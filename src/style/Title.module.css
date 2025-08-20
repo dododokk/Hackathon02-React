@@ -1,0 +1,25 @@
+.header {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.title {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    font-family: "Partial Sans KR";
+    font-size: 80px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 1.6px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #595959;
+    font-family: "Climate Crisis";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
