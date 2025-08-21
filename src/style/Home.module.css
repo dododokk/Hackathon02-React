@@ -13,26 +13,25 @@
   max-height: 50%; /* 화면에 맞춰 줄어듦 */
   height: auto;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: clamp(10px, 6vh, 50px);
 }
 
 .loginBtn{
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: clamp(10px, 6vh, 50px);
   display: flex;
   align-items: center;
-  gap: 2vw;
+  gap: 2.5vw;
 }
 
 .loginBtn button {
   background-color: transparent;
   border: 0;
-  margin: 0px 70px;
   cursor: pointer;
 
   color: #595959;
   font-family: Pretendard;
-  font-size: clamp(13px, 4vw, 20px);
+  font-size: clamp(10px, 4vw, 20px);
   font-style: normal;
   font-weight: 800;
   line-height: normal;
