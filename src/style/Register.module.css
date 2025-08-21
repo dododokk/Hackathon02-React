@@ -1,0 +1,204 @@
+.regisContain {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    margin-top: 30px;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.register {
+    position: relative !important;
+    width: clamp(280px, 50vw, 800px);
+    height: clamp(200px, 50vh, 500px);
+    flex-shrink: 0;
+    border-radius: 30px;
+    background: rgba(151, 151, 151, 0.13);
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
+    margin: 0 auto;
+    margin-top: clamp(40px, 10vh, 100px);
+    padding-top: clamp(20px, 6vh, 60px);
+}
+
+.signup {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-left: clamp(20px, 6vw, 60px);
+    gap: 1vw;
+    margin-bottom: 40px;
+}
+
+.big {
+    color: #000;
+    font-family: Pretendard;
+    font-size: clamp(20px, 6vw, 30px);
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+}
+
+.small {
+    color: #000;
+    font-family: Pretendard;
+    font-size: clamp(8px, 2vw, 20px);
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+}
+
+.regisElement {
+    display: flex;
+    flex-direction: column;
+    margin: 40px 0;
+}
+
+.inputRow {
+    display: flex;
+    align-items: center;
+}
+
+.regisTitle {
+    color: #000;
+    font-family: Pretendard;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 120px;
+    text-align: center;
+    margin-left: 50px;
+}
+
+.regisElement .regisInput {
+    width: 50%;
+    height: 45px;
+    padding: 0 15px;
+
+    border: none;
+    border-radius: 15px;
+
+    background: rgba(151, 151, 151, 0.50);
+    /* 연한 회색 배경 */
+    box-shadow: inset 3px 3px 6px rgba(106, 106, 106, 0.2),
+        inset -3px -3px 6px rgba(220, 220, 220, 0.7);
+    font-size: 15px;
+    color: #333;
+    outline: none;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+
+    margin-left: 50px;
+}
+.regisInput::placeholder{
+    text-align: right;
+}
+
+.messageBox{
+    min-height: 20px;
+}
+
+#warning {
+    font-size: 13px;
+    color: red;
+    margin-left: 220px;
+}
+
+#safe {
+    font-size: 13px;
+    color: green;
+    margin-left: 220px;
+}
+
+.bottomBar{
+    display: flex;
+    align-items: center;
+}
+
+.prev,
+.next {
+    background-color: transparent;
+    border: 0;
+    color: #979797;
+    font-family: Pretendard;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    cursor: pointer;
+}
+
+.prev{
+    margin-left: 30px;
+}
+.next{
+    margin-left: auto;
+    margin-right: 30px;
+}
+
+.centerGroup {
+  display: flex;
+  justify-content: center;
+  flex: 1; /* 가운데 그룹이 중앙을 차지하도록 */
+  gap: 10px; /* "이미 회원이라면?" 과 "로그인" 간격 */
+}
+
+.alreadyRegis {
+    color: #000;
+    font-family: Pretendard;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.moveLogin {
+    color: #0D12FF;
+    font-family: Pretendard;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    cursor: pointer;
+}
+
+.genderGroup {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-right: 40px;
+}
+
+.ageSelect {
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(151, 151, 151, 0.4);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.interestGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.interestBtn {
+  background: #d2e5cd;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: inset 3px 3px 6px rgba(106, 106, 106, 0.2),
+              inset -3px -3px 6px rgba(220, 220, 220, 0.7);
+}
+
+.interestBtn.selected {
+  background: #7fb97f;
+  color: white;
+}

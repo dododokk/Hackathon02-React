@@ -5,7 +5,6 @@ import Title from "./Title";
 function Login(){
     return(
         <div>
-            <Title></Title>
             <div className={styles.login}></div>
         </div>
     );
