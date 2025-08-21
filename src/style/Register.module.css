@@ -60,6 +60,12 @@
     align-items: center;
 }
 
+.inputR {
+    display: flex;
+    align-items: center;
+    margin: 40px 0;
+}
+
 .regisTitle {
     color: #000;
     font-family: Pretendard;
@@ -91,11 +97,12 @@
 
     margin-left: 50px;
 }
-.regisInput::placeholder{
+
+.regisInput::placeholder {
     text-align: right;
 }
 
-.messageBox{
+.messageBox {
     min-height: 20px;
 }
 
@@ -111,7 +118,7 @@
     margin-left: 220px;
 }
 
-.bottomBar{
+.bottomBar {
     display: flex;
     align-items: center;
 }
@@ -129,19 +136,22 @@
     cursor: pointer;
 }
 
-.prev{
+.prev {
     margin-left: 30px;
 }
-.next{
+
+.next {
     margin-left: auto;
     margin-right: 30px;
 }
 
 .centerGroup {
-  display: flex;
-  justify-content: center;
-  flex: 1; /* 가운데 그룹이 중앙을 차지하도록 */
-  gap: 10px; /* "이미 회원이라면?" 과 "로그인" 간격 */
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    /* 가운데 그룹이 중앙을 차지하도록 */
+    gap: 10px;
+    /* "이미 회원이라면?" 과 "로그인" 간격 */
 }
 
 .alreadyRegis {
@@ -164,41 +174,123 @@
 }
 
 .genderGroup {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-right: 40px;
 }
 
 .ageSelect {
-  padding: 5px 10px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(151, 151, 151, 0.4);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
+    padding: 5px 10px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(151, 151, 151, 0.4);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .interestGroup {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .interestBtn {
-  background: #d2e5cd;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: inset 3px 3px 6px rgba(106, 106, 106, 0.2),
-              inset -3px -3px 6px rgba(220, 220, 220, 0.7);
+    background: #d2e5cd;
+    border: none;
+    height: 40px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: inset 3px 3px 6px rgba(106, 106, 106, 0.2),
+        inset -3px -3px 6px rgba(220, 220, 220, 0.7);
 }
 
 .interestBtn.selected {
-  background: #7fb97f;
-  color: white;
+    background: #7fb97f;
+    color: white;
+}
+
+.map {
+    width: 23vw;
+    height: 28vh;
+    margin: 0 auto;
+    border-radius: 30px;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
+    overflow: hidden;
+}
+
+.inputAddress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  margin-left: 43px;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.address {
+  width: 23vw;
+  border: none;
+  border-bottom: 2px solid #999;
+  outline: none;
+  padding: 6px 4px;
+  font-size: 16px;
+  background: transparent;
+}
+
+.searchBtn {
+  width: 3vw;
+  height: 3vh;
+  border-radius: 30px;
+  border: none;
+  background: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2),
+              inset -2px -2px 5px rgba(255,255,255,0.7);
+}
+
+.searchBtn:hover {
+  background: #d6d6d6;
+  transform: scale(1.05);
+  box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2),
+              inset -1px -1px 3px rgba(255,255,255,0.7),
+              0 4px 8px rgba(0,0,0,0.2);
+}
+
+.searchBtn img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.step4{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.firework{
+    width: 18vw;
+    height: 30vh;
+    margin-top: 0;
+}
+
+.congratulation p{
+    font-size: 20px;
+    font-weight: bold;
+    margin: 4px 0;
+}
+
+.congratulation p:last-child{
+    margin-bottom: 50px;
 }

@@ -1,7 +1,9 @@
-import React, { use, useState } from "react";
+import React, { use, useRef, useEffect, useState } from "react";
 import styles from "../style/Register.module.css";
 import Title from "./Title";
 import { useNavigate } from "react-router-dom";
+import searchIcon from "../img/search.png";
+import firework from "../img/firework.png";
 
 function Input(props) {
     return (
@@ -32,6 +34,50 @@ function Register() {
     const [gender, setGender] = useState("");
     const [age, setAge] = useState("");
     const [interests, setInterests] = useState([]);
+
+    //지도 찍기 관련 변수
+    const mapRef = useRef(null);
+    const [map, setMap] = useState(null);
+    const [address, setAddress] = useState("");
+
+    useEffect(() => {
+        if (step === 3 && mapRef.current) {
+            const mapOptions = {
+                center: new window.naver.maps.LatLng(37.5408, 127.0790), //건대 중심
+                zoom: 14,
+            };
+            const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
+            setMap(mapInstance);
+        }
+    }, [step, map]);
+
+    const handleSearch = () => {
+        if (!address || !map) return;
+        window.naver.maps.Service.geocode({ query: address }, function (status, response) {
+            if (status !== window.naver.maps.Service.Status.OK) {
+                alert("주소를 찾을 수 없습니다.");
+                return;
+            }
+
+            const result = response.v2.addresses[0];
+            if (!result) {
+                alert("주소를 찾을 수 없습니다.");
+                return;
+            }
+
+            const coord = new window.naver.maps.LatLng(result.y, result.x);
+
+            // 지도 이동
+            map.setCenter(coord);
+
+            // 마커 표시
+            new window.naver.maps.Marker({
+                position: coord,
+                map: map,
+            });
+        });
+    }
+
 
     const handleIdChange = (e) => setInputId(e.target.value);
     const handlePwChange = (e) => {
@@ -73,7 +119,7 @@ function Register() {
                         <div className={styles.signup}><span className={styles.big}>Sign up</span><span className={styles.small}>| STEP 2</span></div>
                         <Input title="닉네임" type="text" value={inputName} onChange={handleNameChange}
                             placeholder="닉네임을 입력해주세요..." />
-                        <div className={styles.inputRow}>
+                        <div className={styles.inputR}>
                             <span className={styles.regisTitle}>성별</span>
                             <div className={styles.genderGroup}>
                                 <label>
@@ -112,7 +158,7 @@ function Register() {
                                 <option value="60">60대 이상</option>
                             </select>
                         </div>
-                        <div className={styles.inputRow}>
+                        <div className={styles.inputR}>
                             <span className={styles.regisTitle}>관심사</span>
                             <div className={styles.interestGroup}>
                                 {["식품", "생활용품", "사무용품", "반려용품"].map((item) => (
@@ -136,14 +182,52 @@ function Register() {
                         </div>
                     </div>
                 )}
+                {step === 3 && (
+                    <div>
+                        <div className={styles.signup}><span className={styles.big}>Sign up</span><span className={styles.small}>| STEP 3</span></div>
+                        {/* 지도 */}
+                        <div ref={mapRef} className={styles.map} />
+
+                        {/* 주소 입력 */}
+                        <div className={styles.inputAddress}>
+                            <input
+                                type="text"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                placeholder="거주지를 입력해주세요..."
+                                className={styles.address}
+                            />
+                            <button onClick={handleSearch} className={styles.searchBtn}>
+                                <img src={searchIcon}></img>
+                            </button>
+                        </div>
+                    </div>
+                )}
+                {step === 4 && (
+                    <div className={styles.step4}>
+                        <img src={firework} className={styles.firework} />
+                        <div className={styles.congratulation}>
+                            <p>축하합니다!</p>
+                            <p>회원가입이 완료되었습니다!</p>
+                        </div>
+                    </div>
+                )}
                 <div className={styles.bottomBar}>
                     {step > 1 && step < 4 && (
                         <button className={styles.prev} onClick={handlePrev}>&lt; PREV</button>
                     )}
-                    <div className={styles.centerGroup}>
-                        <span className={styles.alreadyRegis}>이미 회원이라면?</span>
-                        <span className={styles.moveLogin} onClick={() => navigate('/login')}>로그인</span>
-                    </div>
+                    {step < 4 && (
+                        <div className={styles.centerGroup}>
+                            <span className={styles.alreadyRegis}>이미 회원이라면?</span>
+                            <span className={styles.moveLogin} onClick={() => navigate('/login')}>로그인</span>
+                        </div>
+                    )}
+                    {step === 4 && (
+                        <div className={styles.centerGroup}>
+                            <span className={styles.moveLogin} onClick={() => navigate('/login')}>로그인</span>
+                            <span className={styles.alreadyRegis}>으로 이동</span>
+                        </div>
+                    )}
                     {step < 4 && (
                         <button className={styles.next} onClick={handleNext}>NEXT &gt;</button>
                     )}
