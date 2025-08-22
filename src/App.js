@@ -13,14 +13,14 @@ import introImg from "./img/exampleIMG.png"; //예시 이미지. 사이트 다 �
 function App() {
   //배경화면 설정 위한 인라인 css
   const backgroundStyle = {
-    position: "fixed",   // 화면 고정
+    // position: "fixed",   // 화면 고정
     top: 0,
     left: 0,
     width: "100vw",
     height: "100vh",
     margin: 0,
     padding: 0,
-    overflow: "hidden",  // 스크롤 방지
+    // overflow: "hidden",  // 스크롤 방지
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
