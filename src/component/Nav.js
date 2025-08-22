@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import styles from "../style/Nav.module.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Nav() {
     const navigate = useNavigate();
-    const [activeMenu, setActiveMenu] = useState("HOME"); // 기본 선택 HOME
+    const location = useLocation();
     const menus = [
         { name: "HOME", path: "/main" },
         { name: "NOTIFICATION", path: "/notification" },
@@ -12,19 +12,14 @@ function Nav() {
         { name: "MY PAGE", path: "/mypage" }
     ];
 
-    const handleClick = (menu) => {
-        setActiveMenu(menu.name);
-        navigate(menu.path); // 페이지 이동
-    };
-
     return (
         <nav>
             <div className={styles.menuBar}>
                 {menus.map((menu) => (
                     <span
                         key={menu.name}
-                        className={`${styles.menu} ${activeMenu === menu.name ? styles.active : ""}`}
-                        onClick={() => handleClick(menu)}
+                        className={`${styles.menu} ${location.pathname === menu.path ? styles.active : ""}`}
+                        onClick={() => navigate(menu.path)}
                     >
                         {menu.name}
                     </span>
