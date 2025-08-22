@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "../style/Login.module.css";
 import Title from "./Title";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { UserContext } from "../context/UserContext";
 
 function Input(props) {
     return (
@@ -20,10 +22,20 @@ function Login() {
     const [inputId, setInputId] = useState("");
     const [inputPw, setInputPw] = useState("");
 
+    const {setUserId, setUserDistinctId, setUserName} = useContext(UserContext);
+    const {isLoggedIn, setIsLoggedIn} = useContext(AuthContext);
+
     const handleIdChange = (e) => setInputId(e.target.value);
-    const handlePwChange = (e) => {
-        setInputPw(e.target.value);
-    };
+    const handlePwChange = (e) => setInputPw(e.target.value);
+
+    const handleLogin = () => {
+        if(inputId &&inputPw){
+            setUserId(inputId);
+            setIsLoggedIn(true);
+            navigate('/main'); 
+            //나중에 서버에 전송
+        }
+    }
 
     return (
         <div className={styles.loginContain}>
@@ -39,7 +51,7 @@ function Login() {
                         <span className={styles.notMember}>회원가입이 아직이신가요?</span>
                         <span className={styles.moveRegis} onClick={() => navigate('/register')}>회원가입</span>
                     </div>
-                    <button className={styles.next} onClick={() => navigate('/main')}>Login &gt;</button>
+                    <button className={styles.next} onClick={handleLogin}>Login &gt;</button>
                 </div>
             </div>
 

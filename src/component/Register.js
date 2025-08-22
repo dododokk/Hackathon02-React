@@ -1,9 +1,10 @@
-import React, { use, useRef, useEffect, useState } from "react";
+import React, { use, useRef, useEffect, useState, useContext } from "react";
 import styles from "../style/Register.module.css";
 import Title from "./Title";
 import { useNavigate } from "react-router-dom";
 import searchIcon from "../img/search.png";
 import firework from "../img/firework.png";
+import { UserContext } from "../context/UserContext";
 
 function Input(props) {
     return (
@@ -24,6 +25,7 @@ function Input(props) {
 
 function Register() {
     const navigate = useNavigate();
+    const { setUserName } = useContext(UserContext); //서버 연결전 임시 데이터(원래 로그인에서 받아와야함.)
 
     const [step, setStep] = useState(1);
     const [inputId, setInputId] = useState("");
@@ -49,7 +51,7 @@ function Register() {
             const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
             setMap(mapInstance);
         }
-    }, [step, map]);
+    }, [step]);
 
     const handleSearch = () => {
         if (!address || !map) return;
@@ -88,7 +90,11 @@ function Register() {
         setConfirmPw(e.target.value);
         setCheckPw(inputPw !== e.target.value);
     }
-    const handleNameChange = (e) => setInputName(e.target.value);
+    const handleNameChange = (e) => {
+        const value = e.target.value;
+        setInputName(value);
+        setUserName(value);
+    };
 
     const handleNext = () => {
         if (step < 4) setStep(step + 1);
