@@ -42,10 +42,12 @@ function Login() {
             <Title />
             <div className={styles.login}>
                 <div className={styles.loginT}>Login</div>
-                <Input title="ID" type="text" value={inputId} onChange={handleIdChange}
-                    placeholder="아이디를 입력해주세요..." />
-                <Input title="PW" type="password" value={inputPw} onChange={handlePwChange}
-                    placeholder="비밀번호를 입력해주세요..." />
+                <div>
+                    <Input title="ID" type="text" value={inputId} onChange={handleIdChange}
+                        placeholder="아이디를 입력해주세요..." />
+                    <Input title="PW" type="password" value={inputPw} onChange={handlePwChange}
+                        placeholder="비밀번호를 입력해주세요..." />
+                </div>
                 <div className={styles.bottomBar}>
                     <div className={styles.centerGroup}>
                         <span className={styles.notMember}>회원가입이 아직이신가요?</span>

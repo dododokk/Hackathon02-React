@@ -18,8 +18,10 @@
     background: rgba(151, 151, 151, 0.13);
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
     margin: 0 auto;
-    margin-top: clamp(40px, 10vh, 100px);
+    margin-top: clamp(40px, 10vh, 70px);
     padding-top: clamp(20px, 6vh, 60px);
+    display: flex;
+    flex-direction: column;
 }
 
 .signup {
@@ -121,6 +123,8 @@
 .bottomBar {
     display: flex;
     align-items: center;
+    margin-top: auto;
+    margin-bottom: 20px;
 }
 
 .prev,

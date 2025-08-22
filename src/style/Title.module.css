@@ -1,6 +1,7 @@
 .header {
     text-align: center;
     margin: 0 auto;
+    min-width: 700px;
 }
 
 .title {

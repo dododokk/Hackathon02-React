@@ -19,7 +19,8 @@
 
 .loginBtn{
   margin: 0 auto;
-  margin-top: clamp(10px, 6vh, 50px);
+  margin-top: clamp(10px, 6vh, 30px);
+  margin-bottom: 30px;
   display: flex;
   align-items: center;
   gap: 2.5vw;

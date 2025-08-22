@@ -17,6 +17,7 @@
     font-weight: 300;
     line-height: normal;
     letter-spacing: 0.48px;
+    white-space: nowrap;
 }
 
 nav hr {

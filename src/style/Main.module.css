@@ -4,7 +4,121 @@
     margin: 0;
     margin-top: 15px;
     padding: 0;
+    min-width: 700px;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+}
+.main{
+    margin: 0 auto;
+    height: 100vh;
+    min-width: 880px;
+}
+
+.searchInner{
+    margin: 0 auto;
+    width: 842px;
+    height: 69px;
+    background: rgba(255, 255, 255, 0.70);
+    border-radius: 999px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+}
+.searchIcon{
+    width: 80.756px;
+height: 46px;
+border: none;
+border-radius: 20px;
+background: rgba(151, 151, 151, 0.50);
+box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
+}
+.searchimg{
+    height: 40px;
+}
+.searchInput{
+    border:none;
+    width: 600px;
+    height: 69px;
+    padding: 0 16px;
+    box-sizing: border-box;
+}
+.searchInner { display: flex; gap: 10px; }
+.categoryBtn { white-space: nowrap;}
+.categorySelect{border: none; font-size: large;  background: rgba(255, 255, 255, 0.20);
+}
+.searchInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  font-size: large;
+  background: rgba(255, 255, 255, 0.20);
+
+}
+.list{
+  margin-top: clamp(14px, 3vh, 32px);
+  display: grid;
+  gap: 14px;
+  place-items: center;
+}
+.card{
+    width: 870px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.70);
+    box-shadow: 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+}
+.cardHead{
+    display: flex;
+    align-items: center;
+    height: 20px;
+}
+.icon{
+    display: flex;
+    align-items: center;
+}
+.thumb{
+    margin: auto 20px;
+    margin-left: 50px;
+    border-radius: 10px;
+}
+.content {
+    width: 300px;
+    font-size: small;
+  /* 말줄임 핵심 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;      /* 보여줄 최대 줄수 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  /* 줄바꿈 처리 */
+  white-space: pre-line;       /* \n을 줄바꿈으로 처리, 공백은 축약 */
+
+  /* 긴 단어/URL 줄바꿈 */
+  /* overflow-wrap: anywhere;     긴 토큰도 줄바꿈되게 */
+  line-height: 1.4;
+}
+.category{
+    padding: 2px 8px;
+    margin-right: 10px;
+height: 26px;
+border-radius: 20px;
+background: rgba(160, 197, 145, 0.50);
+}
+.address{
+    padding: 2px 10px;
+    height: 26px;
+    border-radius: 20px;
+background: rgba(217, 217, 217, 0.50);
+display: flex;
+align-items: center;
+}
+.roadaddress{
+    margin:auto 0;
 }

@@ -17,7 +17,9 @@ function Home() {
                     로그인
                 </button>
                 <span>|</span>
-                <button className={styles.register} onClick={() => navigate("/register")}>회원가입</button>
+                <button className={styles.register} onClick={() => navigate("/register")}>
+                    회원가입
+                </button>
             </div>
         </div>
     );
