@@ -1,10 +1,12 @@
 import React from "react";
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import styles from "./App.css";
+import "./App.css";
 import Home from "./component/Home";
 import Title from "./component/Title";
 import Login from "./component/Login";
 import Register from "./component/Register";
+import Main from "./component/Main";
+import MyPage from "./component/MyPage";
 import background from "./img/background.png";
 import introImg from "./img/exampleIMG.png"; //예시 이미지. 사이트 다 만들고 나면 우리 사이트 화면 사진으로 변경하기!
 
@@ -38,6 +40,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/main" element={<Main />} />
+        <Route path="/mypage" element={<MyPage />} />
       </Routes>
     </div>
   );

@@ -1,0 +1,51 @@
+.menuBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    width: clamp(700px, 60vw, 900px);
+    gap: clamp(60px, 10vw, 100px);
+    margin-top: 30px;
+}
+
+.menu {
+    flex: 1;
+    color: #474747;
+    font-family: Pretendard;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: 0.48px;
+}
+
+nav hr {
+    border: none;
+    border-top: 1.5px solid #474747;
+    margin-top: 10px;
+    width: 110%;
+    margin-left: -5%;
+}
+
+.menu:hover {
+    color: #245112;
+    text-shadow: 0 4px 4px rgba(36, 81, 18, 0.50);
+    font-family: Pretendard;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.48px;
+    cursor: pointer;
+}
+
+.active{
+    color: #245112;
+    text-shadow: 0 4px 4px rgba(36, 81, 18, 0.50);
+    font-family: Pretendard;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.48px;
+}

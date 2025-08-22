@@ -39,7 +39,7 @@ function Login() {
                         <span className={styles.notMember}>회원가입이 아직이신가요?</span>
                         <span className={styles.moveRegis} onClick={() => navigate('/register')}>회원가입</span>
                     </div>
-                    <button className={styles.next} onClick={() => navigate('/home')}>Login &gt;</button>
+                    <button className={styles.next} onClick={() => navigate('/main')}>Login &gt;</button>
                 </div>
             </div>
 
