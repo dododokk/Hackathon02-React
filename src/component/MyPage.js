@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../style/MyPage.module.css";
 import InnerTitle from "./InnerTitle";
-import profile from "../style/profile.png";
+import profile from "../img/profile.png";
 
 function MyPage(){
     return(
