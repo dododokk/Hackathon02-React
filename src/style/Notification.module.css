@@ -1,0 +1,52 @@
+.mainWrapper{
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    /* margin-top: 15px; */
+    padding: 0;
+    min-width: 700px;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.folderContainer{
+    /* position: relative; */
+    width: clamp(300px, 65vw, 1000px);
+    height: clamp(200px, 80vh, 1000px);
+    margin: 0 auto;
+
+    background-size: 100% 100%;
+    background-position: top center;
+    background-repeat: no-repeat;
+
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.notificationHeader{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notificationImg{
+    width: 7%;
+    height: auto;
+    margin-top: clamp(20px, 10vh, 100px);
+    margin-left: clamp(20px, 5vw, 60px);
+}
+
+.notificationTitle{
+    margin-top: clamp(20px, 12vh, 120px);
+}
+
+.headerHr{
+    width: 60%;
+    margin: 10px 0;
+    margin-left: clamp(20px, 5vw, 50px);
+    border: none;
+    border-top: 1.5px solid #7a7a7a;
+}
