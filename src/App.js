@@ -7,6 +7,7 @@ import Login from "./component/Login";
 import Register from "./component/Register";
 import Main from "./component/Main";
 import MyPage from "./component/MyPage";
+import Message from "./component/Message";
 import background from "./img/background.png";
 import introImg from "./img/exampleIMG.png"; //예시 이미지. 사이트 다 만들고 나면 우리 사이트 화면 사진으로 변경하기!
 
@@ -44,6 +45,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/main" element={<Main />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/message" element={<Message />} />
       </Routes>
     </div>
   );
