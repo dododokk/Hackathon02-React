@@ -33,10 +33,10 @@
 }
 
 .messageImg{
-    width: 10%;
+    width: 7%;
     height: auto;
     margin-top: clamp(20px, 10vh, 100px);
-    margin-left: clamp(20px, 5vw, 50px);
+    margin-left: clamp(20px, 5vw, 60px);
 }
 
 .messageTitle{
@@ -49,4 +49,80 @@
     margin-left: clamp(20px, 5vw, 50px);
     border: none;
     border-top: 1.5px solid #7a7a7a;
+}
+
+.messageList {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    margin-top: 10px;
+    width: 80%;      /* ✅ 폴더 컨테이너 기준 */
+    height: 60%;
+    overflow-y: auto;
+}
+
+.messageCard {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 20px;
+    border-bottom: 1px solid #ddd;
+    width: 100%;      /* ✅ 리스트 안에서 가득 */
+    box-sizing: border-box; /* padding 포함 */
+}
+
+.profileImg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.messageContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.messageTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.messageTitleText {
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.messagePeople {
+    color: #555;
+    font-size: 14px;
+    margin-right: auto;
+}
+
+.messageTime {
+    font-size: 12px;
+    color: #888;
+}
+
+.messageBottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.latestMessage {
+    font-size: 14px;
+    color: #666;
+}
+
+.unreadBadge {
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 8px;
 }
