@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "../style/MyPage.module.css";
 import InnerTitle from "./InnerTitle";
 import profile from "../img/profile.png";
@@ -6,9 +6,51 @@ import modify from "../img/modify.png";
 import location from "../img/location.png";
 import { UserContext } from "../context/UserContext";
 
+function Label(props) {
+    return (
+        <label className={`${styles.menuItem} ${props.selected === props.menu ? styles.active : ""}`}
+            onClick={() => props.onSelect(props.menu)}>
+            {props.title}
+        </label>
+    )
+}
+
+function Content(props) {
+    let content;
+
+    if (props.title === "menu1") {
+        content = (
+            <div>
+                menu1
+            </div>
+        );
+    }
+    else if (props.title === "menu2") {
+        content = (
+            <div>
+                menu2
+            </div>
+        );
+    }
+    else{
+        content = (
+            <div>
+                menu3
+            </div>
+        );
+    }
+
+    return(
+        <div id={styles.content}>
+            {content}
+        </div>
+    )
+}
+
 function MyPage() {
     const { userId, userName } = useContext(UserContext);
     const mapRef = useRef(null);
+    const [selectedMenu, setSelectedMenu] = useState("menu1");
 
     useEffect(() => {
         if (window.naver && mapRef.current) {
@@ -44,6 +86,18 @@ function MyPage() {
                     </div>
                 </div>
                 <div ref={mapRef} className={styles.map}></div>
+            </div>
+            <div className={styles.mywriteContent}>
+                <div className={styles.mywrite}>
+                    <Label selected={selectedMenu} menu="menu1" onSelect={setSelectedMenu} title="신청중" />
+                    <Label selected={selectedMenu} menu="menu2" onSelect={setSelectedMenu} title="완료됨" />
+                    <Label selected={selectedMenu} menu="menu3" onSelect={setSelectedMenu} title="내가 쓴 글" />
+                </div>
+                <article>
+                    {selectedMenu === "menu1" && <Content title="menu1" />}
+                    {selectedMenu === "menu2" && <Content title="menu2" />}
+                    {selectedMenu === "menu3" && <Content title="menu3" />}
+                </article>
             </div>
         </div>
     );

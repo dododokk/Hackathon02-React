@@ -16,10 +16,11 @@ function App() {
     // position: "fixed",   // 화면 고정
     top: 0,
     left: 0,
-    width: "100vw",
-    height: "100vh",
+    width: "auto",
+    height: "auto",
     margin: 0,
     padding: 0,
+    overflowX: 'hidden',
     // overflow: "hidden",  // 스크롤 방지
     display: "flex",
     flexDirection: "column",
@@ -30,6 +31,7 @@ function App() {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed'
   };
 
   const navigate = useNavigate();
