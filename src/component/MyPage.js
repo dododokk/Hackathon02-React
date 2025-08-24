@@ -7,6 +7,7 @@ import location from "../img/location.png";
 import addressIcon from "../img/addressIcon.png";
 import thumb from "../img/thumb.png";
 import slash from "../img/slash.png";
+import trash from "../img/trash.png";
 import { UserContext } from "../context/UserContext";
 import { AuthContext } from "../context/AuthContext";
 import { perPersonKRW } from "../utils/price";
@@ -94,6 +95,34 @@ function Content(props) {
         }
     ];
 
+    const handleDelete = async (postId) => {
+        // 서버 연결 후.현재는 board delete 그대로 가져옴.
+        // if (!window.confirm("정말 삭제할까요?")) return;
+
+        // try {
+        //     const res = await fetch(
+        //         `https://miraculous-sparkle-production.up.railway.app/api/posts/${postId}?userId=${encodeURIComponent(userDistinctId)}`,
+        //         {
+        //             method: "DELETE",
+        //             headers: {
+        //                 ...(token && { Authorization: `Bearer ${token}` }),
+        //             },
+        //         }
+        //     );
+
+        //     if (res.status !== 204) {
+        //         const msg = await res.text().catch(() => "");
+        //         throw new Error(msg || `삭제 실패 (status ${res.status})`);
+        //     }
+
+        //     // ✅ 삭제 후 최신 데이터 다시 불러오기
+        //     fetchPosts();
+        // } catch (err) {
+        //     console.error("삭제 에러:", err);
+        //     alert(err.message || "삭제 중 오류가 발생했습니다.");
+        // }
+    };
+
     if (props.title === "menu1") {
         content = (
             <div>
@@ -180,6 +209,7 @@ function Content(props) {
                                 <header className={styles.cardHead}>
                                     <h3 className={styles.title}>{item.title}</h3>
                                     <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
+                                    <button className={styles.delete} onClick={handleDelete}><img src={trash} className={styles.trashImg}/></button>
                                 </header>
                                 <div className={styles.under}>
                                     <div className={styles.cardBody}>
