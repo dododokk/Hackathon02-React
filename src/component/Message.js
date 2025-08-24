@@ -82,7 +82,7 @@ function Message() {
                     {tempMessages.map(msg => (
                         <div key={msg.id} className={styles.messageCard}>
                             <img src={profile} className={styles.profileImg} alt="profile" />
-                            <div className={styles.messageContent} onClick={()=>{navigate('/chat', {state: {postId: msg.id}})}}>
+                            <div className={styles.messageContent} onClick={()=>{navigate('/chat', {state: {msgId: msg.id}})}}>
                                 <div className={styles.messageTop}>
                                     <span className={styles.messageTitleText}>{msg.title}</span>
                                     <span className={styles.messagePeople}>{msg.people}</span>
