@@ -8,7 +8,9 @@ import addressIcon from "../img/addressIcon.png";
 import thumb from "../img/thumb.png";
 import slash from "../img/slash.png";
 import { UserContext } from "../context/UserContext";
+import { AuthContext } from "../context/AuthContext";
 import { perPersonKRW } from "../utils/price";
+import { useNavigate } from "react-router-dom";
 
 function Label(props) {
     return (
@@ -216,7 +218,10 @@ function Content(props) {
 
 function MyPage() {
     const { userId, userName } = useContext(UserContext);
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+    const { setUserId, setUserPw } = useContext(UserContext);
     const mapRef = useRef(null);
+    const navigate = useNavigate();
     const [selectedMenu, setSelectedMenu] = useState("menu1");
 
     useEffect(() => {
@@ -234,6 +239,14 @@ function MyPage() {
         }
     }, []);
 
+    const handleLogout = () => {
+        // localStorage.removeItem("token"); 나중에 토큰 삭제
+        setIsLoggedIn(false);
+        setUserId("");
+        setUserPw("");
+        navigate('/');
+    };
+
     return (
         <div className={styles.mainWrapper}>
             <InnerTitle />
@@ -241,7 +254,10 @@ function MyPage() {
                 <div className={styles.userInfo}>
                     <img src={profile} className={styles.profile} />
                     <div className={styles.infoText}>
-                        <p className={styles.userId}>{userId}</p>
+                        <div className={styles.userIdRow}>
+                            <p className={styles.userId}>{userId}</p>
+                            <button className={styles.logoutBtn} onClick={handleLogout}>Logout</button>
+                        </div>
                         <p className={styles.userName}>{userName}<img src={modify} className={styles.modifyImg}></img></p>
                     </div>
                 </div>
