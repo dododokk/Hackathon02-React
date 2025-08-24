@@ -33,7 +33,7 @@
 }
 
 .notificationImg{
-    width: 7%;
+    width: 5%;
     height: auto;
     margin-top: clamp(20px, 10vh, 100px);
     margin-left: clamp(20px, 5vw, 60px);
@@ -49,4 +49,83 @@
     margin-left: clamp(20px, 5vw, 50px);
     border: none;
     border-top: 1.5px solid #7a7a7a;
+}
+
+/* ✅ 알림 리스트 (폴더 높이의 60%만 사용 + 내부 스크롤) */
+.notificationList {
+    width: 80%;
+    height: 60%;
+    margin: 0 auto;
+    /* margin-top: 10px; */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    /* gap: 16px; */
+    padding-right: 6px; /* 스크롤바 간격 */
+    box-sizing: border-box;
+}
+
+.notificationCard {
+    position: relative;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.notificationContent {
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.postInfo {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.postImg {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.postDetail {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: #555;
+}
+
+.postTitle {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.postPeople, .postPrice {
+    font-size: 13px;
+    color: #777;
+}
+
+.notificationTop {
+    display: flex;
+    justify-content: space-between; /* 왼쪽 content, 오른쪽 버튼 */
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.readButton {
+    padding: 4px 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #f44336; /* 안읽음 빨간색 */
+    color: white;
+    transition: 0.2s;
+    margin-right: 15px;
+}
+
+.readButton:disabled {
+    background: #aaa; /* 읽음 회색 */
+    cursor: not-allowed;
 }
