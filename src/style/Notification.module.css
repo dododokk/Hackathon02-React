@@ -65,6 +65,10 @@
     box-sizing: border-box;
 }
 
+.notificationList::-webkit-scrollbar {
+    width: 6px;
+}
+
 .notificationCard {
     position: relative;
     padding-bottom: 10px;
