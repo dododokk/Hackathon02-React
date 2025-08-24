@@ -7,6 +7,8 @@ import addressIcon from "../img/addressIcon.png";
 import thumb from "../img/thumb.png";
 import slash from "../img/slash.png";
 import { perPersonKRW } from "../utils/price";
+import { useNavigate } from "react-router-dom";
+
 
 const tempData = [
   {
@@ -27,7 +29,7 @@ const tempData = [
     createdAt: "2025-08-19",
   },
   {
-    id: 1,
+    id: 2,
     author: {
         id: 101,
         nickname: "정화진",
@@ -44,7 +46,7 @@ const tempData = [
     createdAt: "2025-08-19",
   },
   {
-    id: 1,
+    id: 3,
     author: {
         id: 101,
         nickname: "정화진",
@@ -61,13 +63,13 @@ const tempData = [
     createdAt: "2025-08-19",
   },
   {
-    id: 1,
+    id: 4,
     author: {
         id: 101,
         nickname: "정화진",
         roadAddress: "용인시 수지구"
     },
-    title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
+    title: "카라멜 죽빵 공구해서 나누실 분 구합니다!",
     category: "식품",
     productDesc: "11,200",
     desiredMemberCount: 3,
@@ -80,6 +82,8 @@ const tempData = [
 ];
 
 function Main() {
+    const navigate = useNavigate();
+    
     const [keyword, setKeyword] = useState("");//검색어
     const [category, setCategory] = useState("카테고리");
     return (
@@ -117,7 +121,7 @@ function Main() {
                             <img className={styles.thumb} src={thumb} alt=""/>
                             <div className={styles.right}>
                                     <header className={styles.cardHead}>
-                                        <h3 className={styles.title}>{item.title}</h3>
+                                        <div className={styles.title} onClick={()=>navigate('/post')}>{item.title}</div>
                                         <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
                                     </header>
                                 <div className={styles.under}>
@@ -144,7 +148,7 @@ function Main() {
                         </article>
                     ))}
                 </section>
-                <button className={styles.sideBtn} aria-label="글쓰기">＋</button>
+                <button onClick={()=>{navigate('/write')}} className={styles.sideBtn} aria-label="글쓰기">＋</button>
             </div>
         </div>
     );
