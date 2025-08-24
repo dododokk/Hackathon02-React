@@ -4,8 +4,10 @@ import InnerTitle from "./InnerTitle";
 import folder from "../img/folder.png";
 import message from "../img/message.png";
 import profile from "../img/profile.png";
+import { useNavigate } from "react-router-dom";
 
 function Message() {
+    const navigate = useNavigate();
     //나중에 서버에서 받기
     const tempMessages = [
         {
@@ -80,7 +82,7 @@ function Message() {
                     {tempMessages.map(msg => (
                         <div key={msg.id} className={styles.messageCard}>
                             <img src={profile} className={styles.profileImg} alt="profile" />
-                            <div className={styles.messageContent}>
+                            <div className={styles.messageContent} onClick={()=>{navigate('/chat', {state: {postId: msg.id}})}}>
                                 <div className={styles.messageTop}>
                                     <span className={styles.messageTitleText}>{msg.title}</span>
                                     <span className={styles.messagePeople}>{msg.people}</span>

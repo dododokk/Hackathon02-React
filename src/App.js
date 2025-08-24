@@ -9,6 +9,7 @@ import Main from "./component/Main";
 import MyPage from "./component/MyPage";
 import Message from "./component/Message";
 import Notification from "./component/Notification";
+import Chat from "./component/Chat";
 import background from "./img/background.png";
 import introImg from "./img/exampleIMG.png"; //예시 이미지. 사이트 다 만들고 나면 우리 사이트 화면 사진으로 변경하기!
 
@@ -48,6 +49,7 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/message" element={<Message />} />
         <Route path="/notification" element={<Notification />} />
+        <Route path="/chat" element={<Chat />} />
       </Routes>
     </div>
   );
