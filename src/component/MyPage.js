@@ -4,7 +4,11 @@ import InnerTitle from "./InnerTitle";
 import profile from "../img/profile.png";
 import modify from "../img/modify.png";
 import location from "../img/location.png";
+import addressIcon from "../img/addressIcon.png";
+import thumb from "../img/thumb.png";
+import slash from "../img/slash.png";
 import { UserContext } from "../context/UserContext";
+import { perPersonKRW } from "../utils/price";
 
 function Label(props) {
     return (
@@ -17,30 +21,193 @@ function Label(props) {
 
 function Content(props) {
     let content;
+    const tempData = [
+        {
+            id: 1,
+            author: {
+                id: 101,
+                nickname: "정화진",
+                roadAddress: "용인시 수지구"
+            },
+            title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
+            category: "식품",
+            productDesc: "11,200",
+            desiredMemberCount: 4,
+            currentMembercount: 2,
+            content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
+            mainImageUrl: "../img/thumb.png",//img id쓸건지
+            status: "OPEN",
+            createdAt: "2025-08-19",
+        },
+        {
+            id: 1,
+            author: {
+                id: 101,
+                nickname: "정화진",
+                roadAddress: "용인시 수지구"
+            },
+            title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
+            category: "식품",
+            productDesc: "11,200",
+            desiredMemberCount: 3,
+            currentMembercount: 2,
+            content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
+            mainImageUrl: "../img/thumb.png",//img id쓸건지
+            status: "OPEN",
+            createdAt: "2025-08-19",
+        },
+        {
+            id: 1,
+            author: {
+                id: 101,
+                nickname: "정화진",
+                roadAddress: "용인시 수지구"
+            },
+            title: "카라멜 소금빵 공구해서 나누실 분 구합니다제목길게해볼게요 자고시퍼요 언제잘수있을까 언제잘수있을까 언제잘수있을까!",
+            category: "식품",
+            productDesc: "11,200",
+            desiredMemberCount: 3,
+            currentMembercount: 2,
+            content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
+            mainImageUrl: "../img/thumb.png",//img id쓸건지
+            status: "OPEN",
+            createdAt: "2025-08-19",
+        },
+        {
+            id: 1,
+            author: {
+                id: 101,
+                nickname: "정화진",
+                roadAddress: "용인시 수지구"
+            },
+            title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
+            category: "식품",
+            productDesc: "11,200",
+            desiredMemberCount: 3,
+            currentMembercount: 2,
+            content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
+            mainImageUrl: "../img/thumb.png",//img id쓸건지
+            status: "OPEN",
+            createdAt: "2025-08-19",
+        }
+    ];
 
     if (props.title === "menu1") {
         content = (
             <div>
-                menu1
+                <section className={styles.list}>
+                    {tempData.map(item => (
+                        <article key={item.id} className={styles.card}>
+                            <img className={styles.thumb} src={thumb} alt="" />
+                            <div className={styles.right}>
+                                <header className={styles.cardHead}>
+                                    <h3 className={styles.title}>{item.title}</h3>
+                                    <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
+                                </header>
+                                <div className={styles.under}>
+                                    <div className={styles.cardBody}>
+                                        <div className={styles.icon}>
+                                            <p className={styles.category}>#{item.category}</p>
+                                            <div className={styles.address}>
+                                                <img className={styles.addressIcon} src={addressIcon}></img>
+                                                <div className={styles.roadaddress}>{item.author.roadAddress}</div>
+                                            </div>
+                                        </div>
+                                        <div className={styles.content}>{item.content}</div>
+                                    </div>
+
+                                    <aside className={styles.priceBox}>
+                                        <div className={styles.price}>
+                                            {perPersonKRW(item.productDesc, item.desiredMemberCount)}
+                                        </div>
+                                        <img className={styles.slash} src={slash}></img>
+                                        <div className={styles.totalPrice}>total {item.productDesc}</div>
+                                    </aside>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
+                </section>
             </div>
         );
     }
     else if (props.title === "menu2") {
         content = (
-            <div>
-                menu2
-            </div>
+            <section className={styles.list}>
+                {tempData.map(item => (
+                    <article key={item.id} className={`${styles.card} ${styles.closed}`}>
+                        <img className={styles.thumb} src={thumb} alt="" />
+                        <div className={styles.right}>
+                            <header className={styles.cardHead}>
+                                <h3 className={`${styles.title} ${styles.titleClosed}`}>{item.title}</h3>
+                                <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
+                            </header>
+
+                            <div className={styles.under}>
+                                <div className={styles.cardBody}>
+                                    <div className={styles.icon}>
+                                        <p className={styles.category}>#{item.category}</p>
+                                        <div className={styles.address}>
+                                            <img className={styles.addressIcon} src={addressIcon} />
+                                            <div className={styles.roadaddress}>{item.author.roadAddress}</div>
+                                        </div>
+                                    </div>
+                                    {/* 개행 살리고 3줄 클램프 유지 */}
+                                    <div className={styles.content}>{item.content}</div>
+                                </div>
+
+                                {/* 가격 대신 종료 버튼 */}
+                                <aside className={styles.closedBox}>
+                                    <button className={styles.closedBtn} disabled>모집 종료</button>
+                                </aside>
+                            </div>
+                        </div>
+                    </article>
+                ))}
+            </section>
         );
     }
-    else{
+    else {
         content = (
             <div>
-                menu3
+                <section className={styles.list}>
+                    {tempData.map(item => (
+                        <article key={item.id} className={styles.card}>
+                            <img className={styles.thumb} src={thumb} alt="" />
+                            <div className={styles.right}>
+                                <header className={styles.cardHead}>
+                                    <h3 className={styles.title}>{item.title}</h3>
+                                    <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
+                                </header>
+                                <div className={styles.under}>
+                                    <div className={styles.cardBody}>
+                                        <div className={styles.icon}>
+                                            <p className={styles.category}>#{item.category}</p>
+                                            <div className={styles.address}>
+                                                <img className={styles.addressIcon} src={addressIcon}></img>
+                                                <div className={styles.roadaddress}>{item.author.roadAddress}</div>
+                                            </div>
+                                        </div>
+                                        <div className={styles.content}>{item.content}</div>
+                                    </div>
+
+                                    <aside className={styles.priceBox}>
+                                        <div className={styles.price}>
+                                            {perPersonKRW(item.productDesc, item.desiredMemberCount)}
+                                        </div>
+                                        <img className={styles.slash} src={slash}></img>
+                                        <div className={styles.totalPrice}>total {item.productDesc}</div>
+                                    </aside>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
+                </section>
             </div>
         );
     }
 
-    return(
+    return (
         <div id={styles.content}>
             {content}
         </div>
