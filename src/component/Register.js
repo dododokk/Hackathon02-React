@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import searchIcon from "../img/search.png";
 import firework from "../img/firework.png";
 import { UserContext } from "../context/UserContext";
+import { useMap } from "../context/MapContext";
 
 function Input(props) {
     return (
@@ -41,6 +42,9 @@ function Register() {
     const mapRef = useRef(null);
     const [map, setMap] = useState(null);
     const [address, setAddress] = useState("");
+    const [marker, setMarker] = useState(null);
+    const mapDivRef = useRef(null);
+    const { initMap, geocode, setCenter, addMarker, clearMarkers, place } = useMap();
 
     useEffect(() => {
         if (step === 3 && mapRef.current) {
@@ -73,10 +77,13 @@ function Register() {
             map.setCenter(coord);
 
             // 마커 표시
-            new window.naver.maps.Marker({
-                position: coord,
-                map: map,
-            });
+            if (marker) {
+                marker.setPosition(coord);
+                if (!marker.getMap()) marker.setMap(map); // 혹시 제거돼 있었다면 다시 붙이기
+            } else {
+                const mk = new window.naver.maps.Marker({ position: coord, map });
+                setMarker(mk);
+            }
         });
     }
 

@@ -18,10 +18,294 @@
     height: auto;
     flex-shrink: 0;
     border-radius: 30px;
-    background: rgba(151, 151, 151, 0.13);
+    background: rgba(254, 248, 248, 0.50);
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
     margin: 0 auto;
     margin-top: clamp(20px, 8vh, 60px);
-    padding-top: clamp(20px, 4vh, 40px);
+    padding-top: clamp(1px, 1vh, 30px);
     /* 여기까지 회색 틀 쓸때 공통 css */
+
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    width: 100%;
+    height: 160px;
+    background: transparent;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 18px;
+    overflow: hidden;
+    /* 최후의 방어 */
+}
+
+.card>* {
+    min-width: 0;
+}
+
+/* 내용이 밖으로 못 튀게 */
+.thumb {
+    width: 130px;
+    height: 130px;
+    /* 고정 프레임(스크린샷과 유사) */
+    object-fit: cover;
+    /* border-radius: 10px; */
+    flex: 0 0 140px;
+    display: block;
+    margin-left: 5px;
+}
+
+/* 오른쪽 전체 래퍼 */
+.right {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 상단: 제목 + 인원필 */
+.cardHead {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    height: auto;
+    /* 고정 높이 제거 */
+    margin-bottom: 0;
+    min-width: 0;
+}
+
+.title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-top: 10px;
+    color: #212121;
+    font-size: 18px;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.under {
+    display: flex;
+    align-items: flex-start;
+    gap: 1px;
+    min-width: 0;
+    margin-top: 40px;
+}
+
+.cardBody {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    /* width: 430px; */
+}
+
+.priceBox {
+    flex: 0 0 auto;
+    min-width: 140px;
+    margin-left: auto;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-right: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.price {
+    color: #6D6D6D;
+    font-family: Pretendard, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    margin: 0;
+    margin-bottom: 20px;
+    line-height: 1;
+}
+
+.slash {
+    width: 34px;
+    height: auto;
+    margin: 2px 0 -2px;
+    opacity: .9;
+}
+
+.totalPrice {
+    color: #6D6D6D;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .2px;
+    line-height: 1;
+    white-space: nowrap;
+    margin-top: 20px;
+}
+
+.exit{
+    width: 40px;
+    height: 40px;
+    margin-right: 20px;
+}
+
+.exit:hover{
+    width: 43px;
+    height: 43px;
+    margin-right: 17px;
+    cursor: pointer;
+}
+
+.profile {
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+}
+
+.people {
+    color: #595959;
+    font-family: Pretendard;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 45px;
+    /* 187.5% */
+    letter-spacing: 0.48px;
+}
+
+.hr {
+    width: 95%;
+    border: none;
+    border-top: 1.5px solid #7a7a7a;
+}
+
+/* ===== 채팅 레이아웃 ===== */
+.chatBody {
+    display: flex;
+    flex-direction: column;
+    /* 카드(160px) + 여백을 제외하고 화면에 꽉 차게 */
+    max-height: 50vh;
+    padding: 8px 14px 0 14px;
+}
+
+.messageList {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 6px 0 12px;
+}
+
+/* === 한 사람의 메시지 블록 === */
+/* (기존 msgRow 사용 중인 코드가 있어도 동작하도록 동일 의미로 유지) */
+.msgGroup,
+.msgRow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+.me { align-items: flex-end; }
+.other { align-items: flex-start; }
+
+/* 프로필 + 닉네임 한 줄 */
+.msgHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px; /* 아바타 높이와 맞춤 */
+    margin-left: 0;
+}
+.msgAvatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.senderName {
+    font-size: 12px;
+    color: #8f8f8f;
+}
+
+/* 말풍선 */
+.bubble {
+    position: relative;            /* 시간 위치 기준 */
+    max-width: 70%;
+    padding: 10px 46px 16px 12px;  /* 오른쪽·아래 여유(시간 자리) */
+    border-radius: 16px;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* 상대 말풍선은 헤더가 숨겨져도 아바타 자리만큼 들여쓰기 유지 */
+.other .bubble { margin-left: 36px; } /* 28(아바타)+8(간격) */
+.me .bubble { margin-right: 36px; }
+
+/* 내 메시지: 오른쪽 초록 */
+.me .bubble {
+    background: #D9F7C7; /* 연초록 */
+    color: #1e3a2f;
+    border-top-right-radius: 6px;
+}
+
+/* 남 메시지: 왼쪽 회색 */
+.other .bubble {
+    background: #EFEFEF;
+    color: #333;
+    border-top-left-radius: 6px;
+}
+
+/* 본문/시간 */
+.msgText { font-size: 15px; }
+
+.msgTime {
+    position: absolute;
+    right: 12px;
+    bottom: 6px;
+    font-size: 12px;
+    opacity: .7;
+}
+
+/* ===== 입력바(하단 고정) ===== */
+.composer {
+    position: sticky; /* chatWrapper 내부 바닥에 고정 */
+    bottom: 0;
+    /* background: rgba(254, 248, 248, 0.90); */
+    display: flex;
+    gap: 8px;
+    padding: 12px 0 14px 0;
+    border-top: 1px solid #dedede;
+    backdrop-filter: blur(2px);
+}
+
+.input {
+    flex: 1;
+    border: 1px solid #cfcfcf;
+    border-radius: 999px;
+    padding: 10px 14px;
+    outline: none;
+    background: #fff;
+}
+
+.sendBtn {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(231, 176, 7, 0.50);
+    color: #595959;
+}
+
+.sendBtn:hover {
+    background: rgba(231, 176, 7, 0.75);
+    color: #333;                       
+    transform: translateY(-2px);        
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15); 
 }

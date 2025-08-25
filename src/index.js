@@ -6,15 +6,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
+import { MapProvider } from './context/MapContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <AuthProvider>
       <UserProvider>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
+        <MapProvider>
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        </MapProvider>
       </UserProvider>
     </AuthProvider>
   </BrowserRouter>
