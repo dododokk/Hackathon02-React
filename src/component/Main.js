@@ -67,30 +67,30 @@ const tempData = [
     status: "OPEN",
     createdAt: "2025-08-19",
   },
-  {
-    id: 4,
-    author: {
-        id: 101,
-        nickname: "정화진",
-        roadAddress: "서울 광진구 능동로 161 "
-    },
-    title: "고양이 츄르 150개 공구해요~",
-    category: "반려용품",
-    productDesc: "33,770",
-    desiredMemberCount: 5,
-    currentMembercount: 2,
-    content: "6가지 맛 혼합 150개 제품이에요 30개씩 나눠요~",
-    mainImageUrl: thumb4,//img id쓸건지
-    status: "OPEN",
-    createdAt: "2025-08-19",
-  }
+//   {
+//     id: 4,
+//     author: {
+//         id: 101,
+//         nickname: "정화진",
+//         roadAddress: "서울 광진구 능동로 161 "
+//     },
+//     title: "고양이 츄르 150개 공구해요~",
+//     category: "반려용품",
+//     productDesc: "33,770",
+//     desiredMemberCount: 5,
+//     currentMembercount: 2,
+//     content: "6가지 맛 혼합 150개 제품이에요 30개씩 나눠요~",
+//     mainImageUrl: thumb4,//img id쓸건지
+//     status: "OPEN",
+//     createdAt: "2025-08-19",
+//   }
 ];
 
 function Main() {
     const navigate = useNavigate();
     
     const [keyword, setKeyword] = useState("");//검색어
-    const [category, setCategory] = useState("카테고리");
+    const [category, setCategory] = useState("");
     return (
         <div className={styles.mainWrapper}>
             <InnerTitle/>
@@ -102,6 +102,7 @@ function Main() {
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                         >
+                            <option value="">전체</option>
                             <option value="식품">#식품</option>
                             <option value="생활용품">#생활용품</option>
                             <option value="사무용품">#사무용품</option>

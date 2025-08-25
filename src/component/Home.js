@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import { useNavigate } from "react-router-dom";
 import Title from "./Title";
-import introImg from "../img/exampleIMG.jpg";
+import introImg from "../img/exampleIMG.png";
 import background from "../img/background.png";
 import styles from "../style/Home.module.css";
 

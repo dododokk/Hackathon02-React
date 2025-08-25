@@ -14,7 +14,7 @@ export default function Write() {
   const [price, setPrice] = useState("");
   const [people, setPeople] = useState(2);
   const [url, setUrl] = useState("");
-  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("");
   const [desc, setDesc] = useState("");
   const [image, setImage] = useState(null);
   const fileRef = useRef(null);
@@ -22,9 +22,8 @@ export default function Write() {
   const titleLimit = 30;
   const titleCount = useMemo(() => `${title.length}/${titleLimit}`, [title]);
 
-  const toggleCategory = (name) => {
-    setCategories((prev) =>
-      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]
+  const selectCategory = (name) => {
+    setCategory((prev) => (prev === name ? "" : name)
     );
   };
 
@@ -71,7 +70,7 @@ export default function Write() {
     //   form.append("price", String(Number(price.replaceAll(",", ""))));
     //   form.append("people", String(people));
     //   form.append("url", url.trim());
-    //   form.append("categories", JSON.stringify(categories));
+    //   form.append("category", category);
     //   form.append("desc", desc.trim());
 
     //   if (image?.file) form.append("image", image.file, image.file.name);
@@ -170,13 +169,13 @@ export default function Write() {
               <label className={styles.label}>카테고리</label>
               <div className={styles.categoryWrap}>
                 {CATEGORIES.map((name) => {
-                  const active = categories.includes(name);
+                  const active = category === name;
                   return (
                     <button
                       key={name}
                       type="button"
                       className={`${styles.chip} ${active ? styles.chipOn : ""}`}
-                      onClick={() => toggleCategory(name)}
+                      onClick={() => selectCategory(name)}
                       aria-pressed={active}
                     >
                       #{name}
