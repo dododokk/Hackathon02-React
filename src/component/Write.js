@@ -36,6 +36,8 @@ export default function Write() {
       alert("이미지 파일을 선택해주세요.");
       return;
     }
+    const objectUrl = URL.createObjectURL(file);
+
     setImage({
       file,
       preview: URL.createObjectURL(file),
@@ -54,27 +56,41 @@ export default function Write() {
     return { ok: true };
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const v = validate();
     if (!v.ok) {
       alert(v.msg);
       return;
     }
-    // 실제 서비스에선 서버로 전송.
-    const payload = {
-      title: title.trim(),
-      productName: productName.trim(),
-      price: Number(price.replaceAll(",", "")),
-      people,
-      url: url.trim(),
-      categories,
-      desc: desc.trim(),
-      imageName: image?.file?.name || null,
-    };
-    console.log("submit payload:", payload);
-    alert("작성 완료! (콘솔에서 payload 확인 가능)");
+    // // 서버로 전송.
+    // try{
+    //   const form = new FormData();
+    //   form.append("title", title.trim());
+    //   form.append("productName", productName.trim());
+    //   form.append("price", String(Number(price.replaceAll(",", ""))));
+    //   form.append("people", String(people));
+    //   form.append("url", url.trim());
+    //   form.append("categories", JSON.stringify(categories));
+    //   form.append("desc", desc.trim());
+
+    //   if (image?.file) form.append("image", image.file, image.file.name);
+
+    //   // const res = await fetch("/api/posts", {
+    //   //   method: "POST",
+    //   //   body: form, // Content-Type 지정하지 마세요(브라우저가 자동 설정)
+    //   // });
+    //   if (!res.ok) throw new Error("업로드 실패");
+    //   const saved = await res.json(); // { id, imageUrl, ... } 형태라고 가정
+    //   alert("작성 완료!");
+    //   navigate(-1);
+    // } catch(err){
+    //   console.error(err);
+    //   alert("저장 중 오류 발생");
+    // }
+
     navigate(-1);
+    
   };
 
   return (

@@ -1,13 +1,16 @@
 import React from "react";
 import InnerTitle from "./InnerTitle";
 import styles from "../style/Main.module.css";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import searchIcon from "../img/search.png";
 import addressIcon from "../img/addressIcon.png";
-import thumb from "../img/thumb.png";
 import slash from "../img/slash.png";
 import { perPersonKRW } from "../utils/price";
 import { useNavigate } from "react-router-dom";
+import thumb1 from "../img/thumb1.png";
+import thumb2 from "../img/thumb2.png";
+import thumb3 from "../img/thumb3.png";
+import thumb4 from "../img/thumb4.png";
 
 
 const tempData = [
@@ -16,15 +19,17 @@ const tempData = [
     author: {
         id: 101,
         nickname: "정화진",
-        roadAddress: "용인시 수지구"
+        roadAddress: "서울 광진구 능동로 120"
     },
-    title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
+    title: "소금빵 같이 구매하실 분 구합니다!",
     category: "식품",
-    productDesc: "11,200",
+    productName: "소금버터롤",
+    productUrl: "https://www.coupang.com/vp/products/8034477620?itemId=22475283013&vendorItemId=89517954732&sourceType=srp_product_ads&clickEventId=af761420-81aa-11f0-97a0-7ad606fb9dde&korePlacement=15&koreSubPlacement=1&clickEventId=af761420-81aa-11f0-97a0-7ad606fb9dde&korePlacement=15&koreSubPlacement=1",
+    productDesc: "21,000",
     desiredMemberCount: 4,
     currentMembercount: 2,
-    content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
-    mainImageUrl: "../img/thumb.png",//img id쓸건지
+    content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요",
+    mainImageUrl: thumb1,//img id쓸건지
     status: "OPEN",
     createdAt: "2025-08-19",
   },
@@ -33,15 +38,15 @@ const tempData = [
     author: {
         id: 101,
         nickname: "정화진",
-        roadAddress: "용인시 수지구"
+        roadAddress: "서울 광진구 능동로 110"
     },
-    title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
-    category: "식품",
-    productDesc: "11,200",
+    title: "키친타올 나눠가져요",
+    category: "생활용품",
+    productDesc: "15,230",
     desiredMemberCount: 3,
     currentMembercount: 2,
-    content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
-    mainImageUrl: "../img/thumb.png",//img id쓸건지
+    content: "총 24롤인데 너무 많아서 같이 구매하고 싶어요! 키친타올 필요하신 분 공구해요~",
+    mainImageUrl: thumb2,//img id쓸건지
     status: "OPEN",
     createdAt: "2025-08-19",
   },
@@ -50,15 +55,15 @@ const tempData = [
     author: {
         id: 101,
         nickname: "정화진",
-        roadAddress: "용인시 수지구"
+        roadAddress: "서울 광진구 광나루로 410"
     },
-    title: "카라멜 소금빵 공구해서 나누실 분 구합니다제목길게해볼게요 자고시퍼요 언제잘수있을까 언제잘수있을까 언제잘수있을까!",
-    category: "식품",
-    productDesc: "11,200",
-    desiredMemberCount: 3,
-    currentMembercount: 2,
-    content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
-    mainImageUrl: "../img/thumb.png",//img id쓸건지
+    title: "샤프심 대량구매",
+    category: "사무용품",
+    productDesc: "21,750",
+    desiredMemberCount: 4,
+    currentMembercount: 1,
+    content: "수량 40개 0.5mm 2B 샤프심이에요 대량구매가 더 저렴해서 공구해요~ 샤프심 10개 필요한 분 계신가요",
+    mainImageUrl: thumb3,//img id쓸건지
     status: "OPEN",
     createdAt: "2025-08-19",
   },
@@ -67,15 +72,15 @@ const tempData = [
     author: {
         id: 101,
         nickname: "정화진",
-        roadAddress: "용인시 수지구"
+        roadAddress: "서울 광진구 능동로 161 "
     },
-    title: "카라멜 죽빵 공구해서 나누실 분 구합니다!",
-    category: "식품",
-    productDesc: "11,200",
-    desiredMemberCount: 3,
+    title: "고양이 츄르 150개 공구해요~",
+    category: "반려용품",
+    productDesc: "33,770",
+    desiredMemberCount: 5,
     currentMembercount: 2,
-    content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
-    mainImageUrl: "../img/thumb.png",//img id쓸건지
+    content: "6가지 맛 혼합 150개 제품이에요 30개씩 나눠요~",
+    mainImageUrl: thumb4,//img id쓸건지
     status: "OPEN",
     createdAt: "2025-08-19",
   }
@@ -118,7 +123,7 @@ function Main() {
                 <section className={styles.list}>
                     {tempData.map(item => (
                         <article key={item.id} className={styles.card}>
-                            <img className={styles.thumb} src={thumb} alt=""/>
+                            <img className={styles.thumb} src={item.mainImageUrl} alt=""/>
                             <div className={styles.right}>
                                     <header className={styles.cardHead}>
                                         <div className={styles.title} onClick={()=>navigate('/post')}>{item.title}</div>
