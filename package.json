@@ -12,6 +12,7 @@
     "react-router-dom": "^6.30.1",
     "react-scripts": "5.0.1",
     "react-select": "^5.10.2",
+    "sweetalert2": "^11.22.5",
     "swiper": "^11.2.10",
     "web-vitals": "^2.1.4"
   },

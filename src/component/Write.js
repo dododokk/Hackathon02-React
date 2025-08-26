@@ -1,7 +1,8 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InnerTitle from "./InnerTitle";
 import styles from "../style/Write.module.css";
+import { API_BASE } from "../config";
 
 const CATEGORIES = ["식품", "생활용품", "사무용품", "반려용품", "기타"];
 
@@ -16,33 +17,34 @@ export default function Write() {
   const [url, setUrl] = useState("");
   const [category, setCategory] = useState("");
   const [desc, setDesc] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(null); // { file, preview }
   const fileRef = useRef(null);
 
   const titleLimit = 30;
   const titleCount = useMemo(() => `${title.length}/${titleLimit}`, [title]);
 
   const selectCategory = (name) => {
-    setCategory((prev) => (prev === name ? "" : name)
-    );
+    setCategory((prev) => (prev === name ? "" : name));
   };
 
   const onSelectImage = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // 간단 검증
     if (!file.type.startsWith("image/")) {
       alert("이미지 파일을 선택해주세요.");
       return;
     }
     const objectUrl = URL.createObjectURL(file);
-
-    setImage({
-      file,
-      preview: URL.createObjectURL(file),
-    });
+    setImage({ file, preview: objectUrl });
     e.target.value = "";
   };
+
+  // 미리보기 URL 정리
+  useEffect(() => {
+    return () => {
+      if (image?.preview) URL.revokeObjectURL(image.preview);
+    };
+  }, [image]);
 
   const validate = () => {
     if (!title.trim()) return { ok: false, msg: "제목을 입력해주세요." };
@@ -52,8 +54,28 @@ export default function Write() {
     if (!price.trim()) return { ok: false, msg: "가격을 입력해주세요." };
     if (isNaN(Number(price.replaceAll(",", ""))))
       return { ok: false, msg: "가격은 숫자만 입력해주세요." };
+    if (!category) return { ok: false, msg: "카테고리를 선택해주세요." };
     return { ok: true };
   };
+
+  // 1) 이미지 먼저 업로드 → 2) 응답 URL을 mainImageUrl로 사용
+  async function uploadImage(file, token) {
+    const form = new FormData();
+    form.append("file", file, file.name);
+
+    const res = await fetch(`${API_BASE}/files`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // 서버가 인증 요구한다면 유지
+        // Content-Type 지정 금지: FormData가 자동 설정(boundary 포함)
+      },
+      body: form,
+    });
+    if (!res.ok) throw new Error(`이미지 업로드 실패 (HTTP ${res.status})`);
+    const data = await res.json(); // { url: "https://..." } 기대
+    if (!data?.url) throw new Error("업로드 응답에 url 없음");
+    return data.url;
+  }
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -62,34 +84,48 @@ export default function Write() {
       alert(v.msg);
       return;
     }
-    // // 서버로 전송.
-    // try{
-    //   const form = new FormData();
-    //   form.append("title", title.trim());
-    //   form.append("productName", productName.trim());
-    //   form.append("price", String(Number(price.replaceAll(",", ""))));
-    //   form.append("people", String(people));
-    //   form.append("url", url.trim());
-    //   form.append("category", category);
-    //   form.append("desc", desc.trim());
 
-    //   if (image?.file) form.append("image", image.file, image.file.name);
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        alert("인증 토큰이 없습니다. 먼저 로그인해주세요.");
+        return;
+      }
 
-    //   // const res = await fetch("/api/posts", {
-    //   //   method: "POST",
-    //   //   body: form, // Content-Type 지정하지 마세요(브라우저가 자동 설정)
-    //   // });
-    //   if (!res.ok) throw new Error("업로드 실패");
-    //   const saved = await res.json(); // { id, imageUrl, ... } 형태라고 가정
-    //   alert("작성 완료!");
-    //   navigate(-1);
-    // } catch(err){
-    //   console.error(err);
-    //   alert("저장 중 오류 발생");
-    // }
+      // 1) 파일이 있으면 서버에 업로드해 공개 URL 받기
+      let mainImageUrl = null;
+      if (image?.file) {
+        mainImageUrl = await uploadImage(image.file, token);
+      }
 
-    navigate(-1);
-    
+      // 2) 게시글 생성(JSON)
+      const body = {
+        title: title.trim(),
+        category,
+        productName: productName.trim(),
+        productUrl: url.trim() || null,
+        productDesc: price.trim(),
+        desiredMemberCount: Number(people),
+        content: desc.trim(),
+        mainImageUrl,                              // 업로드 URL (없으면 null)
+      };
+
+      const res = await fetch(`${API_BASE}/posts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const saved = await res.json();
+      alert("작성 완료!");
+      navigate(`/posts/${saved.id}`);
+    } catch (err) {
+      console.error(err);
+      alert(`저장 중 오류 발생: ${err.message || err}`);
+    }
   };
 
   return (
@@ -117,25 +153,23 @@ export default function Write() {
             {/* 제품명 / 가격 */}
             <div className={styles.rowFour}>
               <label className={styles.label}>제품명</label>
-              
               <input
                 className={`${styles.input} ${styles.inputSmall}`}
                 type="text"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
               />
-              <label className={styles.label}>
-                가격
-              </label>
+              <label className={styles.label}>가격</label>
               <input
                 className={`${styles.input} ${styles.inputPrice}`}
                 type="text"
                 inputMode="numeric"
                 placeholder=""
                 value={price}
-                onChange={(e) => setPrice(e.target.value.replace(/[^\d,]/g, ""))}
+                onChange={(e) =>
+                  setPrice(e.target.value.replace(/[^\d,]/g, ""))
+                }
               />
-              
             </div>
 
             {/* 모집 인원 / URL */}
@@ -152,9 +186,7 @@ export default function Write() {
                   </option>
                 ))}
               </select>
-              <label className={styles.label}>
-                URL
-              </label>
+              <label className={styles.label}>URL</label>
               <input
                 className={`${styles.input} ${styles.url} ${styles.flexGrow}`}
                 type="url"
@@ -212,18 +244,20 @@ export default function Write() {
                       type="button"
                       className={styles.deleteBtn}
                       onClick={() => setImage(null)}
-                    >✕</button>
-                    </div>
-                ):(
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
                   <button
                     type="button"
                     className={styles.uploadBox}
                     onClick={() => fileRef.current?.click()}
-                    >
-                      <span className={styles.plus}>＋</span>
-                    </button>
+                  >
+                    <span className={styles.plus}>＋</span>
+                  </button>
                 )}
-                
+
                 <input
                   ref={fileRef}
                   type="file"
