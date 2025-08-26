@@ -8,9 +8,14 @@ export const UserProvider = ({children})=>{
     const [userPw, setUserPw] = useState("");
     const [userName, setUserName] = useState("");
     const [userDistinctId, setUserDistinctId] = useState();
+    const [userInterest, setUserInterest] = useState([]);
+    const [userAddress, setUserAddress] = useState("");
 
     return(
-        <UserContext.Provider value={{userId, setUserId, userPw, setUserPw, userDistinctId, setUserDistinctId, userName, setUserName}}>
+        <UserContext.Provider
+        value={{userId, setUserId, userPw, setUserPw, userDistinctId, setUserDistinctId,
+        userName, setUserName, userInterest, setUserInterest,
+        userAddress, setUserAddress}}>
             {children}
         </UserContext.Provider>
     );

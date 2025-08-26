@@ -24,7 +24,7 @@ function Login() {
     const [inputId, setInputId] = useState("");
     const [inputPw, setInputPw] = useState("");
 
-    const { setUserId, setUserDistinctId, setUserName } = useContext(UserContext);
+    const { setUserId, setUserDistinctId, setUserName, setUserInterest, setUserAddress } = useContext(UserContext);
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
     const handleIdChange = (e) => setInputId(e.target.value);
@@ -61,10 +61,12 @@ function Login() {
         //         const token = data.token || data; // 서버에서 {"token":"..."} 또는 그냥 문자열 반환할 수 있음
         //         localStorage.setItem("jwt", token);
 
-        //         // 유저 정보 (예: userId, username, nickname)
+        //         // 유저 정보 (예: userId, username, nickname) -> 나중에 변수명 확정되면 수정
         //         if (data.userId) setUserDistinctId(data.userId);
         //         if (data.username) setUserId(data.username);
         //         if (data.nickname) setUserName(data.nickname);
+        //         if (data.interest) setUserInterest(data.interest);
+        //         if (data.address) setUserAddress(data.address);
 
         //         setIsLoggedIn(true);
         //         navigate("/main");

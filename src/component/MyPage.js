@@ -248,7 +248,7 @@ function Content(props) {
 }
 
 function MyPage() {
-    const { userId, userName } = useContext(UserContext);
+    const { userId, userName, userInterest, userAddress } = useContext(UserContext);
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
     const { setUserId, setUserPw } = useContext(UserContext);
     const mapRef = useRef(null);
@@ -302,6 +302,17 @@ function MyPage() {
                     <div className={styles.infoText}>
                         <div className={styles.userIdRow}>
                             <p className={styles.userId}>{userId}</p>
+                            <div className={styles.interests}>
+                                {userInterest && userInterest.length > 0 ? (
+                                    userInterest.map((item, idx) => (
+                                        <span key={idx} className={styles.interestTag}>
+                                            #{item}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className={styles.noInterest}>관심사 없음</span>
+                                )}
+                            </div>
                             <button className={styles.logoutBtn} onClick={handleLogout}>Logout</button>
                         </div>
                         <p className={styles.userName}>{userName}<img src={modify} className={styles.modifyImg}></img></p>

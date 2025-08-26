@@ -144,6 +144,15 @@ function Register() {
                 });
                 return;
             }
+            if(!interests || interests.length === 0){
+                Swal.fire({
+                    icon: "warning",
+                    text: "관심사를 1개 이상 선택해주세요.",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#1f8954ff"
+                });
+                return;
+            }
         }
         if (step === 3) {
             if (!hasMarker) {

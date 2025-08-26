@@ -74,6 +74,28 @@
     gap: 30px;
 }
 
+.interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: 12px;
+}
+
+.interestTag {
+  font-size: 0.85rem;
+  background: #f0f0f0;
+  border-radius: 12px;
+  padding: 2px 8px;
+  color: #333;
+}
+
+.noInterest {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-left: 12px;
+}
+
+
 .logoutBtn {
     background: rgba(160, 197, 145, .50);
     color: #2c6c3c;
