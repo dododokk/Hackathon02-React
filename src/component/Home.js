@@ -13,11 +13,6 @@ import introImg1 from "../img/thumb2.png";
 import introImg2 from "../img/thumb.png";
 import introImg3 from "../img/thumb3.png";
 
-// Swiper.js 관련 컴포넌트 및 CSS import
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css';
-
 // 사용할 이미지들을 import 합니다.
 import thumb1 from "../img/thumb1.png";
 import thumb2 from "../img/thumb2.png";

@@ -12,8 +12,9 @@
 .sliderContainer {
   width: 100%;
   max-width: 900px;
-  height: 350px;
+  height: clamp(100px, 50vh, 450px);
   margin: 0 auto;
+  margin-top: 30px;
   position: relative;
   overflow: hidden;
 }
@@ -26,22 +27,16 @@
 
 /* 모든 슬라이드의 기본 스타일 */
 .sliderContainer :global(.swiper-slide) {
-    width: 300px !important;
-    height: 300px;
-    /* [수정 1] 모든 슬라이드를 기본적으로 완전히 투명하게 만듭니다. */
+    width: clamp(100px, 45vw, 400px) !important;
+    height: clamp(100px, 49vh, 400px);
     opacity: 0;
     transform: scale(0.8);
-    /*그림자*/
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-
-    /* [수정 2] transition에 !important를 추가하여 부드러운 효과를 강제합니다. */
     transition: transform 0.3s ease-in-out, opacity 0s ease-in-out !important;
     z-index: 1;
 }
 
-/* 중앙 활성 슬라이드 */
 .sliderContainer :global(.swiper-slide-active) {
-    /* [수정 1] 중앙 슬라이드만 다시 보이게 합니다. */
     opacity: 1;
     transform: scale(1);
     z-index: 10;
@@ -49,13 +44,11 @@
 
 /* 이전/다음 슬라이드 (양옆) */
 .sliderContainer :global(.swiper-slide-prev) {
-    /* [수정 1] 왼쪽 슬라이드만 다시 보이게 합니다. */
     opacity: 0.6;
     transform: translateX(40%) scale(0.8) !important;
     z-index: 5;
 }
 .sliderContainer :global(.swiper-slide-next) {
-    /* [수정 1] 오른쪽 슬라이드만 다시 보이게 합니다. */
     opacity: 0.6;
     transform: translateX(-40%) scale(0.8) !important;
     z-index: 5;
@@ -70,7 +63,6 @@
 }
 
 
-/* ===== 기존 로그인 버튼 스타일 ===== */
 .loginBtn {
   margin: 0 auto;
   margin-top: clamp(10px, 6vh, 30px);
