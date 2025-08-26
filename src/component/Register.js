@@ -7,6 +7,7 @@ import firework from "../img/firework.png";
 import { UserContext } from "../context/UserContext";
 import { useMap } from "../context/MapContext";
 import Swal from "sweetalert2";
+import { API_BASE } from "../config";
 
 function Input(props) {
     return (
@@ -61,19 +62,11 @@ function Register() {
         if (!address.trim()) return;
 
         try {
-            // 1) 지오코딩: place 전역 상태 갱신됨
             const p = await geocode(address);
-
-            // 2) 기존 마커 지우고
             clearMarkers();
             setHasMarker(false);
-
-            // 3) 마커 1개만 추가
             const mk = addMarker({ lat: p.lat, lng: p.lng });
-
             setHasMarker(!!mk || true);
-
-            // 4) 지도 이동/줌
             setCenter(p.lat, p.lng, 16);
         } catch (e) {
             Swal.fire({
@@ -102,7 +95,7 @@ function Register() {
         setUserName(value);
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (step === 1) {
             if (!inputId.trim()) {
                 Swal.fire({
@@ -162,6 +155,36 @@ function Register() {
                 });
                 return;
             }
+
+            // 서버 전송 코드
+            try {
+                const res = await fetch(`${API_BASE}/auth/signup`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: inputId,
+                        password: inputPw,
+                        nickname: inputName,
+                        gender: gender.toUpperCase(), // "male" → "MALE"
+                        ageRange: age,
+                        roadAddress: place.roadAddress,
+                        interests: interests,
+                    }),
+                });
+
+                if (res.status === 201) {
+                    setStep(4);
+                } else if (res.status === 400) {
+                    Swal.fire({ icon: "error", text: "이미 존재하는 사용자명입니다." });
+                } else if (res.status === 409) {
+                    Swal.fire({ icon: "error", text: "이미 사용 중인 아이디입니다." });
+                } else {
+                    Swal.fire({ icon: "error", text: "회원가입 실패. 다시 시도해주세요." });
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            return;
         }
         if (step < 4) setStep(step + 1);
     };

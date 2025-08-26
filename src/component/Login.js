@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { UserContext } from "../context/UserContext";
 import Swal from "sweetalert2";
+import { API_BASE } from "../config";
 
 function Input(props) {
     return (
@@ -29,7 +30,7 @@ function Login() {
     const handleIdChange = (e) => setInputId(e.target.value);
     const handlePwChange = (e) => setInputPw(e.target.value);
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!inputId || !inputPw) {
             Swal.fire({
                 icon: "warning",
@@ -40,10 +41,49 @@ function Login() {
             return; // 로그인 진행 중단
         }
 
-        setUserId(inputId);
-        setIsLoggedIn(true);
-        navigate('/main');
-        //나중에 서버에 전송
+        // 서버 전송
+        // 주석 처리 안하면 main으로 넘어갈 수가 없어서 나중에 아래 navigate 주석처리 후 아래 서버 주석 풀면 테스트 가능해여
+        navigate("/main");
+        // try {
+        //     const res = await fetch(`${API_BASE}/auth/login`, {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify({
+        //             username: inputId,
+        //             password: inputPw,
+        //         }),
+        //     });
+
+        //     if (res.status === 200) {
+        //         const data = await res.json();
+
+        //         // JWT 토큰
+        //         const token = data.token || data; // 서버에서 {"token":"..."} 또는 그냥 문자열 반환할 수 있음
+        //         localStorage.setItem("jwt", token);
+
+        //         // 유저 정보 (예: userId, username, nickname)
+        //         if (data.userId) setUserDistinctId(data.userId);
+        //         if (data.username) setUserId(data.username);
+        //         if (data.nickname) setUserName(data.nickname);
+
+        //         setIsLoggedIn(true);
+        //         navigate("/main");
+        //     } else if (res.status === 400) {
+        //         console.error("400: Bad Request");
+        //     } else if (res.status === 401) {
+        //         console.error("401: 아이디/비번 불일치");
+        //         Swal.fire({
+        //             icon: "error",
+        //             text: "아이디 또는 비밀번호가 잘못되었습니다.",
+        //             confirmButtonText: "확인",
+        //             confirmButtonColor: "#1f8954ff"
+        //         });
+        //     } else {
+        //         console.error("로그인 실패");
+        //     }
+        // } catch (error) {
+        //     console.error(error);
+        // }
     }
 
     return (
