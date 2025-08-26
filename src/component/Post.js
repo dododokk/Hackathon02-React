@@ -1,13 +1,18 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import InnerTitle from "./InnerTitle";
 import styles from "../style/Post.module.css";
-import thumbFallback from "../img/thumb.png";
 import addressIcon from "../img/addressIcon.png";
 import slash from "../img/slash.png";
 import { perPersonKRW } from "../utils/price";
 import profile from "../img/profile.png";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { API_BASE } from "../config"; // API base url 관리하는 파일이 있다면 import
+import { getDirectImageUrl, FALLBACK_IMG } from "../utils/image";
+
+
 
 const tempData = [
   {
@@ -19,7 +24,7 @@ const tempData = [
     productUrl: "https://example.com/p/1",
     productDesc: "11,200",
     desiredMemberCount: 2,
-    currentMembercount: 1,
+    currentMemberCount: 1,
     content:
       "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ제가 구매할테니 시간 조율 해보아요 나눔하자고 이사람들아 나 화나게 하지마라니 덜덜 이걸 강매해버리네 협박하지마 이수호수호",
     mainImageUrl: "https://cdn/1.jpg", // 비어있으면 thumbFallback 사용
@@ -32,75 +37,87 @@ function Post(){
     
     const navigate = useNavigate();
 
+    // const totalPriceNumber = Number(String(tempData.productDesc).replace(/[^\d]/g, ""));
+
+
+    const { postId } = useParams(); // /posts/:postId 라우트 기준
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState(null);
 
-//    useEffect(() => {
-//     const ac = new AbortController();
-//     setLoading(true);
-//     setErr(null);
+useEffect(() => {
+  const ac = new AbortSignal ? new AbortController() : null;
+  setLoading(true);
+  setErr(null);
 
-//     fetch(`${API_BASE}/posts/${id}`, { signal: ac.signal, credentials: "include" })
-//       .then((res) => {
-//         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-//         return res.json();
-//       })
-//       .then((data) => setPost(data))
-//       .catch((e) => {
-//         if (e.name !== "AbortError") setErr(e);
-//       })
-//       .finally(() => setLoading(false));
+  fetch(`${API_BASE}/posts/${postId}`, {
+    signal: ac?.signal,
+    credentials: "include",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then((data) => setPost(data))
+    .catch((e) => {
+      if (e.name !== "AbortError") setErr(e);
+    })
+    .finally(() => setLoading(false));
 
-//     return () => ac.abort();
-//   }, [id]);
+  return () => ac?.abort?.();
+}, [postId]);
 
-//   if (loading) {
-//     return (
-//       <main className={styles.wrap}>
-//         <article className={styles.card}>불러오는 중…</article>
-//       </main>
-//     );
-//   }
-//   if (err) {
-//     return (
-//       <main className={styles.wrap}>
-//         <article className={styles.card}>
-//           불러오기 실패: {String(err.message)}
-//           <div style={{ marginTop: 8 }}>
-//             <button className={styles.btnGhost} onClick={() => navigate(-1)}>뒤로</button>
-//           </div>
-//         </article>
-//       </main>
-//     );
-//   }
-//   if (!post) {
-//     return (
-//       <main className={styles.wrap}>
-//         <article className={styles.card}>게시글이 없습니다.</article>
-//       </main>
-//     );
-//   }
-
-    const totalPriceNumber = Number(String(tempData.productDesc).replace(/[^\d]/g, ""));
+if (loading) {
+  return (
+    <main className={styles.wrap}>
+      <article className={styles.card}>불러오는 중…</article>
+    </main>
+  );
+}
+if (err) {
+  return (
+    <main className={styles.wrap}>
+      <article className={styles.card}>
+        불러오기 실패: {String(err.message)}
+        <div style={{ marginTop: 8 }}>
+          <button className={styles.btnGhost} onClick={() => navigate(-1)}>
+            뒤로
+          </button>
+        </div>
+      </article>
+    </main>
+  );
+}
+if (!post) {
+  return (
+    <main className={styles.wrap}>
+      <article className={styles.card}>게시글이 없습니다.</article>
+    </main>
+  );
+}
 
     return (
         <main className={styles.wrap}>
             <InnerTitle/>
-            {tempData.map(post => (
+            {post && (
             <article className={styles.card}>
                 <header className={styles.top}>
-                    <img className={styles.thumb} src={post.mainImageUrl || thumbFallback} alt=""/>
+                    <img className={styles.thumb} src={getDirectImageUrl(post.mainImageUrl)} alt=""
+                        onError={(e) => {
+                            e.currentTarget.src = FALLBACK_IMG;
+                            e.currentTarget.onerror = null;
+                        }}
+                    />
                     <div className={styles.topRight}>
                         <div className={styles.titleRow}>
                             <h1 className={styles.title}>{post.title}</h1>
                             <span className={styles.pill}>
-                                {post.currentMembercount}/{post.desiredMemberCount}명
+                                {post.currentMemberCount}/{post.desiredMemberCount}명
                             </span>
                         </div>
                         <div className={styles.metaRow}>
                             <div className={styles.author}>
-                                <img className={styles.profile} src={profile}></img>
+                                <img className={styles.profile} src={profile} alt=""></img>
                                 <span className={styles.nickname}>{post.author?.nickname}</span>
                             </div>
                             <time className={styles.date}>{post.createdAt}</time>
@@ -140,7 +157,7 @@ function Post(){
                     </div>
                 </footer>
             </article>
-            ))}
+            )}
         </main>
     );
 }
