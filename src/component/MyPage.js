@@ -12,6 +12,7 @@ import { UserContext } from "../context/UserContext";
 import { AuthContext } from "../context/AuthContext";
 import { perPersonKRW } from "../utils/price";
 import { useNavigate } from "react-router-dom";
+import { useMap } from "../context/MapContext";
 
 function Label(props) {
     return (
@@ -209,7 +210,7 @@ function Content(props) {
                                 <header className={styles.cardHead}>
                                     <h3 className={styles.title}>{item.title}</h3>
                                     <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
-                                    <button className={styles.delete} onClick={handleDelete}><img src={trash} className={styles.trashImg}/></button>
+                                    <button className={styles.delete} onClick={handleDelete}><img src={trash} className={styles.trashImg} /></button>
                                 </header>
                                 <div className={styles.under}>
                                     <div className={styles.cardBody}>
@@ -253,21 +254,29 @@ function MyPage() {
     const mapRef = useRef(null);
     const navigate = useNavigate();
     const [selectedMenu, setSelectedMenu] = useState("menu1");
+    const { initMap, addMarker, clearMarkers, setCenter, place, addressText, geocode } = useMap();
 
     useEffect(() => {
-        if (window.naver && mapRef.current) {
-            const map = new window.naver.maps.Map(mapRef.current, {
-                center: new window.naver.maps.LatLng(37.5408, 127.0790), // 예시: 건대 근처
-                zoom: 15,
-            });
-
-            // 마커 찍기
-            new window.naver.maps.Marker({
-                position: new window.naver.maps.LatLng(37.5408, 127.0790),
-                map,
+        if (mapRef.current) {
+            initMap(mapRef.current, {
+                center: new window.naver.maps.LatLng(37.5408, 127.0790),
+                zoom: 14,
             });
         }
-    }, []);
+    }, [initMap]);
+
+    useEffect(() => {
+        if (!place && addressText && addressText.trim()) {
+            geocode(addressText).catch(() => {/* 실패해도 무시 */ });
+        }
+    }, [place, addressText, geocode]);
+
+    useEffect(() => {
+        if (!place) return;
+        clearMarkers();
+        addMarker({ lat: place.lat, lng: place.lng });
+        setCenter(place.lat, place.lng, 16);
+    }, [place, clearMarkers, addMarker, setCenter]);
 
     const handleLogout = () => {
         // localStorage.removeItem("token"); 나중에 토큰 삭제
@@ -276,6 +285,13 @@ function MyPage() {
         setUserPw("");
         navigate('/');
     };
+
+    const displayAddress =
+        (place?.regionText && place.regionText.trim()) || // ← "시 구 동" 우선
+        (place?.roadAddress && place.roadAddress.trim()) ||
+        (place?.jibunAddress && place.jibunAddress.trim()) ||
+        (addressText && addressText.trim()) ||
+        "미설정";
 
     return (
         <div className={styles.mainWrapper}>
@@ -295,7 +311,7 @@ function MyPage() {
                     <span className={styles.label}>| 거주지 </span>
                     <div className={styles.addressBox}>
                         <img src={location} className={styles.locationIcon} />
-                        <span className={styles.addressText}>address</span>
+                        <span className={styles.addressText}>{displayAddress}</span>
                     </div>
                 </div>
                 <div ref={mapRef} className={styles.map}></div>

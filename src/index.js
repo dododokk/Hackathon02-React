@@ -10,17 +10,17 @@ import { MapProvider } from './context/MapContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-    <AuthProvider>
-      <UserProvider>
-        <MapProvider>
+  <MapProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <UserProvider>
           <React.StrictMode>
             <App />
           </React.StrictMode>
-        </MapProvider>
-      </UserProvider>
-    </AuthProvider>
-  </BrowserRouter>
+        </UserProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </MapProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

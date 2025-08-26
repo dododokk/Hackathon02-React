@@ -68,6 +68,14 @@ export function MapProvider({ children }) {
     map.fitBounds(bounds);
   }, [map, hasNaver]);
 
+  const toRegionText = (region) => {
+    if (!region) return "";
+    const { sido = "", sigungu = "", dong = "", ri = "" } = region;
+    // '동'이 없고 '리'가 있으면 면/리까지 노출
+    const parts = [sido, sigungu, dong || ri].filter(Boolean);
+    return parts.join(" ");
+  };
+
   const geocode = useCallback((query) => {
     return new Promise((resolve, reject) => {
       if (!hasNaver) return reject(new Error("NAVER_NOT_AVAILABLE"));
@@ -90,13 +98,14 @@ export function MapProvider({ children }) {
           jibunAddress,
           englishAddress,
           region: {
-            sido:    pick(["SIDO"]),
+            sido: pick(["SIDO"]),
             sigungu: pick(["SIGUGUN", "SIGUNGU"]),
-            dong:    pick(["DONGMYUN", "DONG"]),
-            ri:      pick(["RI"]),
+            dong: pick(["DONGMYUN", "DONG"]),
+            ri: pick(["RI"]),
           },
           raw: r,
         };
+        data.regionText = toRegionText(data.region);
         setPlace(data);
         resolve(data);
       });
@@ -111,6 +120,7 @@ export function MapProvider({ children }) {
   const value = useMemo(() => ({
     map,
     place,
+    toRegionText,
     initMap,
     geocode,
     setCenter,

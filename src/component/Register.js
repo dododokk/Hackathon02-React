@@ -48,44 +48,33 @@ function Register() {
 
     useEffect(() => {
         if (step === 3 && mapRef.current) {
-            const mapOptions = {
-                center: new window.naver.maps.LatLng(37.5408, 127.0790), //건대 중심
+            initMap(mapRef.current, {
+                center: new window.naver.maps.LatLng(37.5408, 127.0790), // 건대
                 zoom: 14,
-            };
-            const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
-            setMap(mapInstance);
+            });
         }
-    }, [step]);
+    }, [step, initMap]);
 
-    const handleSearch = () => {
-        if (!address || !map) return;
-        window.naver.maps.Service.geocode({ query: address }, function (status, response) {
-            if (status !== window.naver.maps.Service.Status.OK) {
-                alert("주소를 찾을 수 없습니다.");
-                return;
-            }
+    const handleSearch = async () => {
+        if (!address.trim()) return;
 
-            const result = response.v2.addresses[0];
-            if (!result) {
-                alert("주소를 찾을 수 없습니다.");
-                return;
-            }
+        try {
+            // 1) 지오코딩: place 전역 상태 갱신됨
+            const p = await geocode(address);
 
-            const coord = new window.naver.maps.LatLng(result.y, result.x);
+            // 2) 기존 마커 지우고
+            clearMarkers();
 
-            // 지도 이동
-            map.setCenter(coord);
+            // 3) 마커 1개만 추가
+            addMarker({ lat: p.lat, lng: p.lng });
 
-            // 마커 표시
-            if (marker) {
-                marker.setPosition(coord);
-                if (!marker.getMap()) marker.setMap(map); // 혹시 제거돼 있었다면 다시 붙이기
-            } else {
-                const mk = new window.naver.maps.Marker({ position: coord, map });
-                setMarker(mk);
-            }
-        });
-    }
+            // 4) 지도 이동/줌
+            setCenter(p.lat, p.lng, 16);
+        } catch (e) {
+            alert("주소를 찾을 수 없습니다.");
+            console.error(e);
+        }
+    };
 
 
     const handleIdChange = (e) => setInputId(e.target.value);
