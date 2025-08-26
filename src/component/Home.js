@@ -2,6 +2,16 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Title from "./Title";
 import styles from "../style/Home.module.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/effect-coverflow";
+import { Navigation, EffectCoverflow, Autoplay } from "swiper/modules";
+// 홈화면 이미지 슬라이드
+import introImg from "../img/exampleIMG.png";
+import introImg1 from "../img/thumb2.png";
+import introImg2 from "../img/thumb.png";
+import introImg3 from "../img/thumb3.png";
 
 // Swiper.js 관련 컴포넌트 및 CSS import
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -18,10 +28,10 @@ function Home() {
     // 루프 기능의 안정성을 위해 이미지 배열을 2번 반복합니다.
     const images = [thumb1, thumb2, thumb3, thumb1, thumb2, thumb3];
 
+
     return (
         <div className={styles.Home}>
             <Title />
-
             {/* Swiper를 감싸는 새로운 컨테이너. 이 컨테이너가 3개만 보이도록 강제합니다. */}
             <div className={styles.sliderContainer}>
                 <Swiper

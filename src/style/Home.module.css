@@ -71,7 +71,7 @@
 
 
 /* ===== 기존 로그인 버튼 스타일 ===== */
-.loginBtn{
+.loginBtn {
   margin: 0 auto;
   margin-top: clamp(10px, 6vh, 30px);
   display: flex;
@@ -99,3 +99,21 @@
   font-weight: 400;
   line-height: normal;
 }
+
+.prevBtn, .nextBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(60,60,70,0.4);
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.prevBtn { left: 50px; }
+.nextBtn { right: 50px; }

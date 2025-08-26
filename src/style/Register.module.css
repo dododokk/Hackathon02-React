@@ -123,7 +123,7 @@
 .bottomBar {
     display: flex;
     align-items: center;
-    /* margin-top: auto; */
+    margin-top: auto;
     margin-bottom: 20px;
 }
 
