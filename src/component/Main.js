@@ -9,7 +9,9 @@ import { perPersonKRW } from "../utils/price";
 import { useNavigate } from "react-router-dom";
 import { getDirectImageUrl, FALLBACK_IMG } from "../utils/image";
 import { API_BASE } from "../config";
-
+import thumb1 from "../img/thumb1.png";
+import thumb2 from "../img/thumb2.png";
+import thumb3 from "../img/thumb3.png";
 
 const CATEGORY_LABEL = {
     FOOD: "식품",

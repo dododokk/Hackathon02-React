@@ -7,8 +7,6 @@ import addressIcon from "../img/addressIcon.png";
 import slash from "../img/slash.png";
 import { perPersonKRW } from "../utils/price";
 import profile from "../img/profile.png";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { API_BASE } from "../config"; // API base url 관리하는 파일이 있다면 import
 import { getDirectImageUrl, FALLBACK_IMG } from "../utils/image";
 
