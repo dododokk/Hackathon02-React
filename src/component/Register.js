@@ -6,6 +6,7 @@ import searchIcon from "../img/search.png";
 import firework from "../img/firework.png";
 import { UserContext } from "../context/UserContext";
 import { useMap } from "../context/MapContext";
+import Swal from "sweetalert2";
 
 function Input(props) {
     return (
@@ -45,6 +46,7 @@ function Register() {
     const [marker, setMarker] = useState(null);
     const mapDivRef = useRef(null);
     const { initMap, geocode, setCenter, addMarker, clearMarkers, place } = useMap();
+    const [hasMarker, setHasMarker] = useState(false);
 
     useEffect(() => {
         if (step === 3 && mapRef.current) {
@@ -64,14 +66,22 @@ function Register() {
 
             // 2) 기존 마커 지우고
             clearMarkers();
+            setHasMarker(false);
 
             // 3) 마커 1개만 추가
-            addMarker({ lat: p.lat, lng: p.lng });
+            const mk = addMarker({ lat: p.lat, lng: p.lng });
+
+            setHasMarker(!!mk || true);
 
             // 4) 지도 이동/줌
             setCenter(p.lat, p.lng, 16);
         } catch (e) {
-            alert("주소를 찾을 수 없습니다.");
+            Swal.fire({
+                icon: "error",
+                text: "주소를 찾을 수 없습니다.",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#1f8954ff",
+            });
             console.error(e);
         }
     };
@@ -93,6 +103,66 @@ function Register() {
     };
 
     const handleNext = () => {
+        if (step === 1) {
+            if (!inputId.trim()) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "아이디를 입력해주세요.",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#1f8954ff"
+                });
+                return;
+            }
+            if (!inputPw.trim()) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "비밀번호를 입력해주세요.",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#1f8954ff"
+                });
+                return;
+            }
+            if (!confirmPw.trim()) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "비밀번호 확인을 입력해주세요.",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#1f8954ff"
+                });
+                return;
+            }
+        }
+        if (step === 2) {
+            if (!inputName.trim()) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "닉네임을 입력해주세요.",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#1f8954ff"
+                });
+                return;
+            }
+            if (!gender.trim()) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "성별을 입력해주세요.",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#1f8954ff"
+                });
+                return;
+            }
+        }
+        if (step === 3) {
+            if (!hasMarker) {
+                Swal.fire({
+                    icon: "warning",
+                    text: "주소를 입력해주세요.",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#1f8954ff"
+                });
+                return;
+            }
+        }
         if (step < 4) setStep(step + 1);
     };
 

@@ -4,6 +4,7 @@ import Title from "./Title";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { UserContext } from "../context/UserContext";
+import Swal from "sweetalert2";
 
 function Input(props) {
     return (
@@ -22,19 +23,27 @@ function Login() {
     const [inputId, setInputId] = useState("");
     const [inputPw, setInputPw] = useState("");
 
-    const {setUserId, setUserDistinctId, setUserName} = useContext(UserContext);
-    const {isLoggedIn, setIsLoggedIn} = useContext(AuthContext);
+    const { setUserId, setUserDistinctId, setUserName } = useContext(UserContext);
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
     const handleIdChange = (e) => setInputId(e.target.value);
     const handlePwChange = (e) => setInputPw(e.target.value);
 
     const handleLogin = () => {
-        if(inputId &&inputPw){
-            setUserId(inputId);
-            setIsLoggedIn(true);
-            navigate('/main'); 
-            //나중에 서버에 전송
+        if (!inputId || !inputPw) {
+            Swal.fire({
+                icon: "warning",
+                text: "아이디와 비밀번호를 모두 입력해주세요!",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#1f8954ff"
+            });
+            return; // 로그인 진행 중단
         }
+
+        setUserId(inputId);
+        setIsLoggedIn(true);
+        navigate('/main');
+        //나중에 서버에 전송
     }
 
     return (
