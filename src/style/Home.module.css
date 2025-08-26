@@ -6,20 +6,114 @@
   padding: 0;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  /* overflow: hidden; */
+  overflow: visible;
 }
 
 .introImg {
-  max-width: 60%;  /* 화면에 맞춰 줄어듦 */
-  max-height: 60%; /* 화면에 맞춰 줄어듦 */
+  /* max-width: 60%; 
+  max-height: 60%; 
   width: 600px;
   height: auto;
   margin: 0 auto;
   margin-top: 30px;
-  border-radius: 25px;
+  border-radius: 25px; */
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.loginBtn{
+/* 슬라이더 전체 박스 */
+.introSlider {
+  width: min(800px, 95vw);
+  height: auto;
+  margin: 0 auto;
+  /* padding: 24px 40px; */
+  overflow: visible;
+}
+
+/* 각 슬라이드: 가로폭을 고정해 slidesPerView="auto"로 ‘옆이 살짝 보이게’ */
+.slide {
+  /* width: clamp(100px, 70vw, 300px);
+  height: clamp(100px, 70vh, 300px); */
+  display: flex;
+  justify-content: center;
+  margin: 5px auto;
+}
+
+/* 카드 모양 */
+.slideImg {
+  width: 50%;
+  height: auto;
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-left: 200px;
+  /* border-radius: 24px; */
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .18);
+}
+
+/* ----- 핵심: 중앙 외 슬라이드 흐림 & 축소 ----- */
+/* :global(.swiper-slide) {
+  transition: transform .45s ease, filter .45s ease, opacity .45s ease;
+  filter: blur(2.5px);
+  opacity: .5;
+  transform: scale(.7);
+}
+
+:global(.swiper-slide-prev),
+:global(.swiper-slide-next) {
+  filter: blur(5px);
+  opacity: .55;
+  transform: scale(.7);
+  z-index: 1;
+}
+
+:global(.swiper-slide-active) {
+  filter: none;
+  opacity: 1;
+  transform: scale(1);
+  z-index: 2;
+} */
+ /* 공통: 슬라이드 전환 부드럽게 */
+:global(.swiper-slide) .slideImg {
+  transition: transform .4s ease, filter .4s ease, opacity .4s ease;
+}
+
+/* 중앙(active) 슬라이드: 원래 크기 */
+:global(.swiper-slide-active) .slideImg {
+  transform: scale(1);
+  filter: none;
+  opacity: 1;
+}
+
+/* 양옆(prev/next) 슬라이드: 축소 + 블러 */
+:global(.swiper-slide-prev) .slideImg,
+:global(.swiper-slide-next) .slideImg {
+  transform: scale(0.75);   /* ← 크기 줄이는 핵심 */
+  filter: blur(3px);
+  opacity: 0.6;
+}
+
+
+:global(.swiper-button-prev:after),
+:global(.swiper-button-next:after) {
+  font-size: 20px;
+  /* 아이콘 사이즈 */
+  color: #fff;
+  /* 화살표 색 */
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  margin-top: 50px;
+}
+
+
+/* 클릭 시 눌림 느낌 */
+:global(.swiper-button-prev:active),
+:global(.swiper-button-next:active) {
+  transform: scale(0.96);
+}
+
+.loginBtn {
   margin: 0 auto;
   margin-top: clamp(10px, 6vh, 30px);
   margin-bottom: 30px;
@@ -49,3 +143,21 @@
   font-weight: 400;
   line-height: normal;
 }
+
+.prevBtn, .nextBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(60,60,70,0.4);
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.prevBtn { left: 50px; }
+.nextBtn { right: 50px; }

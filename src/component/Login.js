@@ -33,7 +33,7 @@ function Login() {
         if (!inputId || !inputPw) {
             Swal.fire({
                 icon: "warning",
-                text: "아이디와 비밀번호를 모두 입력해주세요!",
+                text: "아이디와 비밀번호를 모두 입력해주세요.",
                 confirmButtonText: "확인",
                 confirmButtonColor: "#1f8954ff"
             });
