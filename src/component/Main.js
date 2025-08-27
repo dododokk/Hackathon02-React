@@ -45,11 +45,12 @@ function Main() {
       const params = new URLSearchParams();
       params.set("status", "OPEN");
       // 풀패칭이므로 서버는 limit/lastId 없이 “전부” 내려줘야 함
-      if (category) params.set("category", category);
+      if (category) params.append("category", category);
       const baseUrl = keyword.trim()
-        ? `${API_BASE}/posts/search`
-        : `https://hackathon02-api-production.up.railway.app/api/posts`;
-
+        ? `${API_BASE}/posts/search`                // 키워드 검색
+        : category
+          ? `${API_BASE}/posts/search/category`     // 카테고리 검색
+          : `${API_BASE}/posts`;   
       if (keyword.trim()) params.set("q", keyword.trim());
 
       const res = await fetch(`${baseUrl}?${params.toString()}`, {
