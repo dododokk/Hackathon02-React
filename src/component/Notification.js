@@ -69,7 +69,7 @@ function Notification() {
         try {
             const token = localStorage.getItem("jwt");
             const res = await fetch(`${API_BASE}/notifications/${id}/read`, {
-                method: "PATCH",
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     // Authorization: `Bearer ${token}`,

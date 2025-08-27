@@ -124,6 +124,32 @@ function Register() {
                 });
                 return;
             }
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/check/username?value=${encodeURIComponent(inputId)}`, {
+                    method: "GET",
+                });
+
+                if (res.status === 200) {
+                    const data = await res.json();
+                    if (data.available) {
+                        setStep(step + 1);
+                    } else {
+                        Swal.fire({ icon: "error", text: "이미 사용 중인 아이디입니다.", confirmButtonText: "확인", confirmButtonColor: "#1f8954ff" });
+                        return;
+                    }
+                } else if (res.status === 409) {
+                    Swal.fire({ icon: "error", text: "이미 사용 중인 아이디입니다.", confirmButtonText: "확인", confirmButtonColor: "#1f8954ff" });
+                    return;
+                } else {
+                    Swal.fire({ icon: "error", text: "아이디 확인 중 오류가 발생했습니다.", confirmButtonText: "확인", confirmButtonColor: "#1f8954ff" });
+                    return;
+                }
+            } catch (err) {
+                console.error(err);
+                return;
+            }
+            return;
         }
         if (step === 2) {
             if (!inputName.trim()) {
@@ -144,7 +170,7 @@ function Register() {
                 });
                 return;
             }
-            if(!interests || interests.length === 0){
+            if (!interests || interests.length === 0) {
                 Swal.fire({
                     icon: "warning",
                     text: "관심사를 1개 이상 선택해주세요.",
