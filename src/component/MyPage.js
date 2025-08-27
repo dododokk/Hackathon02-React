@@ -95,7 +95,7 @@ function Content({ which }) {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  const token = useMemo(() => localStorage.getItem("token"), []);
+  const token = useMemo(() => localStorage.getItem("jwt"), []);
 
   // 메뉴별 엔드포인트 매핑
   const endpoint = useMemo(() => {
@@ -274,7 +274,7 @@ function MyPage() {
           <img src={profile} className={styles.profile} alt="" />
           <div className={styles.infoText}>
             <div className={styles.userIdRow}>
-              <p className={styles.userId}>{userId}</p>
+              <p className={styles.userId}>{userName}</p>
               <div className={styles.interests}>
                 {userInterest && userInterest.length > 0 ? (
                   userInterest.map((item, idx) => (

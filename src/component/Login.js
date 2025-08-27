@@ -66,8 +66,8 @@ function Login() {
                 if (data.userId) setUserDistinctId(data.userId);
                 if (data.username) setUserId(data.username);
                 if (data.nickname) setUserName(data.nickname);
-                if (data.interest) setUserInterest(data.interest);
-                if (data.address) setUserAddress(data.address);
+                if (data.interests) setUserInterest(data.interests);
+                if (data.roadAddress) setUserAddress(data.roadAddress);
 
                 setIsLoggedIn(true);
                 navigate("/main");
