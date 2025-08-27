@@ -36,11 +36,13 @@ function Main() {
 
   // 공용: 페이지 병합 & 커서/끝 처리
   function applyPage({ page, reset }) {
-    if (reset) setItems(page);
-    else setItems((prev) => prev.concat(page));
-
-    const last = page[page.length - 1];
-    setCursor(last ? last.id : null);
+    setItems(prev => reset ? page:prev.concat(page));
+    const last = page[page.length-1];
+    setCursor(prevCursor => {
+      const nextCursor = last ? last.id : null;
+      if(!nextCursor || nextCursor === prevCursor) setDone(true);
+      return nextCursor;
+    })
 
     if (page.length < limit) setDone(true);
   }
@@ -49,6 +51,7 @@ function Main() {
     if (loadingRef.current) return;
     loadingRef.current = true;
 
+    try{
     const params = new URLSearchParams();
     params.set("status", "OPEN");
     params.set("limit", String(limit));
@@ -64,13 +67,16 @@ function Main() {
     const page = normalizePage(data);
 
     applyPage({ page, reset });
+  } finally {
     loadingRef.current = false;
+  }
   }
 
   async function fetchSearch({ reset = false } = {}) {
     if (loadingRef.current) return;
     loadingRef.current = true;
 
+    try{
     const params = new URLSearchParams();
     params.set("q", keyword.trim()); // 키워드 있을 때만 호출됨
     params.set("status", "OPEN");
@@ -87,7 +93,9 @@ function Main() {
     const page = normalizePage(data);
 
     applyPage({ page, reset });
+  } finally{
     loadingRef.current = false;
+  }
   }
 
   // 키워드/카테고리 변경 시 첫 페이지부터 재조회 (디바운스)
@@ -122,14 +130,13 @@ function Main() {
     const io = new IntersectionObserver(
       async (entries) => {
         if (!entries[0].isIntersecting) return;
+        if(loadingRef.current) return;
+        io.unobserve(el);
         try {
-          setLoading(true);
           if (keyword.trim()) await fetchSearch({ reset: false });
           else await fetchList({ reset: false });
-        } catch (e) {
-          setError(e.message || "불러오기 실패");
         } finally {
-          setLoading(false);
+          if(!done) io.observe(el);
         }
       },
       { rootMargin: "200px" }
@@ -138,7 +145,7 @@ function Main() {
     io.observe(el);
     return () => io.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cursor, done, keyword]);
+  }, [cursor, done, keyword, category]);
 
   // 검색 버튼/Enter: 디바운스 없이 즉시 재조회
   const onClickSearch = async () => {
@@ -221,7 +228,7 @@ function Main() {
                   <header className={styles.cardHead}>
                     <div
                       className={styles.title}
-                      onClick={() => navigate("/post")}
+                      onClick={() => navigate("/post/${item.id}")}
                     >
                       {item.title}
                     </div>

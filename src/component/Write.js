@@ -121,7 +121,7 @@ export default function Write() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const saved = await res.json();
       alert("작성 완료!");
-      navigate(`/posts/${saved.id}`);
+      navigate(-1);
     } catch (err) {
       console.error(err);
       alert(`저장 중 오류 발생: ${err.message || err}`);
