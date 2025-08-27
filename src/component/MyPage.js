@@ -301,7 +301,7 @@ function MyPage() {
           <span className={styles.label}>| 거주지 </span>
           <div className={styles.addressBox}>
             <img src={location} className={styles.locationIcon} alt="" />
-            <span className={styles.addressText}>{displayAddress}</span>
+            <span className={styles.addressText}>{userAddress}</span>
           </div>
         </div>
         <div ref={mapRef} className={styles.map}></div>
