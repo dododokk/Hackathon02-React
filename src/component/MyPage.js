@@ -246,9 +246,10 @@ function MyPage() {
   // 마커 표시
   useEffect(() => {
     if (!place) return;
-    clearMarkers();
-    addMarker({ lat: place.lat, lng: place.lng });
-    setCenter(place.lat, place.lng, 16);
+
+   if (!place) return;
+   addMarker({ lat: place.lat, lng: place.lng });
+   setCenter(place.lat, place.lng, 16);
   }, [place, clearMarkers, addMarker, setCenter]);
 
   const handleLogout = () => {
