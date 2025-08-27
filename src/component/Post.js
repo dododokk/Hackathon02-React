@@ -23,6 +23,15 @@ function Post() {
   const [applying, setApplying] = useState(false);
   const [applyErr, setApplyErr] = useState(null);
 
+  const getAuthHeaders = () => {
+  const token = localStorage.getItem("jwt");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  // 서버 count가 작성자를 포함하는지 모호하면 토글로 관리
+  const COUNT_EXCLUDES_AUTHOR = true; // 서버 count가 '신청자 수'만 주면 true
+
+
   useEffect(() => {
     const controller =
       typeof AbortController !== "undefined" ? new AbortController() : null;
@@ -32,31 +41,30 @@ function Post() {
 
     (async () => {
       try {
-        const token = localStorage.getItem("jwt");
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers.Authorization = `Bearer ${token}`;
-
+        const auth = getAuthHeaders();
+        
         const res = await fetch(`${API_BASE}/posts/${postId}`, {
           credentials: "include",
+          headers:auth,
           ...(controller ? { signal: controller.signal } : {}),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const baseData = await res.json();
 
         // 신청 인원수 보정: /applications/count 가 있으면 반영
-        let count = 0;
+        let applicantCount = 0;
         try {
           const r = await fetch(
             `${API_BASE}/posts/${postId}/applications/count`,
             {
               method: "GET",
-              headers,
+              headers: auth,
               ...(controller ? { signal: controller.signal } : {}),
             }
           );
           if (r.ok) {
             const body = await r.json().catch(() => null);
-            count =
+            applicantCount =
               typeof body === "number"
                 ? body
                 : typeof body?.count === "number"
@@ -67,14 +75,13 @@ function Post() {
           // count 실패는 무시(작성자 1명만 표기)
         }
 
-        setPost({
-          ...baseData,
-          currentMemberCount:
-            typeof baseData.currentMemberCount === "number" &&
-            baseData.currentMemberCount > 0
-              ? baseData.currentMemberCount // 서버가 정확히 주면 그대로 사용
-              : 1 + count, // 작성자 1 + 신청자 수 추정
-        });
+        const computed =
+        typeof baseData.currentMemberCount === "number"
+          ? baseData.currentMemberCount
+          : (COUNT_EXCLUDES_AUTHOR ? 1 + applicantCount : applicantCount);
+
+
+        setPost({ ...baseData, currentMemberCount: computed });
       } catch (e) {
         if (e.name !== "AbortError") setErr(e);
       } finally {
@@ -90,13 +97,10 @@ function Post() {
     if (applying) return;
 
     // 마감 여부 체크
-    if (
-      post?.desiredMemberCount &&
-      post?.currentMemberCount >= post.desiredMemberCount
-    ) {
-      alert("모집이 마감되었습니다.");
-      return;
-    }
+    if (post?.desiredMemberCount && post?.currentMemberCount >= post.desiredMemberCount) {
+    alert("모집이 마감되었습니다.");
+    return;
+  }
 
     const token = localStorage.getItem("jwt");
     if (!token) {
@@ -115,37 +119,46 @@ function Post() {
     try {
       const res = await fetch(`${API_BASE}/posts/${postId}/applications`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", // 바디 없어도 허용
-        },
+        headers: { ...getAuthHeaders(), "Content-Type": "application/json" }, // POST에만 Content-Type
         credentials: "include",
-        body: null, // 명시적으로 바디 없음
       });
+      if (res.status === 401) throw new Error("로그인이 필요합니다.");
+      if (res.status === 403) throw new Error("신청 권한이 없습니다.");
+      if (res.status === 404) throw new Error("게시글을 찾을 수 없습니다.");
+      if (res.status === 409) throw new Error("이미 신청했거나 모집이 마감되었습니다.");
+      if (!res.ok) throw new Error(`신청 실패(HTTP ${res.status})`);
 
-      if (res.status === 200 || res.status === 201) {
-        // 성공: 낙관적으로 현재 인원 +1
+      let body = null;
+      try { body = await res.json(); } catch {}
+      if (body && typeof body.currentMemberCount === "number") {
+        setPost((p) => (p ? { ...p, currentMemberCount: body.currentMemberCount } : p));
+      } else {
+        // 2) 없으면 count 재조회로 정확히 동기화
+        const auth = getAuthHeaders();
+        const r = await fetch(`${API_BASE}/posts/${postId}/applications/count`, {
+          method: "GET",
+          headers: auth,
+        });
+        let applicantCount = 0;
+        if (r.ok) {
+          const b = await r.json().catch(() => null);
+          applicantCount =
+            typeof b === "number" ? b :
+            typeof b?.count === "number" ? b.count :
+            Number(b?.count ?? 0) || 0;
+        }
+        
         setPost((p) =>
           p
             ? {
                 ...p,
-                currentMemberCount: (p.currentMemberCount || 0) + 1,
+                currentMemberCount: COUNT_EXCLUDES_AUTHOR ? 1 + applicantCount : applicantCount,
               }
             : p
         );
-        alert("신청이 접수되었습니다!");
-        navigate("/main");
-        return;
       }
-
-      if (res.status === 401) throw new Error("로그인이 필요합니다.");
-      if (res.status === 403) throw new Error("신청 권한이 없습니다.");
-      if (res.status === 404) throw new Error("게시글을 찾을 수 없습니다.");
-      if (res.status === 409)
-        throw new Error("이미 신청했거나 모집이 마감되었습니다.");
-
-      // 기타 상태
-      throw new Error(`신청 실패(HTTP ${res.status})`);
+      alert("신청이 접수되었습니다!");
+      navigate("/main");
     } catch (e) {
       setApplyErr(e);
       alert(e.message || "신청 중 오류가 발생했습니다.");

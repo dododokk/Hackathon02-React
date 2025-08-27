@@ -226,7 +226,9 @@ function Main() {
                               alt="주소"
                             />
                             <div className={styles.roadaddress}>
-                              {item.author?.roadAddress}
+                              {item.roadAddress !== undefined && item.roadAddress !== null
+                                ? item.roadAddress
+                                : item.author?.roadAddress || "주소 미등록"}
                             </div>
                           </div>
                         </div>
