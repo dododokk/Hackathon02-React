@@ -45,7 +45,7 @@ function Login() {
         // 주석 처리 안하면 main으로 넘어갈 수가 없어서 나중에 아래 navigate 주석처리 후 아래 서버 주석 풀면 테스트 가능해여
         // navigate("/main");
         try {
-            const res = await fetch(`https://hackathon02-api-production.up.railway.app/api/auth/login`, {
+            const res = await fetch(`${API_BASE}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

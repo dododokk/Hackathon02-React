@@ -86,7 +86,7 @@ export default function Write() {
     }
 
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = localStorage.getItem("jwt");
       if (!token) {
         alert("인증 토큰이 없습니다. 먼저 로그인해주세요.");
         return;
