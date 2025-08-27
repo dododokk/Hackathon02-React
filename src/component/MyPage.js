@@ -235,11 +235,13 @@ function MyPage() {
   }, [initMap]);
 
   // 주소 → 좌표
-  useEffect(() => {
-    if (!place && addressText && addressText.trim()) {
-      geocode(addressText).catch(() => {});
-    }
-  }, [place, addressText, geocode]);
+ useEffect(() => {
+  if (userAddress && userAddress.trim()) {
+    geocode(userAddress).catch(() => {});
+  } else if (!place && addressText && addressText.trim()) {
+    geocode(addressText).catch(() => {});
+  }
+}, [userAddress, place, addressText, geocode]);
 
   // 마커 표시
   useEffect(() => {
