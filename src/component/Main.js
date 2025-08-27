@@ -53,17 +53,48 @@ function Main() {
           : `${API_BASE}/posts`;   
       if (keyword.trim()) params.set("q", keyword.trim());
 
+      const token = localStorage.getItem("token");
+      const headers = {"Content-Type":"application/json"};
+      if(token) headers.Authorization = `Bearer ${token}`;
       const res = await fetch(`${baseUrl}?${params.toString()}`, {
         method: "GET",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}` 
-        },
+        headers,
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const data = await res.json();
-      const all = normalizePage(data);
+      let all = normalizePage(data);
+
+      async function getCount(id) {
+        const r = await fetch(`${API_BASE}/posts/${id}/applications/count`, {
+          method: "GET",
+          headers,
+        })
+        if (!r.ok) return 0; // 실패 시 0 처리 (UI는 작성자 1명만 표시)
+        // 응답이 숫자 || { count: number } 모두 대응
+        const body = await r.json().catch(() => null);
+        if (typeof body === "number") return body;
+        if (body && typeof body.count === "number") return body.count;
+        return Number(body?.count ?? 0) || 0;
+      }
+
+      const concurrency = 8;
+      const out = [];
+      for (let i = 0; i < all.length; i += concurrency) {
+      const chunk = all.slice(i, i + concurrency);
+      const counted = await Promise.all(
+        chunk.map(async (it) => {
+          const cnt = await getCount(it.id);
+          // 화면 표시는 "작성자(1) + 신청 인원 수"
+          const fixed = 1 + (Number(cnt) || 0);
+          return {
+            ...it,
+            currentMemberCount: fixed,
+          };
+        })
+      );
+      out.push(...counted);
+    }
 
       // 전체를 메모리에 보관
       setFullItems(all);
