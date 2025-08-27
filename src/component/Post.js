@@ -23,6 +23,8 @@ function Post() {
   // 신청 상태
   const [applying, setApplying] = useState(false);
   const [applyErr, setApplyErr] = useState(null);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [isAuthor, setIsAuthor] = useState(false);
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("jwt");
@@ -78,6 +80,37 @@ function Post() {
         const computed = applicantCount;
 
         setPost({ ...baseData, currentMemberCount: computed });
+        try {
+            const meRes = await fetch(`${API_BASE}/users/me`, {
+              method: "GET",
+              headers: auth,
+              ...(controller ? { signal: controller.signal } : {}),
+            });
+            if (meRes.ok) {
+              const me = await meRes.json();
+              // 백엔드가 author.id를 내려준다고 가정 (없으면 nickname 비교)
+              if (me?.id && baseData?.author?.id) {
+                setIsAuthor(me.id === baseData.author.id);
+              } else if (me?.nickname && baseData?.author?.nickname) {
+                setIsAuthor(me.nickname === baseData.author.nickname);
+              }
+            }
+          } catch {}
+
+          // ✅ 내 신청 여부 조회 (엔드포인트 예: /posts/:id/applications/me)
+          try {
+            const aRes = await fetch(`${API_BASE}/posts/${postId}/applications/me`, {
+              method: "GET",
+              headers: auth,
+              ...(controller ? { signal: controller.signal } : {}),
+            });
+            if (aRes.ok) {
+              const data = await aRes.json().catch(() => ({}));
+              setHasApplied(Boolean(data?.applied ?? true)); // 200이면 true로 간주
+            } else if (aRes.status === 404) {
+              setHasApplied(false);
+            }
+          } catch {}
       } catch (e) {
         if (e.name !== "AbortError") setErr(e);
       } finally {
@@ -91,6 +124,26 @@ function Post() {
   // ✅ 신청 API 호출
   const handleApply = async () => {
     if (applying) return;
+    if (hasApplied) {
+       Swal.fire({
+         icon: "info",
+         text: "이미 신청한 글입니다.",
+         confirmButtonText: "확인",
+         confirmButtonColor: "#1f8954ff",
+       });
+       return;
+     }
+
+     // ✅ 내가 작성자면 막기
+     if (isAuthor) {
+       Swal.fire({
+         icon: "warning",
+         text: "본인이 작성한 글에는 신청할 수 없습니다.",
+         confirmButtonText: "확인",
+         confirmButtonColor: "#1f8954ff",
+       });
+       return;
+     }
 
     // 마감 여부 체크
     if (post?.desiredMemberCount && post?.currentMemberCount >= post.desiredMemberCount) {
@@ -125,6 +178,7 @@ function Post() {
           confirmButtonText: "확인",
           confirmButtonColor: "#1f8954ff",
         });
+        navigate("/login", { replace: true, state: { from: location.pathname } });
         return;
       }
 
@@ -149,12 +203,20 @@ function Post() {
       }
 
       if (res.status === 409) {
+        // Swal.fire({
+        //   icon: "error",
+        //   text: "이미 신청했거나 모집이 마감되었습니다.",
+        //   confirmButtonText: "확인",
+        //   confirmButtonColor: "#1f8954ff",
+        // });
+        // return;
+        setHasApplied(true);
         Swal.fire({
-          icon: "error",
-          text: "이미 신청했거나 모집이 마감되었습니다.",
+          icon: "info",
+          text: "이미 신청한 글입니다.",
           confirmButtonText: "확인",
-          confirmButtonColor: "#1f8954ff",
-        });
+          confirmButtonColor: "#1f8954ff"
+        })
         return;
       }
 
@@ -329,17 +391,22 @@ function Post() {
               <button
                 className={styles.btnPrimary}
                 onClick={handleApply}
-                disabled={applying || isClosed}
+                disabled={applying || isClosed || isAuthor || hasApplied}
                 aria-busy={applying ? "true" : "false"}
                 title={
                   isClosed
                     ? "모집 마감"
+                    : isAuthor
+                    ? "내 게시글"
+                    :hasApplied
+                    ?"이미 신청함"
                     : applying
                       ? "신청 처리 중…"
                       : "신청하기"
                 }
               >
-                {isClosed ? "마감" : applying ? "신청 중…" : "신청하기"}
+                {isClosed ? "마감" : isAuthor?"내 게시글":hasApplied?"이미 신청함":applying
+                ? "신청 중...":"신청하기"}
               </button>
             </div>
             {applyErr && (
