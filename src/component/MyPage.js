@@ -278,7 +278,7 @@ function MyPage() {
           <img src={profile} className={styles.profile} alt="" />
           <div className={styles.infoText}>
             <div className={styles.userIdRow}>
-              <p className={styles.userId}>{userName}</p>
+              <p className={styles.userId}>{userId}</p>
               <div className={styles.interests}>
                 {userInterest && userInterest.length > 0 ? (
                   userInterest.map((item, idx) => (

@@ -73,8 +73,8 @@ function Login() {
                 navigate("/main");
             } else if (res.status === 400) {
                 console.error("400: Bad Request");
-            } else if (res.status === 401) {
-                console.error("401: 아이디/비번 불일치");
+            } else if (res.status === 500) {
+                console.error("500: 아이디/비번 불일치");
                 Swal.fire({
                     icon: "error",
                     text: "아이디 또는 비밀번호가 잘못되었습니다.",
