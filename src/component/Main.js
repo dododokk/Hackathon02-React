@@ -48,13 +48,16 @@ function Main() {
       if (category) params.set("category", category);
       const baseUrl = keyword.trim()
         ? `${API_BASE}/posts/search`
-        : `${API_BASE}/posts`;
+        : `https://hackathon02-api-production.up.railway.app/api/posts`;
 
       if (keyword.trim()) params.set("q", keyword.trim());
 
       const res = await fetch(`${baseUrl}?${params.toString()}`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}` 
+        },
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
