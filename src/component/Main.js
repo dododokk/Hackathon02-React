@@ -1,19 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import InnerTitle from "./InnerTitle";
 import styles from "../style/Main.module.css";
 import searchIcon from "../img/search.png";
 import addressIcon from "../img/addressIcon.png";
 import slash from "../img/slash.png";
 import { perPersonKRW } from "../utils/price";
-import { useNavigate , useLocation} from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getDirectImageUrl, FALLBACK_IMG } from "../utils/image";
 import { API_BASE } from "../config";
+import { UserContext } from "../context/UserContext";
 
 function Main() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const initialCategory = location.state?.category || "";
+  const { userAddress } = useContext(UserContext);
 
   // 검색/필터 상태
   const [keyword, setKeyword] = useState("");     // 검색어
@@ -39,83 +41,91 @@ function Main() {
     return [];
   }
 
- // Main.js
+  // Main.js
 
-// 한 번만(조건 바뀔 때만) 전체 패칭
-async function fetchAll({ reset = false } = {}) {
+  // 한 번만(조건 바뀔 때만) 전체 패칭
+  async function fetchAll({ reset = false } = {}) {
     try {
-        setLoading(true);
-        setError("");
+      setLoading(true);
+      setError("");
 
-        const params = new URLSearchParams();
-        params.set("status", "OPEN");
-        if (category) params.append("category", category);
+      const params = new URLSearchParams();
+      params.set("status", "OPEN");
+      if (category) params.append("category", category);
 
-        const baseUrl = keyword.trim()
-            ? `${API_BASE}/posts/search`
-            : category
-                ? `${API_BASE}/posts/search/category`
-                : `${API_BASE}/posts`;
-        if (keyword.trim()) params.set("q", keyword.trim());
-        
-        const token = localStorage.getItem("token"); // 실제 사용하는 토큰 키로 변경
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers.Authorization = `Bearer ${token}`;
+      const baseUrl = keyword.trim()
+        ? `${API_BASE}/posts/search`
+        : category
+          ? `${API_BASE}/posts/search/category`
+          : `${API_BASE}/posts`;
+      if (keyword.trim()) params.set("q", keyword.trim());
 
-        // 1. 기본 게시글 목록 가져오기
-        const res = await fetch(`${baseUrl}?${params.toString()}`, {
-            method: "GET",
-            headers,
+      const token = localStorage.getItem("token"); // 실제 사용하는 토큰 키로 변경
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      // 1. 기본 게시글 목록 가져오기
+      const res = await fetch(`${baseUrl}?${params.toString()}`, {
+        method: "GET",
+        headers,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      let all = normalizePage(data);
+
+      // 자신과 같은 주소 필터링
+      if (userAddress && userAddress.trim()) {
+        all = all.filter(
+          (post) =>
+            (post.roadAddress || post.author?.roadAddress || "").includes(userAddress)
+        );
+      }
+
+      // 2. 각 게시글의 정확한 신청 인원수 가져오기 (Post.js와 동일한 로직)
+      async function getCount(id) {
+        const r = await fetch(`${API_BASE}/posts/${id}/applications/count`, {
+          method: "GET",
+          headers,
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!r.ok) return 0; // 실패 시 0 처리
+        const body = await r.json().catch(() => null);
+        if (typeof body === "number") return body;
+        if (body && typeof body.count === "number") return body.count;
+        return Number(body?.count ?? 0) || 0;
+      }
 
-        const data = await res.json();
-        const all = normalizePage(data);
+      // 병렬 요청으로 성능 최적화
+      const concurrency = 8;
+      const out = [];
+      for (let i = 0; i < all.length; i += concurrency) {
+        const chunk = all.slice(i, i + concurrency);
+        const counted = await Promise.all(
+          chunk.map(async (it) => {
+            const applicantCount = await getCount(it.id);
+            // Post.js와 동일하게 '작성자(1) + 신청자 수'로 최종 인원 계산
+            const fixedCount = applicantCount;
+            return {
+              ...it,
+              currentMemberCount: fixedCount,
+            };
+          })
+        );
+        out.push(...counted);
+      }
 
-        // 2. 각 게시글의 정확한 신청 인원수 가져오기 (Post.js와 동일한 로직)
-        async function getCount(id) {
-            const r = await fetch(`${API_BASE}/posts/${id}/applications/count`, {
-                method: "GET",
-                headers,
-            });
-            if (!r.ok) return 0; // 실패 시 0 처리
-            const body = await r.json().catch(() => null);
-            if (typeof body === "number") return body;
-            if (body && typeof body.count === "number") return body.count;
-            return Number(body?.count ?? 0) || 0;
-        }
+      // 3. 재계산된 데이터로 state 업데이트
+      setFullItems(out);
 
-        // 병렬 요청으로 성능 최적화
-        const concurrency = 8;
-        const out = [];
-        for (let i = 0; i < all.length; i += concurrency) {
-            const chunk = all.slice(i, i + concurrency);
-            const counted = await Promise.all(
-                chunk.map(async (it) => {
-                    const applicantCount = await getCount(it.id);
-                    // Post.js와 동일하게 '작성자(1) + 신청자 수'로 최종 인원 계산
-                    const fixedCount = applicantCount;
-                    return {
-                        ...it,
-                        currentMemberCount: fixedCount,
-                    };
-                })
-            );
-            out.push(...counted);
-        }
-
-        // 3. 재계산된 데이터로 state 업데이트
-        setFullItems(out);
-
-        if (reset) setViewCount(PAGE_SIZE);
+      if (reset) setViewCount(PAGE_SIZE);
 
     } catch (e) {
-        setError(e.message || "불러오기 실패");
-        setFullItems([]);
+      setError(e.message || "불러오기 실패");
+      setFullItems([]);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-}
+  }
 
   // 검색/카테고리 변경 시 디바운스로 풀패칭
   useEffect(() => {
