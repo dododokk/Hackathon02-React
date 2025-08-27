@@ -74,14 +74,9 @@ function Post() {
         } catch {
           // count 실패는 무시(작성자 1명만 표기)
         }
+const computed = applicantCount;
 
-        const computed =
-        typeof baseData.currentMemberCount === "number"
-          ? baseData.currentMemberCount
-          : (COUNT_EXCLUDES_AUTHOR ? 1 + applicantCount : applicantCount);
-
-
-        setPost({ ...baseData, currentMemberCount: computed });
+setPost({ ...baseData, currentMemberCount: computed });
       } catch (e) {
         if (e.name !== "AbortError") setErr(e);
       } finally {
@@ -152,7 +147,7 @@ function Post() {
           p
             ? {
                 ...p,
-                currentMemberCount: COUNT_EXCLUDES_AUTHOR ? 1 + applicantCount : applicantCount,
+               currentMemberCount: applicantCount,
               }
             : p
         );
