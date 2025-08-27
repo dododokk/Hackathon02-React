@@ -5,16 +5,19 @@ import searchIcon from "../img/search.png";
 import addressIcon from "../img/addressIcon.png";
 import slash from "../img/slash.png";
 import { perPersonKRW } from "../utils/price";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation} from "react-router-dom";
 import { getDirectImageUrl, FALLBACK_IMG } from "../utils/image";
 import { API_BASE } from "../config";
 
 function Main() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const initialCategory = location.state?.category || "";
 
   // 검색/필터 상태
   const [keyword, setKeyword] = useState("");     // 검색어
-  const [category, setCategory] = useState("");   // "", "식품", "생활용품" ...
+  const [category, setCategory] = useState(initialCategory);   // "", "식품", "생활용품" ...
 
   // 풀패칭: 전체 데이터는 메모리에 보관
   const [fullItems, setFullItems] = useState([]);

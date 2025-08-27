@@ -9,7 +9,8 @@ function InnerTitle() {
     return (
         <header className={styles.header}>
             <div className={styles.headerdiv}>
-            <h1 className={styles.title}  onClick={()=>{navigate('/main')}}>MOA</h1>
+            <h1 className={styles.title} 
+            onClick={()=>navigate('/main', {state: {category: ""}})}>MOA</h1>
             <Nav />
             </div>
         </header>

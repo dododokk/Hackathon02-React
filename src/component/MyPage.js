@@ -282,7 +282,9 @@ function MyPage() {
               <div className={styles.interests}>
                 {userInterest && userInterest.length > 0 ? (
                   userInterest.map((item, idx) => (
-                    <span key={idx} className={styles.interestTag}>
+                    <span key={idx} 
+                    className={styles.interestTag}
+                    onClick={()=>navigate('/main', {state: {category: item}})}>
                       #{item}
                     </span>
                   ))
