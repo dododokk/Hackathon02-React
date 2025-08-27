@@ -26,6 +26,10 @@ function Main() {
   const sentinelRef = useRef(null);
   const loadingRef = useRef(false);               // 중복 요청 방지
 
+  const hasMoreRef = useRef(true);
+  const loadingFlagRef = useRef(false);
+  useEffect(() => { hasMoreRef.current = !done; }, [done]);
+  
   // 서로 다른 응답 포맷 통일
   function normalizePage(data) {
     if (Array.isArray(data?.items)) return data.items;   // /posts/search
@@ -127,24 +131,24 @@ function Main() {
     const el = sentinelRef.current;
     if (!el) return;
 
-    const io = new IntersectionObserver(
-      async (entries) => {
-        if (!entries[0].isIntersecting) return;
-        if(loadingRef.current) return;
-        io.unobserve(el);
-        try {
-          if (keyword.trim()) await fetchSearch({ reset: false });
-          else await fetchList({ reset: false });
-        } finally {
-          if(!done) io.observe(el);
-        }
-      },
-      { rootMargin: "200px" }
-    );
+    const io = new IntersectionObserver(async (entries) => {
+      if (!entries[0].isIntersecting) return;
+      if (loadingRef.current) return;
+
+      // 한 번 트리거되면 현재 옵저버는 더 이상 관찰하지 않게 (중복 방지)
+      io.unobserve(el);
+
+      try {
+        if (keyword.trim()) await fetchSearch({ reset: false });
+        else await fetchList({ reset: false });
+      } finally {
+        // ✅ 재관찰은 하지 않음.
+        // cursor/done 변화로 이 useEffect가 다시 실행되며 새 옵저버가 attach 됨.
+      }
+    }, { rootMargin: "200px" });
 
     io.observe(el);
     return () => io.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cursor, done, keyword, category]);
 
   // 검색 버튼/Enter: 디바운스 없이 즉시 재조회
@@ -228,7 +232,7 @@ function Main() {
                   <header className={styles.cardHead}>
                     <div
                       className={styles.title}
-                      onClick={() => navigate("/post/${item.id}")}
+                      onClick={() => navigate(`/post/${item.id}`)}
                     >
                       {item.title}
                     </div>
