@@ -125,11 +125,13 @@
     align-items: center;
     margin-top: auto;
     margin-bottom: 20px;
+    justify-content: center;
 }
 
-.prev,
-.next {
-    background-color: transparent;
+.prev{
+    position: absolute;
+    left: 30px;
+     background-color: transparent;
     border: 0;
     color: #979797;
     font-family: Pretendard;
@@ -138,6 +140,23 @@
     font-weight: 500;
     line-height: normal;
     cursor: pointer;
+    /* margin-left: auto;
+    margin-right: 30px; */
+}
+.next{
+    position: absolute;
+    right: 30px;
+     background-color: transparent;
+    border: 0;
+    color: #979797;
+    font-family: Pretendard;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    cursor: pointer;
+    /* margin-left: auto;
+    margin-right: 30px; */
 }
 
 .prev {
@@ -152,7 +171,7 @@
 .centerGroup {
     display: flex;
     justify-content: center;
-    flex: 1;
+    /* flex: 1; */
     /* 가운데 그룹이 중앙을 차지하도록 */
     gap: 10px;
     /* "이미 회원이라면?" 과 "로그인" 간격 */
