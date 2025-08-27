@@ -31,6 +31,7 @@ function Label({ selected, menu, onSelect, title }) {
 function PostCard({ item, variant = "default", onDelete }) {
   const isClosed = variant === "closed";
   const imgSrc = item.mainImageUrl || thumb;
+  const navigate = useNavigate();
 
   return (
     <article
@@ -40,7 +41,8 @@ function PostCard({ item, variant = "default", onDelete }) {
       <img className={styles.thumb} src={imgSrc} alt="" />
       <div className={styles.right}>
         <header className={styles.cardHead}>
-          <h3 className={`${styles.title} ${isClosed ? styles.titleClosed : ""}`}>
+          <h3 className={`${styles.title} ${isClosed ? styles.titleClosed : ""}`}
+          onClick={() => navigate(`/post/${item.id}`)}>
             {item.title}
           </h3>
           <span className={styles.pill}>

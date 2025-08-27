@@ -357,6 +357,12 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.title:active{
+  opacity: .85;
+  transform: translateY(1px);
 }
 
 .pill {

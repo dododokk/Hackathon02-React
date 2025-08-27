@@ -119,7 +119,7 @@ function Main() {
 
 
       // 3. 재계산된 데이터로 state 업데이트
-      setFullItems(out);
+      setFullItems(filtered);
 
       if (reset) setViewCount(PAGE_SIZE);
 
