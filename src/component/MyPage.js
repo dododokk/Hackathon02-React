@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
 import styles from "../style/MyPage.module.css";
 import InnerTitle from "./InnerTitle";
 import profile from "../img/profile.png";
@@ -14,333 +14,315 @@ import { perPersonKRW } from "../utils/price";
 import { useNavigate } from "react-router-dom";
 import { useMap } from "../context/MapContext";
 
-function Label(props) {
-    return (
-        <label className={`${styles.menuItem} ${props.selected === props.menu ? styles.active : ""}`}
-            onClick={() => props.onSelect(props.menu)}>
-            {props.title}
-        </label>
-    )
+/** 탭 라벨 */
+function Label({ selected, menu, onSelect, title }) {
+  return (
+    <label
+      className={`${styles.menuItem} ${selected === menu ? styles.active : ""}`}
+      onClick={() => onSelect(menu)}
+    >
+      {title}
+    </label>
+  );
 }
 
-function Content(props) {
-    let content;
-    const tempData = [
-        {
-            id: 1,
-            author: {
-                id: 101,
-                nickname: "정화진",
-                roadAddress: "용인시 수지구"
-            },
-            title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
-            category: "식품",
-            productDesc: "11,200",
-            desiredMemberCount: 4,
-            currentMembercount: 2,
-            content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
-            mainImageUrl: "../img/thumb.png",//img id쓸건지
-            status: "OPEN",
-            createdAt: "2025-08-19",
-        },
-        {
-            id: 1,
-            author: {
-                id: 101,
-                nickname: "정화진",
-                roadAddress: "용인시 수지구"
-            },
-            title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
-            category: "식품",
-            productDesc: "11,200",
-            desiredMemberCount: 3,
-            currentMembercount: 2,
-            content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
-            mainImageUrl: "../img/thumb.png",//img id쓸건지
-            status: "OPEN",
-            createdAt: "2025-08-19",
-        },
-        {
-            id: 1,
-            author: {
-                id: 101,
-                nickname: "정화진",
-                roadAddress: "용인시 수지구"
-            },
-            title: "카라멜 소금빵 공구해서 나누실 분 구합니다제목길게해볼게요 자고시퍼요 언제잘수있을까 언제잘수있을까 언제잘수있을까!",
-            category: "식품",
-            productDesc: "11,200",
-            desiredMemberCount: 3,
-            currentMembercount: 2,
-            content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
-            mainImageUrl: "../img/thumb.png",//img id쓸건지
-            status: "OPEN",
-            createdAt: "2025-08-19",
-        },
-        {
-            id: 1,
-            author: {
-                id: 101,
-                nickname: "정화진",
-                roadAddress: "용인시 수지구"
-            },
-            title: "카라멜 소금빵 공구해서 나누실 분 구합니다!",
-            category: "식품",
-            productDesc: "11,200",
-            desiredMemberCount: 3,
-            currentMembercount: 2,
-            content: "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ 제가 구매할테니 시간 조율 해보아요sdfld길게써볼게요 말줄여지는지 봐볼게요 졸려요 화지니졸려요 프론트좀열받아요 이거너무귀찮고눈아프고 하깃맇어요",
-            mainImageUrl: "../img/thumb.png",//img id쓸건지
-            status: "OPEN",
-            createdAt: "2025-08-19",
+/** 서버 데이터 카드 공통 렌더링 */
+function PostCard({ item, variant = "default", onDelete }) {
+  const isClosed = variant === "closed";
+  const imgSrc = item.mainImageUrl || thumb;
+
+  return (
+    <article
+      className={`${styles.card} ${isClosed ? styles.closed : ""}`}
+      key={item.id}
+    >
+      <img className={styles.thumb} src={imgSrc} alt="" />
+      <div className={styles.right}>
+        <header className={styles.cardHead}>
+          <h3 className={`${styles.title} ${isClosed ? styles.titleClosed : ""}`}>
+            {item.title}
+          </h3>
+          <span className={styles.pill}>
+            {item.currentMemberCount}/{item.desiredMemberCount}명
+          </span>
+
+          {/* 내가 쓴 글 탭만 삭제 버튼 노출 (선택) */}
+          {onDelete && (
+            <button className={styles.delete} onClick={() => onDelete(item.id)}>
+              <img src={trash} className={styles.trashImg} alt="delete" />
+            </button>
+          )}
+        </header>
+
+        <div className={styles.under}>
+          <div className={styles.cardBody}>
+            <div className={styles.icon}>
+              <p className={styles.category}>#{item.category}</p>
+              <div className={styles.address}>
+                <img className={styles.addressIcon} src={addressIcon} alt="" />
+                <div className={styles.roadaddress}>
+                  {item.author?.roadAddress || "지역 미기재"}
+                </div>
+              </div>
+            </div>
+            <div className={styles.content}>{item.content}</div>
+          </div>
+
+          {isClosed ? (
+            <aside className={styles.closedBox}>
+              <button className={styles.closedBtn} disabled>
+                모집 종료
+              </button>
+            </aside>
+          ) : (
+            <aside className={styles.priceBox}>
+              <div className={styles.price}>
+                {perPersonKRW(item.productDesc, item.desiredMemberCount)}
+              </div>
+              <img className={styles.slash} src={slash} alt="" />
+              <div className={styles.totalPrice}>total {item.productDesc}</div>
+            </aside>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/** 서버 연결 + 렌더링 */
+function Content({ which }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  const token = useMemo(() => localStorage.getItem("token"), []);
+
+  // 메뉴별 엔드포인트 매핑
+  const endpoint = useMemo(() => {
+    if (which === "menu1") return "/api/mypage/applied/ongoing";   // 신청중(approved|open)
+    if (which === "menu2") return "/api/mypage/applied/completed"; // 완료됨(approved|full)
+    return "/api/mypage/my-posts";                                 // 내가 쓴 글
+  }, [which]);
+
+  // 데이터 가져오기
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchList = async () => {
+      setLoading(true);
+      setErr("");
+      try {
+        if (!token) {
+          throw new Error("로그인이 필요합니다. (토큰 없음)");
         }
-    ];
 
-    const handleDelete = async (postId) => {
-        // 서버 연결 후.현재는 board delete 그대로 가져옴.
-        // if (!window.confirm("정말 삭제할까요?")) return;
+        const res = await fetch(endpoint, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        // try {
-        //     const res = await fetch(
-        //         `https://miraculous-sparkle-production.up.railway.app/api/posts/${postId}?userId=${encodeURIComponent(userDistinctId)}`,
-        //         {
-        //             method: "DELETE",
-        //             headers: {
-        //                 ...(token && { Authorization: `Bearer ${token}` }),
-        //             },
-        //         }
-        //     );
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(text || `요청 실패 (${res.status})`);
+        }
 
-        //     if (res.status !== 204) {
-        //         const msg = await res.text().catch(() => "");
-        //         throw new Error(msg || `삭제 실패 (status ${res.status})`);
-        //     }
+        const data = await res.json();
 
-        //     // ✅ 삭제 후 최신 데이터 다시 불러오기
-        //     fetchPosts();
-        // } catch (err) {
-        //     console.error("삭제 에러:", err);
-        //     alert(err.message || "삭제 중 오류가 발생했습니다.");
-        // }
+        // 서버가 배열을 준다는 전제. 아닐 경우 방어.
+        const list = Array.isArray(data) ? data : (data?.content ?? []);
+        if (!ignore) setItems(list);
+      } catch (e) {
+        if (!ignore) setErr(e.message || "알 수 없는 오류");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
     };
 
-    if (props.title === "menu1") {
-        content = (
-            <div>
-                <section className={styles.list}>
-                    {tempData.map(item => (
-                        <article key={item.id} className={styles.card}>
-                            <img className={styles.thumb} src={thumb} alt="" />
-                            <div className={styles.right}>
-                                <header className={styles.cardHead}>
-                                    <h3 className={styles.title}>{item.title}</h3>
-                                    <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
-                                </header>
-                                <div className={styles.under}>
-                                    <div className={styles.cardBody}>
-                                        <div className={styles.icon}>
-                                            <p className={styles.category}>#{item.category}</p>
-                                            <div className={styles.address}>
-                                                <img className={styles.addressIcon} src={addressIcon}></img>
-                                                <div className={styles.roadaddress}>{item.author.roadAddress}</div>
-                                            </div>
-                                        </div>
-                                        <div className={styles.content}>{item.content}</div>
-                                    </div>
+    fetchList();
+    return () => {
+      ignore = true;
+    };
+  }, [endpoint, token]);
 
-                                    <aside className={styles.priceBox}>
-                                        <div className={styles.price}>
-                                            {perPersonKRW(item.productDesc, item.desiredMemberCount)}
-                                        </div>
-                                        <img className={styles.slash} src={slash}></img>
-                                        <div className={styles.totalPrice}>total {item.productDesc}</div>
-                                    </aside>
-                                </div>
-                            </div>
-                        </article>
-                    ))}
-                </section>
-            </div>
-        );
+  // (선택) 내가 쓴 글 삭제 예시 – 실제 API 경로/파라미터에 맞춰 수정해 사용
+  const handleDelete = async (postId) => {
+    if (!window.confirm("정말 삭제할까요?")) return;
+    try {
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status !== 204) {
+        const msg = await res.text().catch(() => "");
+        throw new Error(msg || `삭제 실패 (status ${res.status})`);
+      }
+      // 삭제 후 목록 갱신
+      setItems((prev) => prev.filter((p) => p.id !== postId));
+    } catch (e) {
+      alert(e.message || "삭제 중 오류가 발생했습니다.");
     }
-    else if (props.title === "menu2") {
-        content = (
-            <section className={styles.list}>
-                {tempData.map(item => (
-                    <article key={item.id} className={`${styles.card} ${styles.closed}`}>
-                        <img className={styles.thumb} src={thumb} alt="" />
-                        <div className={styles.right}>
-                            <header className={styles.cardHead}>
-                                <h3 className={`${styles.title} ${styles.titleClosed}`}>{item.title}</h3>
-                                <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
-                            </header>
+  };
 
-                            <div className={styles.under}>
-                                <div className={styles.cardBody}>
-                                    <div className={styles.icon}>
-                                        <p className={styles.category}>#{item.category}</p>
-                                        <div className={styles.address}>
-                                            <img className={styles.addressIcon} src={addressIcon} />
-                                            <div className={styles.roadaddress}>{item.author.roadAddress}</div>
-                                        </div>
-                                    </div>
-                                    {/* 개행 살리고 3줄 클램프 유지 */}
-                                    <div className={styles.content}>{item.content}</div>
-                                </div>
-
-                                {/* 가격 대신 종료 버튼 */}
-                                <aside className={styles.closedBox}>
-                                    <button className={styles.closedBtn} disabled>모집 종료</button>
-                                </aside>
-                            </div>
-                        </div>
-                    </article>
-                ))}
-            </section>
-        );
-    }
-    else {
-        content = (
-            <div>
-                <section className={styles.list}>
-                    {tempData.map(item => (
-                        <article key={item.id} className={styles.card}>
-                            <img className={styles.thumb} src={thumb} alt="" />
-                            <div className={styles.right}>
-                                <header className={styles.cardHead}>
-                                    <h3 className={styles.title}>{item.title}</h3>
-                                    <span className={styles.pill}>{item.currentMembercount}/{item.desiredMemberCount}명</span>
-                                    <button className={styles.delete} onClick={handleDelete}><img src={trash} className={styles.trashImg} /></button>
-                                </header>
-                                <div className={styles.under}>
-                                    <div className={styles.cardBody}>
-                                        <div className={styles.icon}>
-                                            <p className={styles.category}>#{item.category}</p>
-                                            <div className={styles.address}>
-                                                <img className={styles.addressIcon} src={addressIcon}></img>
-                                                <div className={styles.roadaddress}>{item.author.roadAddress}</div>
-                                            </div>
-                                        </div>
-                                        <div className={styles.content}>{item.content}</div>
-                                    </div>
-
-                                    <aside className={styles.priceBox}>
-                                        <div className={styles.price}>
-                                            {perPersonKRW(item.productDesc, item.desiredMemberCount)}
-                                        </div>
-                                        <img className={styles.slash} src={slash}></img>
-                                        <div className={styles.totalPrice}>total {item.productDesc}</div>
-                                    </aside>
-                                </div>
-                            </div>
-                        </article>
-                    ))}
-                </section>
-            </div>
-        );
-    }
-
+  if (loading) {
     return (
-        <div id={styles.content}>
-            {content}
+      <div id={styles.content}>
+        <div className={styles.list}>불러오는 중…</div>
+      </div>
+    );
+  }
+
+  if (err) {
+    return (
+      <div id={styles.content}>
+        <div className={styles.list}>
+          <p style={{ color: "crimson" }}>오류: {err}</p>
         </div>
-    )
+      </div>
+    );
+  }
+
+  if (!items.length) {
+    return (
+      <div id={styles.content}>
+        <div className={styles.list}>
+          <p>표시할 게시글이 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const variant = which === "menu2" ? "closed" : "default";
+  const showDelete = which === "menu3";
+
+  return (
+    <div id={styles.content}>
+      <section className={styles.list}>
+        {items.map((item) => (
+          <PostCard
+            key={item.id}
+            item={item}
+            variant={variant}
+            onDelete={showDelete ? handleDelete : undefined}
+          />
+        ))}
+      </section>
+    </div>
+  );
 }
 
 function MyPage() {
-    const { userId, userName, userInterest, userAddress } = useContext(UserContext);
-    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-    const { setUserId, setUserPw } = useContext(UserContext);
-    const mapRef = useRef(null);
-    const navigate = useNavigate();
-    const [selectedMenu, setSelectedMenu] = useState("menu1");
-    const { initMap, addMarker, clearMarkers, setCenter, place, addressText, geocode } = useMap();
+  const { userId, userName, userInterest, userAddress, setUserId, setUserPw } =
+    useContext(UserContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  const mapRef = useRef(null);
+  const navigate = useNavigate();
+  const [selectedMenu, setSelectedMenu] = useState("menu1");
+  const { initMap, addMarker, clearMarkers, setCenter, place, addressText, geocode } = useMap();
 
-    useEffect(() => {
-        if (mapRef.current) {
-            initMap(mapRef.current, {
-                center: new window.naver.maps.LatLng(37.5408, 127.0790),
-                zoom: 14,
-            });
-        }
-    }, [initMap]);
+  // 지도 초기화
+  useEffect(() => {
+    if (mapRef.current) {
+      initMap(mapRef.current, {
+        center: new window.naver.maps.LatLng(37.5408, 127.079),
+        zoom: 14,
+      });
+    }
+  }, [initMap]);
 
-    useEffect(() => {
-        if (!place && addressText && addressText.trim()) {
-            geocode(addressText).catch(() => {/* 실패해도 무시 */ });
-        }
-    }, [place, addressText, geocode]);
+  // 주소 → 좌표
+  useEffect(() => {
+    if (!place && addressText && addressText.trim()) {
+      geocode(addressText).catch(() => {});
+    }
+  }, [place, addressText, geocode]);
 
-    useEffect(() => {
-        if (!place) return;
-        clearMarkers();
-        addMarker({ lat: place.lat, lng: place.lng });
-        setCenter(place.lat, place.lng, 16);
-    }, [place, clearMarkers, addMarker, setCenter]);
+  // 마커 표시
+  useEffect(() => {
+    if (!place) return;
+    clearMarkers();
+    addMarker({ lat: place.lat, lng: place.lng });
+    setCenter(place.lat, place.lng, 16);
+  }, [place, clearMarkers, addMarker, setCenter]);
 
-    const handleLogout = () => {
-        // localStorage.removeItem("token"); 나중에 토큰 삭제
-        setIsLoggedIn(false);
-        setUserId("");
-        setUserPw("");
-        navigate('/');
-    };
+  const handleLogout = () => {
+    // 나중에 실제 토큰 키 사용
+    // localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setUserId("");
+    setUserPw("");
+    navigate("/");
+  };
 
-    const displayAddress =
-        (place?.regionText && place.regionText.trim()) || // ← "시 구 동" 우선
-        (place?.roadAddress && place.roadAddress.trim()) ||
-        (place?.jibunAddress && place.jibunAddress.trim()) ||
-        (addressText && addressText.trim()) ||
-        "미설정";
+  const displayAddress =
+    (place?.regionText && place.regionText.trim()) ||
+    (place?.roadAddress && place.roadAddress.trim()) ||
+    (place?.jibunAddress && place.jibunAddress.trim()) ||
+    (addressText && addressText.trim()) ||
+    "미설정";
 
-    return (
-        <div className={styles.mainWrapper}>
-            <InnerTitle />
-            <div className={styles.myInfo}>
-                <div className={styles.userInfo}>
-                    <img src={profile} className={styles.profile} />
-                    <div className={styles.infoText}>
-                        <div className={styles.userIdRow}>
-                            <p className={styles.userId}>{userId}</p>
-                            <div className={styles.interests}>
-                                {userInterest && userInterest.length > 0 ? (
-                                    userInterest.map((item, idx) => (
-                                        <span key={idx} className={styles.interestTag}>
-                                            #{item}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <span className={styles.noInterest}>관심사 없음</span>
-                                )}
-                            </div>
-                            <button className={styles.logoutBtn} onClick={handleLogout}>Logout</button>
-                        </div>
-                        <p className={styles.userName}>{userName}<img src={modify} className={styles.modifyImg}></img></p>
-                    </div>
-                </div>
-                <div className={styles.mapInfo}>
-                    <span className={styles.label}>| 거주지 </span>
-                    <div className={styles.addressBox}>
-                        <img src={location} className={styles.locationIcon} />
-                        <span className={styles.addressText}>{displayAddress}</span>
-                    </div>
-                </div>
-                <div ref={mapRef} className={styles.map}></div>
+  return (
+    <div className={styles.mainWrapper}>
+      <InnerTitle />
+
+      {/* 상단 내 정보 */}
+      <div className={styles.myInfo}>
+        <div className={styles.userInfo}>
+          <img src={profile} className={styles.profile} alt="" />
+          <div className={styles.infoText}>
+            <div className={styles.userIdRow}>
+              <p className={styles.userId}>{userId}</p>
+              <div className={styles.interests}>
+                {userInterest && userInterest.length > 0 ? (
+                  userInterest.map((item, idx) => (
+                    <span key={idx} className={styles.interestTag}>
+                      #{item}
+                    </span>
+                  ))
+                ) : (
+                  <span className={styles.noInterest}>관심사 없음</span>
+                )}
+              </div>
+              <button className={styles.logoutBtn} onClick={handleLogout}>
+                Logout
+              </button>
             </div>
-            <div className={styles.mywriteContent}>
-                <div className={styles.mywrite}>
-                    <Label selected={selectedMenu} menu="menu1" onSelect={setSelectedMenu} title="신청중" />
-                    <Label selected={selectedMenu} menu="menu2" onSelect={setSelectedMenu} title="완료됨" />
-                    <Label selected={selectedMenu} menu="menu3" onSelect={setSelectedMenu} title="내가 쓴 글" />
-                </div>
-                <article>
-                    {selectedMenu === "menu1" && <Content title="menu1" />}
-                    {selectedMenu === "menu2" && <Content title="menu2" />}
-                    {selectedMenu === "menu3" && <Content title="menu3" />}
-                </article>
-            </div>
+            <p className={styles.userName}>
+              {userName}
+              <img src={modify} className={styles.modifyImg} alt="" />
+            </p>
+          </div>
         </div>
-    );
+
+        <div className={styles.mapInfo}>
+          <span className={styles.label}>| 거주지 </span>
+          <div className={styles.addressBox}>
+            <img src={location} className={styles.locationIcon} alt="" />
+            <span className={styles.addressText}>{displayAddress}</span>
+          </div>
+        </div>
+        <div ref={mapRef} className={styles.map}></div>
+      </div>
+
+      {/* 하단 탭 & 콘텐츠 */}
+      <div className={styles.mywriteContent}>
+        <div className={styles.mywrite}>
+          <Label selected={selectedMenu} menu="menu1" onSelect={setSelectedMenu} title="신청중" />
+          <Label selected={selectedMenu} menu="menu2" onSelect={setSelectedMenu} title="완료됨" />
+          <Label selected={selectedMenu} menu="menu3" onSelect={setSelectedMenu} title="내가 쓴 글" />
+        </div>
+
+        <article>
+          {selectedMenu === "menu1" && <Content which="menu1" />}
+          {selectedMenu === "menu2" && <Content which="menu2" />}
+          {selectedMenu === "menu3" && <Content which="menu3" />}
+        </article>
+      </div>
+    </div>
+  );
 }
 
 export default MyPage;
