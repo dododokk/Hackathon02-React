@@ -15,161 +15,90 @@ function Main() {
   // 검색/필터 상태
   const [keyword, setKeyword] = useState("");     // 검색어
   const [category, setCategory] = useState("");   // "", "식품", "생활용품" ...
-  // 화면에 뿌릴 목록 (서버 결과만 사용)
-  const [items, setItems] = useState([]);
-  const [cursor, setCursor] = useState(null);     // lastId
-  const [done, setDone] = useState(false);        // 더 이상 없음
+
+  // 풀패칭: 전체 데이터는 메모리에 보관
+  const [fullItems, setFullItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const limit = 20;
-  const sentinelRef = useRef(null);
-  const loadingRef = useRef(false);               // 중복 요청 방지
+  // 화면에 노출할 개수 (슬라이스)
+  const PAGE_SIZE = 20;           // 한 번에 더 보여줄 개수
+  const [viewCount, setViewCount] = useState(PAGE_SIZE);
 
-  const hasMoreRef = useRef(true);
-  const loadingFlagRef = useRef(false);
-  useEffect(() => { hasMoreRef.current = !done; }, [done]);
-  
-  // 서로 다른 응답 포맷 통일
+  // 디바운스 타이머
+  const debounceRef = useRef(null);
+
+  // 응답 포맷 통일
   function normalizePage(data) {
-    if (Array.isArray(data?.items)) return data.items;   // /posts/search
-    if (Array.isArray(data?.content)) return data.content; // /posts
-    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.items)) return data.items;     // /posts/search 에서 items일 수 있음
+    if (Array.isArray(data?.content)) return data.content; // /posts 에서 content일 수 있음
+    if (Array.isArray(data)) return data;                  // 그냥 배열
     return [];
   }
 
-  // 공용: 페이지 병합 & 커서/끝 처리
-  function applyPage({ page, reset }) {
-    setItems(prev => reset ? page:prev.concat(page));
-    const last = page[page.length-1];
-    setCursor(prevCursor => {
-      const nextCursor = last ? last.id : null;
-      if(!nextCursor || nextCursor === prevCursor) setDone(true);
-      return nextCursor;
-    })
-
-    if (page.length < limit) setDone(true);
-  }
-
-  async function fetchList({ reset = false } = {}) {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
-
-    try{
-      setLoading(true);
-    const params = new URLSearchParams();
-    params.set("status", "OPEN");
-    params.set("limit", String(limit));
-    if (category) params.set("category", category);
-    if (!reset && cursor) params.set("lastId", String(cursor));
-
-    const res = await fetch(`${API_BASE}/posts?${params.toString()}` , {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const page = normalizePage(data);
-
-    applyPage({ page, reset });
-  } catch(e){
-    setError(e.message || "불러오기 실패");
-  }finally {
-    setLoading(false);
-    loadingRef.current = false;
-  }
-  }
-
-  async function fetchSearch({ reset = false } = {}) {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
-
-    try{
-      setLoading(true);
-    const params = new URLSearchParams();
-    params.set("q", keyword.trim()); // 키워드 있을 때만 호출됨
-    params.set("status", "OPEN");
-    params.set("limit", String(limit));
-    if (category) params.set("category", category);
-    if (!reset && cursor) params.set("lastId", String(cursor));
-
-    const res = await fetch(`${API_BASE}/posts/search?${params.toString()}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const page = normalizePage(data);
-
-    applyPage({ page, reset });
-  }catch(e){
-    setError(e.message || "불러오기 실패");
-  }finally{
-    loadingRef.current = false;
-  }
-  }
-
-  // 키워드/카테고리 변경 시 첫 페이지부터 재조회 (디바운스)
-  useEffect(() => {
-    let t = null;
-    setDone(false);
-    setCursor(null);
-    setLoading(true);
-    setError("");
-
-    t = setTimeout(async () => {
-      try {
-        if (keyword.trim()) await fetchSearch({ reset: true });
-        else await fetchList({ reset: true });
-      } catch (e) {
-        setError(e.message || "불러오기 실패");
-      } finally {
-        setLoading(false);
-      }
-    }, 300);
-
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, category]);
-
-  const cooldownRef = useRef(0);
-  // 무한 스크롤: 현재 모드(검색/목록)에 맞게 다음 페이지 호출
-  useEffect(() => {
-    if (done) return;
-    const el = sentinelRef.current;
-    if (!el) return;
-
-    const io = new IntersectionObserver(async (entries) => {
-      const now = Date.now();
-      if (!entries[0].isIntersecting) return;
-      if (loadingRef.current) return;
-      if(now-cooldownRef.current<300) return;
-      cooldownRef.current = now;
-
-      if(keyword.trim()) await fetchSearch({reset: false});
-      else await fetchList({reset:false});
-    }, {
-      rootMargin: "0px",
-      threshold: 0.1,
-    });
-    io.observe(el);
-    return()=> io.disconnect();
-  }, [cursor, done, keyword, category]);
-
-  // 검색 버튼/Enter: 디바운스 없이 즉시 재조회
-  const onClickSearch = async () => {
-    setDone(false);
-    setCursor(null);
-    setLoading(true);
-    setError("");
+  // 한 번만(조건 바뀔 때만) 전체 패칭
+  async function fetchAll({ reset = false } = {}) {
     try {
-      if (keyword.trim()) await fetchSearch({ reset: true });
-      else await fetchList({ reset: true });
+      setLoading(true);
+      setError("");
+
+      const params = new URLSearchParams();
+      params.set("status", "OPEN");
+      // 풀패칭이므로 서버는 limit/lastId 없이 “전부” 내려줘야 함
+      if (category) params.set("category", category);
+      const baseUrl = keyword.trim()
+        ? `${API_BASE}/posts/search`
+        : `${API_BASE}/posts`;
+
+      if (keyword.trim()) params.set("q", keyword.trim());
+
+      const res = await fetch(`${baseUrl}?${params.toString()}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      const all = normalizePage(data);
+
+      // 전체를 메모리에 보관
+      setFullItems(all);
+      // 검색/필터가 바뀌어서 재조회하는 경우, 화면 노출 개수 초기화
+      if (reset) setViewCount(PAGE_SIZE);
     } catch (e) {
       setError(e.message || "불러오기 실패");
+      setFullItems([]);
     } finally {
       setLoading(false);
     }
+  }
+
+  // 검색/카테고리 변경 시 디바운스로 풀패칭
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    setLoading(true);
+    setError("");
+
+    debounceRef.current = setTimeout(() => {
+      fetchAll({ reset: true });
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyword, category]);
+
+  // 최초 로드
+  useEffect(() => {
+    fetchAll({ reset: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 즉시 검색(버튼/Enter): 디바운스 없이 재조회
+  const onClickSearch = async () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    await fetchAll({ reset: true });
   };
   const onKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -177,6 +106,10 @@ function Main() {
       onClickSearch();
     }
   };
+
+  // 화면에 보여줄 슬라이스
+  const visibleItems = fullItems.slice(0, viewCount);
+  const hasMoreToShow = viewCount < fullItems.length;
 
   return (
     <div className={styles.mainWrapper}>
@@ -220,81 +153,93 @@ function Main() {
         )}
 
         {!loading && !error && (
-          <section className={styles.list}>
-            {items.map((item) => (
-              <article key={item.id} className={styles.card}>
-                <img
-                  className={styles.thumb}
-                  src={getDirectImageUrl(item.mainImageUrl || item.imageUrl)}
-                  alt={item.title || "thumbnail"}
-                  loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.src = FALLBACK_IMG;
-                    e.currentTarget.onerror = null;
-                  }}
-                />
-                <div className={styles.right}>
-                  <header className={styles.cardHead}>
-                    <div
-                      className={styles.title}
-                      onClick={() => navigate(`/post/${item.id}`)}
-                    >
-                      {item.title}
-                    </div>
-                    <span className={styles.pill}>
-                      {item.currentMemberCount}/{item.desiredMemberCount}명
-                    </span>
-                  </header>
+          <>
+            <section className={styles.list}>
+              {visibleItems.map((item) => (
+                <article key={item.id} className={styles.card}>
+                  <img
+                    className={styles.thumb}
+                    src={getDirectImageUrl(item.mainImageUrl || item.imageUrl)}
+                    alt={item.title || "thumbnail"}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = FALLBACK_IMG;
+                      e.currentTarget.onerror = null;
+                    }}
+                  />
+                  <div className={styles.right}>
+                    <header className={styles.cardHead}>
+                      <div
+                        className={styles.title}
+                        onClick={() => navigate(`/post/${item.id}`)}
+                      >
+                        {item.title}
+                      </div>
+                      <span className={styles.pill}>
+                        {item.currentMemberCount}/{item.desiredMemberCount}명
+                      </span>
+                    </header>
 
-                  <div className={styles.under}>
-                    <div className={styles.cardBody}>
-                      <div className={styles.icon}>
-                        <p className={styles.category}>#{item.category}</p>
-                        <div className={styles.address}>
-                          <img
-                            className={styles.addressIcon}
-                            src={addressIcon}
-                            alt="주소"
-                          />
-                          <div className={styles.roadaddress}>
-                            {item.author?.roadAddress}
+                    <div className={styles.under}>
+                      <div className={styles.cardBody}>
+                        <div className={styles.icon}>
+                          <p className={styles.category}>#{item.category}</p>
+                          <div className={styles.address}>
+                            <img
+                              className={styles.addressIcon}
+                              src={addressIcon}
+                              alt="주소"
+                            />
+                            <div className={styles.roadaddress}>
+                              {item.author?.roadAddress}
+                            </div>
                           </div>
                         </div>
+                        <div className={styles.content}>{item.content}</div>
                       </div>
-                      <div className={styles.content}>{item.content}</div>
+
+                      <aside className={styles.priceBox}>
+                        <div className={styles.price}>
+                          {perPersonKRW(
+                            item.productDesc,
+                            item.desiredMemberCount
+                          )}
+                        </div>
+                        <img className={styles.slash} src={slash} alt="/" />
+                        <div className={styles.totalPrice}>
+                          total {item.productDesc}
+                        </div>
+                      </aside>
                     </div>
-
-                    <aside className={styles.priceBox}>
-                      <div className={styles.price}>
-                        {perPersonKRW(
-                          item.productDesc,
-                          item.desiredMemberCount
-                        )}
-                      </div>
-                      <img className={styles.slash} src={slash} alt="/" />
-                      <div className={styles.totalPrice}>
-                        total {item.productDesc}
-                      </div>
-                    </aside>
                   </div>
-                </div>
-              </article>
-            ))}
-          </section>
+                </article>
+              ))}
+            </section>
+
+            {/* 더보기 버튼: 클라이언트 슬라이스만 증가 */}
+            {hasMoreToShow && (
+              <div style={{ display: "flex", justifyContent: "center", padding: "16px" }}>
+                <button
+                  className={styles.moreBtn}
+                  onClick={() => setViewCount((v) => v + PAGE_SIZE)}
+                >
+                  더보기
+                </button>
+              </div>
+            )}
+
+            {/* 글쓰기 플로팅 버튼 */}
+            <button
+              onClick={() => {
+                navigate("/write");
+              }}
+              className={styles.sideBtn}
+              aria-label="글쓰기"
+            >
+              ＋
+            </button>
+          </>
         )}
-
-        {/* 무한 스크롤 센티넬 */}
-        <div ref={sentinelRef} style={{ height: 40 }} />
-
-        <button
-          onClick={() => {
-            navigate("/write");
-          }}
-          className={styles.sideBtn}
-          aria-label="글쓰기"
-        >
-          ＋
-        </button>
       </div>
     </div>
   );
