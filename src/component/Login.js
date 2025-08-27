@@ -6,6 +6,7 @@ import { AuthContext } from "../context/AuthContext";
 import { UserContext } from "../context/UserContext";
 import Swal from "sweetalert2";
 import { API_BASE } from "../config";
+console.log("API_BASE =", API_BASE); // ✅ 여기서 undefined 아니어야 함
 
 function Input(props) {
     return (
