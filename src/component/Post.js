@@ -118,11 +118,55 @@ function Post() {
         headers: { ...getAuthHeaders(), "Content-Type": "application/json" }, // POST에만 Content-Type
         credentials: "include",
       });
-      if (res.status === 401) throw new Error("로그인이 필요합니다.");
-      if (res.status === 403) throw new Error("신청 권한이 없습니다.");
-      if (res.status === 404) throw new Error("게시글을 찾을 수 없습니다.");
-      if (res.status === 409) throw new Error("이미 신청했거나 모집이 마감되었습니다.");
-      if (!res.ok) throw new Error(`신청 실패(HTTP ${res.status})`);
+      if (res.status === 401) {
+        Swal.fire({
+          icon: "warning",
+          text: "로그인이 필요합니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#1f8954ff",
+        });
+        return;
+      }
+
+      if (res.status === 403) {
+        Swal.fire({
+          icon: "error",
+          text: "신청 권한이 없습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#1f8954ff",
+        });
+        return;
+      }
+
+      if (res.status === 404) {
+        Swal.fire({
+          icon: "error",
+          text: "게시글을 찾을 수 없습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#1f8954ff",
+        });
+        return;
+      }
+
+      if (res.status === 409) {
+        Swal.fire({
+          icon: "error",
+          text: "이미 신청했거나 모집이 마감되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#1f8954ff",
+        });
+        return;
+      }
+
+      if (!res.ok) {
+        Swal.fire({
+          icon: "error",
+          text: "이미 신청했거나 모집이 마감되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#1f8954ff",
+        });
+        return;
+      }
 
       let body = null;
       try { body = await res.json(); } catch { }
