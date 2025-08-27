@@ -72,16 +72,24 @@ function Notification() {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
+                    // Authorization: `Bearer ${token}`,
                 },
             });
 
             if (res.ok) {
-                // 서버 성공 응답이면 로컬 상태 업데이트
+                const result = await res.json();
+                const updated = result.data;
+
                 setReadStates((prev) => ({
                     ...prev,
-                    [id]: true,
+                    [updated.id]: updated.isRead, // 서버가 내려준 isRead 반영
                 }));
+
+                setNotifications((prev) =>
+                    prev.map((n) =>
+                        n.id === updated.id ? { ...n, isRead: updated.isRead, readAt: updated.readAt } : n
+                    )
+                );
             } else {
                 console.error("읽음 처리 실패:", res.status);
             }
