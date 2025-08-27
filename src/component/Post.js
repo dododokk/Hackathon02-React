@@ -32,7 +32,7 @@ function Post() {
 
     (async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("jwt");
         const headers = { "Content-Type": "application/json" };
         if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -98,7 +98,7 @@ function Post() {
       return;
     }
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("jwt");
     if (!token) {
       // 로그인 필요 시 로그인 화면으로
       alert("로그인이 필요합니다.");
