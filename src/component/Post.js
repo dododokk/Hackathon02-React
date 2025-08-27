@@ -9,6 +9,7 @@ import { perPersonKRW } from "../utils/price";
 import profile from "../img/profile.png";
 import { API_BASE } from "../config";
 import { getDirectImageUrl, FALLBACK_IMG } from "../utils/image";
+import Swal from "sweetalert2";
 
 function Post() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function Post() {
   const [applyErr, setApplyErr] = useState(null);
 
   const getAuthHeaders = () => {
-  const token = localStorage.getItem("jwt");
+    const token = localStorage.getItem("jwt");
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
@@ -42,10 +43,10 @@ function Post() {
     (async () => {
       try {
         const auth = getAuthHeaders();
-        
+
         const res = await fetch(`${API_BASE}/posts/${postId}`, {
           credentials: "include",
-          headers:auth,
+          headers: auth,
           ...(controller ? { signal: controller.signal } : {}),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -68,15 +69,15 @@ function Post() {
               typeof body === "number"
                 ? body
                 : typeof body?.count === "number"
-                ? body.count
-                : Number(body?.count ?? 0) || 0;
+                  ? body.count
+                  : Number(body?.count ?? 0) || 0;
           }
         } catch {
           // count 실패는 무시(작성자 1명만 표기)
         }
-const computed = applicantCount;
+        const computed = applicantCount;
 
-setPost({ ...baseData, currentMemberCount: computed });
+        setPost({ ...baseData, currentMemberCount: computed });
       } catch (e) {
         if (e.name !== "AbortError") setErr(e);
       } finally {
@@ -93,9 +94,9 @@ setPost({ ...baseData, currentMemberCount: computed });
 
     // 마감 여부 체크
     if (post?.desiredMemberCount && post?.currentMemberCount >= post.desiredMemberCount) {
-    alert("모집이 마감되었습니다.");
-    return;
-  }
+      alert("모집이 마감되었습니다.");
+      return;
+    }
 
     const token = localStorage.getItem("jwt");
     if (!token) {
@@ -124,7 +125,7 @@ setPost({ ...baseData, currentMemberCount: computed });
       if (!res.ok) throw new Error(`신청 실패(HTTP ${res.status})`);
 
       let body = null;
-      try { body = await res.json(); } catch {}
+      try { body = await res.json(); } catch { }
       if (body && typeof body.currentMemberCount === "number") {
         setPost((p) => (p ? { ...p, currentMemberCount: body.currentMemberCount } : p));
       } else {
@@ -139,20 +140,25 @@ setPost({ ...baseData, currentMemberCount: computed });
           const b = await r.json().catch(() => null);
           applicantCount =
             typeof b === "number" ? b :
-            typeof b?.count === "number" ? b.count :
-            Number(b?.count ?? 0) || 0;
+              typeof b?.count === "number" ? b.count :
+                Number(b?.count ?? 0) || 0;
         }
-        
+
         setPost((p) =>
           p
             ? {
-                ...p,
-               currentMemberCount: applicantCount,
-              }
+              ...p,
+              currentMemberCount: applicantCount,
+            }
             : p
         );
       }
-      alert("신청이 접수되었습니다!");
+      Swal.fire({
+        icon: "success",
+        text: "신청이 완료되었습니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff",
+      });
       navigate("/main");
     } catch (e) {
       setApplyErr(e);
@@ -285,8 +291,8 @@ setPost({ ...baseData, currentMemberCount: computed });
                   isClosed
                     ? "모집 마감"
                     : applying
-                    ? "신청 처리 중…"
-                    : "신청하기"
+                      ? "신청 처리 중…"
+                      : "신청하기"
                 }
               >
                 {isClosed ? "마감" : applying ? "신청 중…" : "신청하기"}

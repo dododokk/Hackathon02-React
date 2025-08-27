@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import InnerTitle from "./InnerTitle";
 import styles from "../style/Write.module.css";
 import { API_BASE } from "../config";
+import Swal from "sweetalert2";
 
 const CATEGORIES = ["식품", "생활용품", "사무용품", "반려용품", "기타"];
 
@@ -31,7 +32,12 @@ export default function Write() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      alert("이미지 파일을 선택해주세요.");
+      Swal.fire({
+        icon: "warning",
+        text: "이미지 파일을 선택해주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff"
+      });
       return;
     }
     const objectUrl = URL.createObjectURL(file);
@@ -81,7 +87,12 @@ export default function Write() {
     e.preventDefault();
     const v = validate();
     if (!v.ok) {
-      alert(v.msg);
+      Swal.fire({
+        icon: "warning",
+        text: v.msg,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff"
+      });
       return;
     }
 
@@ -120,7 +131,12 @@ export default function Write() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const saved = await res.json();
-      alert("작성 완료!");
+      Swal.fire({
+        icon: "success",
+        text: "게시글 작성이 완료되었습니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff",
+      });
       navigate(-1);
     } catch (err) {
       console.error(err);
