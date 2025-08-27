@@ -113,6 +113,10 @@ function Main() {
         );
         out.push(...counted);
       }
+      const filtered = out.filter(
+        (item) => item.currentMemberCount < item.desiredMemberCount
+      );
+
 
       // 3. 재계산된 데이터로 state 업데이트
       setFullItems(out);
