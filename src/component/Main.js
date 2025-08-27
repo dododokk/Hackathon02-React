@@ -39,77 +39,83 @@ function Main() {
     return [];
   }
 
-  // 한 번만(조건 바뀔 때만) 전체 패칭
-  async function fetchAll({ reset = false } = {}) {
+ // Main.js
+
+// 한 번만(조건 바뀔 때만) 전체 패칭
+async function fetchAll({ reset = false } = {}) {
     try {
-      setLoading(true);
-      setError("");
+        setLoading(true);
+        setError("");
 
-      const params = new URLSearchParams();
-      params.set("status", "OPEN");
-      // 풀패칭이므로 서버는 limit/lastId 없이 “전부” 내려줘야 함
-      if (category) params.append("category", category);
-      const baseUrl = keyword.trim()
-        ? `${API_BASE}/posts/search`                // 키워드 검색
-        : category
-          ? `${API_BASE}/posts/search/category`     // 카테고리 검색
-          : `${API_BASE}/posts`;   
-      if (keyword.trim()) params.set("q", keyword.trim());
+        const params = new URLSearchParams();
+        params.set("status", "OPEN");
+        if (category) params.append("category", category);
 
-      const token = localStorage.getItem("token");
-      const headers = {"Content-Type":"application/json"};
-      if(token) headers.Authorization = `Bearer ${token}`;
-      const res = await fetch(`${baseUrl}?${params.toString()}`, {
-        method: "GET",
-        headers,
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const baseUrl = keyword.trim()
+            ? `${API_BASE}/posts/search`
+            : category
+                ? `${API_BASE}/posts/search/category`
+                : `${API_BASE}/posts`;
+        if (keyword.trim()) params.set("q", keyword.trim());
+        
+        const token = localStorage.getItem("token"); // 실제 사용하는 토큰 키로 변경
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers.Authorization = `Bearer ${token}`;
 
-      const data = await res.json();
-      let all = normalizePage(data);
+        // 1. 기본 게시글 목록 가져오기
+        const res = await fetch(`${baseUrl}?${params.toString()}`, {
+            method: "GET",
+            headers,
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      async function getCount(id) {
-        const r = await fetch(`${API_BASE}/posts/${id}/applications/count`, {
-          method: "GET",
-          headers,
-        })
-        if (!r.ok) return 0; // 실패 시 0 처리 (UI는 작성자 1명만 표시)
-        // 응답이 숫자 || { count: number } 모두 대응
-        const body = await r.json().catch(() => null);
-        if (typeof body === "number") return body;
-        if (body && typeof body.count === "number") return body.count;
-        return Number(body?.count ?? 0) || 0;
-      }
+        const data = await res.json();
+        const all = normalizePage(data);
 
-      const concurrency = 8;
-      const out = [];
-      for (let i = 0; i < all.length; i += concurrency) {
-      const chunk = all.slice(i, i + concurrency);
-      const counted = await Promise.all(
-        chunk.map(async (it) => {
-          const cnt = await getCount(it.id);
-          // 화면 표시는 "작성자(1) + 신청 인원 수"
-          const fixed = 1 + (Number(cnt) || 0);
-          return {
-            ...it,
-            currentMemberCount: fixed,
-          };
-        })
-      );
-      out.push(...counted);
-    }
+        // 2. 각 게시글의 정확한 신청 인원수 가져오기 (Post.js와 동일한 로직)
+        async function getCount(id) {
+            const r = await fetch(`${API_BASE}/posts/${id}/applications/count`, {
+                method: "GET",
+                headers,
+            });
+            if (!r.ok) return 0; // 실패 시 0 처리
+            const body = await r.json().catch(() => null);
+            if (typeof body === "number") return body;
+            if (body && typeof body.count === "number") return body.count;
+            return Number(body?.count ?? 0) || 0;
+        }
 
-      // 전체를 메모리에 보관
-      setFullItems(all);
-      // 검색/필터가 바뀌어서 재조회하는 경우, 화면 노출 개수 초기화
-      if (reset) setViewCount(PAGE_SIZE);
+        // 병렬 요청으로 성능 최적화
+        const concurrency = 8;
+        const out = [];
+        for (let i = 0; i < all.length; i += concurrency) {
+            const chunk = all.slice(i, i + concurrency);
+            const counted = await Promise.all(
+                chunk.map(async (it) => {
+                    const applicantCount = await getCount(it.id);
+                    // Post.js와 동일하게 '작성자(1) + 신청자 수'로 최종 인원 계산
+                    const fixedCount = applicantCount;
+                    return {
+                        ...it,
+                        currentMemberCount: fixedCount,
+                    };
+                })
+            );
+            out.push(...counted);
+        }
+
+        // 3. 재계산된 데이터로 state 업데이트
+        setFullItems(out);
+
+        if (reset) setViewCount(PAGE_SIZE);
+
     } catch (e) {
-      setError(e.message || "불러오기 실패");
-      setFullItems([]);
+        setError(e.message || "불러오기 실패");
+        setFullItems([]);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  }
+}
 
   // 검색/카테고리 변경 시 디바운스로 풀패칭
   useEffect(() => {
