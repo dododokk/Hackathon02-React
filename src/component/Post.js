@@ -1,5 +1,4 @@
-import React, { useMemo, useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import InnerTitle from "./InnerTitle";
 import styles from "../style/Post.module.css";
@@ -20,9 +19,11 @@ function Post() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
-  // 신청 상태
+  // 신청/버튼 상태
   const [applying, setApplying] = useState(false);
   const [applyErr, setApplyErr] = useState(null);
+
+  // ✅ 추가: 이미 신청 여부 / 작성자 여부
   const [hasApplied, setHasApplied] = useState(false);
   const [isAuthor, setIsAuthor] = useState(false);
 
@@ -31,9 +32,8 @@ function Post() {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
-  // 서버 count가 작성자를 포함하는지 모호하면 토글로 관리
-  const COUNT_EXCLUDES_AUTHOR = true; // 서버 count가 '신청자 수'만 주면 true
-
+  // 서버 count가 작성자를 포함하는지 모호하면 토글로 관리 (현재 로직에서는 미사용)
+  const COUNT_EXCLUDES_AUTHOR = true;
 
   useEffect(() => {
     const controller =
@@ -46,6 +46,7 @@ function Post() {
       try {
         const auth = getAuthHeaders();
 
+        // 게시글 기본 정보
         const res = await fetch(`${API_BASE}/posts/${postId}`, {
           credentials: "include",
           headers: auth,
@@ -54,7 +55,7 @@ function Post() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const baseData = await res.json();
 
-        // 신청 인원수 보정: /applications/count 가 있으면 반영
+        // 신청 인원수 보정
         let applicantCount = 0;
         try {
           const r = await fetch(
@@ -71,46 +72,54 @@ function Post() {
               typeof body === "number"
                 ? body
                 : typeof body?.count === "number"
-                  ? body.count
-                  : Number(body?.count ?? 0) || 0;
+                ? body.count
+                : Number(body?.count ?? 0) || 0;
           }
         } catch {
-          // count 실패는 무시(작성자 1명만 표기)
+          // count 실패는 무시
         }
-        const computed = applicantCount;
 
-        setPost({ ...baseData, currentMemberCount: computed });
+        setPost({ ...baseData, currentMemberCount: applicantCount });
+
+        // ✅ 내 정보로 작성자 여부 판단
         try {
-            const meRes = await fetch(`${API_BASE}/users/me`, {
-              method: "GET",
-              headers: auth,
-              ...(controller ? { signal: controller.signal } : {}),
-            });
-            if (meRes.ok) {
-              const me = await meRes.json();
-              // 백엔드가 author.id를 내려준다고 가정 (없으면 nickname 비교)
-              if (me?.id && baseData?.author?.id) {
-                setIsAuthor(me.id === baseData.author.id);
-              } else if (me?.nickname && baseData?.author?.nickname) {
-                setIsAuthor(me.nickname === baseData.author.nickname);
-              }
+          const meRes = await fetch(`${API_BASE}/users/me`, {
+            method: "GET",
+            headers: auth,
+            ...(controller ? { signal: controller.signal } : {}),
+          });
+          if (meRes.ok) {
+            const me = await meRes.json();
+            if (me?.id && baseData?.author?.id) {
+              setIsAuthor(me.id === baseData.author.id);
+            } else if (me?.nickname && baseData?.author?.nickname) {
+              setIsAuthor(me.nickname === baseData.author.nickname);
             }
-          } catch {}
+          }
+        } catch {
+          // 내 정보 조회 실패 시 버튼은 작성자 여부 판단 없이 진행
+        }
 
-          // ✅ 내 신청 여부 조회 (엔드포인트 예: /posts/:id/applications/me)
-          try {
-            const aRes = await fetch(`${API_BASE}/posts/${postId}/applications/me`, {
+        // ✅ 내 신청 여부 조회 (엔드포인트가 없다면 생략 가능)
+        try {
+          const aRes = await fetch(
+            `${API_BASE}/posts/${postId}/applications/me`,
+            {
               method: "GET",
               headers: auth,
               ...(controller ? { signal: controller.signal } : {}),
-            });
-            if (aRes.ok) {
-              const data = await aRes.json().catch(() => ({}));
-              setHasApplied(Boolean(data?.applied ?? true)); // 200이면 true로 간주
-            } else if (aRes.status === 404) {
-              setHasApplied(false);
             }
-          } catch {}
+          );
+          if (aRes.ok) {
+            // 200이면 이미 신청으로 간주
+            const data = await aRes.json().catch(() => ({}));
+            setHasApplied(Boolean(data?.applied ?? true));
+          } else if (aRes.status === 404) {
+            setHasApplied(false);
+          }
+        } catch {
+          // 엔드포인트 없거나 실패해도 치명적이지 않음 (아래 409로도 막힘)
+        }
       } catch (e) {
         if (e.name !== "AbortError") setErr(e);
       } finally {
@@ -124,37 +133,47 @@ function Post() {
   // ✅ 신청 API 호출
   const handleApply = async () => {
     if (applying) return;
+
+    // 이미 신청/작성자/마감이면 버튼 자체가 disabled지만, 이중 가드
     if (hasApplied) {
-       Swal.fire({
-         icon: "info",
-         text: "이미 신청한 글입니다.",
-         confirmButtonText: "확인",
-         confirmButtonColor: "#1f8954ff",
-       });
-       return;
-     }
-
-     // ✅ 내가 작성자면 막기
-     if (isAuthor) {
-       Swal.fire({
-         icon: "warning",
-         text: "본인이 작성한 글에는 신청할 수 없습니다.",
-         confirmButtonText: "확인",
-         confirmButtonColor: "#1f8954ff",
-       });
-       return;
-     }
-
-    // 마감 여부 체크
-    if (post?.desiredMemberCount && post?.currentMemberCount >= post.desiredMemberCount) {
-      alert("모집이 마감되었습니다.");
+      Swal.fire({
+        icon: "info",
+        text: "이미 신청한 글입니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff",
+      });
+      return;
+    }
+    if (isAuthor) {
+      Swal.fire({
+        icon: "warning",
+        text: "본인이 작성한 글에는 신청할 수 없습니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff",
+      });
+      return;
+    }
+    if (
+      post?.desiredMemberCount &&
+      post?.currentMemberCount >= post.desiredMemberCount
+    ) {
+      Swal.fire({
+        icon: "info",
+        text: "모집이 마감되었습니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff",
+      });
       return;
     }
 
     const token = localStorage.getItem("jwt");
     if (!token) {
-      // 로그인 필요 시 로그인 화면으로
-      alert("로그인이 필요합니다.");
+      Swal.fire({
+        icon: "warning",
+        text: "로그인이 필요합니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff",
+      });
       navigate("/login", {
         replace: true,
         state: { from: location.pathname },
@@ -168,9 +187,10 @@ function Post() {
     try {
       const res = await fetch(`${API_BASE}/posts/${postId}/applications`, {
         method: "POST",
-        headers: { ...getAuthHeaders(), "Content-Type": "application/json" }, // POST에만 Content-Type
+        headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
         credentials: "include",
       });
+
       if (res.status === 401) {
         Swal.fire({
           icon: "warning",
@@ -178,10 +198,12 @@ function Post() {
           confirmButtonText: "확인",
           confirmButtonColor: "#1f8954ff",
         });
-        navigate("/login", { replace: true, state: { from: location.pathname } });
+        navigate("/login", {
+          replace: true,
+          state: { from: location.pathname },
+        });
         return;
       }
-
       if (res.status === 403) {
         Swal.fire({
           icon: "error",
@@ -191,7 +213,6 @@ function Post() {
         });
         return;
       }
-
       if (res.status === 404) {
         Swal.fire({
           icon: "error",
@@ -201,29 +222,21 @@ function Post() {
         });
         return;
       }
-
       if (res.status === 409) {
-        // Swal.fire({
-        //   icon: "error",
-        //   text: "이미 신청했거나 모집이 마감되었습니다.",
-        //   confirmButtonText: "확인",
-        //   confirmButtonColor: "#1f8954ff",
-        // });
-        // return;
-        setHasApplied(true);
+        // ✅ 서버에서 이미 신청/마감 충돌
+        setHasApplied(true); // 이미 신청으로 취급 (마감 충돌일 수도 있지만 버튼 비활성화 목적엔 문제 없음)
         Swal.fire({
           icon: "info",
           text: "이미 신청한 글입니다.",
           confirmButtonText: "확인",
-          confirmButtonColor: "#1f8954ff"
-        })
+          confirmButtonColor: "#1f8954ff",
+        });
         return;
       }
-
       if (!res.ok) {
         Swal.fire({
           icon: "error",
-          text: "이미 신청했거나 모집이 마감되었습니다.",
+          text: "신청 처리 중 오류가 발생했습니다.",
           confirmButtonText: "확인",
           confirmButtonColor: "#1f8954ff",
         });
@@ -231,11 +244,16 @@ function Post() {
       }
 
       let body = null;
-      try { body = await res.json(); } catch { }
+      try {
+        body = await res.json();
+      } catch {}
+
       if (body && typeof body.currentMemberCount === "number") {
-        setPost((p) => (p ? { ...p, currentMemberCount: body.currentMemberCount } : p));
+        setPost((p) =>
+          p ? { ...p, currentMemberCount: body.currentMemberCount } : p
+        );
       } else {
-        // 2) 없으면 count 재조회로 정확히 동기화
+        // count 재조회
         const auth = getAuthHeaders();
         const r = await fetch(`${API_BASE}/posts/${postId}/applications/count`, {
           method: "GET",
@@ -245,20 +263,22 @@ function Post() {
         if (r.ok) {
           const b = await r.json().catch(() => null);
           applicantCount =
-            typeof b === "number" ? b :
-              typeof b?.count === "number" ? b.count :
-                Number(b?.count ?? 0) || 0;
+            typeof b === "number"
+              ? b
+              : typeof b?.count === "number"
+              ? b.count
+              : Number(b?.count ?? 0) || 0;
         }
-
         setPost((p) =>
           p
             ? {
-              ...p,
-              currentMemberCount: applicantCount,
-            }
+                ...p,
+                currentMemberCount: applicantCount,
+              }
             : p
         );
       }
+
       Swal.fire({
         icon: "success",
         text: "신청이 완료되었습니다.",
@@ -268,7 +288,12 @@ function Post() {
       navigate("/main");
     } catch (e) {
       setApplyErr(e);
-      alert(e.message || "신청 중 오류가 발생했습니다.");
+      Swal.fire({
+        icon: "error",
+        text: e.message || "신청 중 오류가 발생했습니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#1f8954ff",
+      });
     } finally {
       setApplying(false);
     }
@@ -306,6 +331,26 @@ function Post() {
   const isClosed =
     post?.desiredMemberCount &&
     post?.currentMemberCount >= post.desiredMemberCount;
+
+  const primaryDisabled = applying || isClosed || isAuthor || hasApplied;
+  const primaryTitle = isClosed
+    ? "모집 마감"
+    : isAuthor
+    ? "내 게시글"
+    : hasApplied
+    ? "이미 신청함"
+    : applying
+    ? "신청 처리 중…"
+    : "신청하기";
+  const primaryLabel = isClosed
+    ? "마감"
+    : isAuthor
+    ? "내 게시글"
+    : hasApplied
+    ? "이미 신청함"
+    : applying
+    ? "신청 중…"
+    : "신청하기";
 
   return (
     <main className={styles.wrap}>
@@ -391,22 +436,11 @@ function Post() {
               <button
                 className={styles.btnPrimary}
                 onClick={handleApply}
-                disabled={applying || isClosed || isAuthor || hasApplied}
+                disabled={primaryDisabled}
                 aria-busy={applying ? "true" : "false"}
-                title={
-                  isClosed
-                    ? "모집 마감"
-                    : isAuthor
-                    ? "내 게시글"
-                    :hasApplied
-                    ?"이미 신청함"
-                    : applying
-                      ? "신청 처리 중…"
-                      : "신청하기"
-                }
+                title={primaryTitle}
               >
-                {isClosed ? "마감" : isAuthor?"내 게시글":hasApplied?"이미 신청함":applying
-                ? "신청 중...":"신청하기"}
+                {primaryLabel}
               </button>
             </div>
             {applyErr && (
