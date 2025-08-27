@@ -11,26 +11,6 @@ import { API_BASE } from "../config"; // API base url 관리하는 파일이 있
 import { getDirectImageUrl, FALLBACK_IMG } from "../utils/image";
 
 
-
-const tempData = [
-  {
-    id: 1,
-    author: { id: 101, nickname: "문효진", roadAddress: "서울특별시 광진구 능동로 120, 건대부고 후문" },
-    title: "카라멜 소금빵 공구해서 반띵하실 분 구합니다!",
-    category: "식품",
-    productName: "카라멜 소금빵",
-    productUrl: "https://example.com/p/1",
-    productDesc: "11,200",
-    desiredMemberCount: 2,
-    currentMemberCount: 1,
-    content:
-      "10개 다 먹기에는 너무 많아서 같이 사실 분 구합니다..ㅎㅎ제가 구매할테니 시간 조율 해보아요 나눔하자고 이사람들아 나 화나게 하지마라니 덜덜 이걸 강매해버리네 협박하지마 이수호수호",
-    mainImageUrl: "https://cdn/1.jpg", // 비어있으면 thumbFallback 사용
-    status: "OPEN",
-    createdAt: "2025-08-21",
-  },
-];
-
 function Post(){
     
     const navigate = useNavigate();
