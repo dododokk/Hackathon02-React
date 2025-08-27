@@ -102,7 +102,7 @@ function Content({ which }) {
   const endpoint = useMemo(() => {
     if (which === "menu1") return `${API_BASE}/mypage/applied/ongoing`;   // 신청중(approved|open)
     if (which === "menu2") return `${API_BASE}/mypage/applied/completed`; // 완료됨(approved|full)
-    if(which === "menu3") return `${API_BASE}/mypage/my-posts`;                                 // 내가 쓴 글
+    if (which === "menu3") return `${API_BASE}/mypage/my-posts`;                                 // 내가 쓴 글
   }, [which]);
 
   // 데이터 가져오기
@@ -230,26 +230,29 @@ function MyPage() {
       initMap(mapRef.current, {
         center: new window.naver.maps.LatLng(37.5408, 127.079),
         zoom: 14,
+        zoomControl: false,   // 줌 버튼 비활성화
+        scrollWheel: false,   // 마우스 휠 줌 금지
+        pinchZoom: false,     // 터치 핀치 줌 금지
+        keyboardShortcuts: false // 키보드 +/- 줌 금지
       });
     }
   }, [initMap]);
 
   // 주소 → 좌표
- useEffect(() => {
-  if (userAddress && userAddress.trim()) {
-    geocode(userAddress).catch(() => {});
-  } else if (!place && addressText && addressText.trim()) {
-    geocode(addressText).catch(() => {});
-  }
-}, [userAddress, place, addressText, geocode]);
+  useEffect(() => {
+    if (userAddress && userAddress.trim()) {
+      geocode(userAddress).catch(() => { });
+    } else if (!place && addressText && addressText.trim()) {
+      geocode(addressText).catch(() => { });
+    }
+  }, [userAddress, place, addressText, geocode]);
 
   // 마커 표시
   useEffect(() => {
     if (!place) return;
 
-   if (!place) return;
-   addMarker({ lat: place.lat, lng: place.lng });
-   setCenter(place.lat, place.lng, 16);
+    addMarker({ lat: place.lat, lng: place.lng });
+    setCenter(place.lat, place.lng, 16);
   }, [place, clearMarkers, addMarker, setCenter]);
 
   const handleLogout = () => {
@@ -282,9 +285,9 @@ function MyPage() {
               <div className={styles.interests}>
                 {userInterest && userInterest.length > 0 ? (
                   userInterest.map((item, idx) => (
-                    <span key={idx} 
-                    className={styles.interestTag}
-                    onClick={()=>navigate('/main', {state: {category: item}})}>
+                    <span key={idx}
+                      className={styles.interestTag}
+                      onClick={() => navigate('/main', { state: { category: item } })}>
                       #{item}
                     </span>
                   ))
