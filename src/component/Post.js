@@ -35,6 +35,16 @@ function Post() {
   // 서버 count가 작성자를 포함하는지 모호하면 토글로 관리 (현재 로직에서는 미사용)
   const COUNT_EXCLUDES_AUTHOR = true;
 
+  const getUserFromToken = () => {
+    const token = localStorage.getItem("jwt");
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, " ").replace(/_/g, "/")));
+      return payload || null; // { sub, userId, nickname, ... } 중 무엇이든 백엔드 규약에 맞게 사용
+    } catch {
+      return null;
+    }
+  };
   useEffect(() => {
     const controller =
       typeof AbortController !== "undefined" ? new AbortController() : null;
@@ -81,26 +91,20 @@ function Post() {
 
         setPost({ ...baseData, currentMemberCount: applicantCount });
 
-        // ✅ 내 정보로 작성자 여부 판단
-        try {
-          const meRes = await fetch(`${API_BASE}/users/me`, {
-            method: "GET",
-            headers: auth,
-            ...(controller ? { signal: controller.signal } : {}),
-          });
-          if (meRes.ok) {
-            const me = await meRes.json();
-            if (me?.id && baseData?.author?.id) {
-              setIsAuthor(me.id === baseData.author.id);
-            } else if (me?.nickname && baseData?.author?.nickname) {
+        const me = getUserFromToken();
+          if (me) {
+            // ⚠️ 백엔드가 무엇을 author에 담는지에 따라 비교 키를 선택하세요.
+            // 가장 좋은 건 'id' 비교. 없으면 email/nickname 등 대체.
+            const myId = me.userId || me.sub || me.id;
+            const authorId = baseData?.author?.id || baseData?.authorId;
+            if (myId && authorId) {
+              setIsAuthor(String(myId) === String(authorId));
+            } else if (me.nickname && baseData?.author?.nickname) {
               setIsAuthor(me.nickname === baseData.author.nickname);
             }
           }
-        } catch {
-          // 내 정보 조회 실패 시 버튼은 작성자 여부 판단 없이 진행
-        }
+        
 
-        // ✅ 내 신청 여부 조회 (엔드포인트가 없다면 생략 가능)
         try {
           const aRes = await fetch(
             `${API_BASE}/posts/${postId}/applications/me`,
