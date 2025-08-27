@@ -243,7 +243,7 @@ function Register() {
                         nickname: inputName,
                         gender: gender.toUpperCase(), // "male" → "MALE"
                         ageRange: age,
-                        roadAddress: place.roadAddress,
+                        roadAddress: place.regionText,
                         interests: interests,
                     }),
                 });
@@ -365,7 +365,7 @@ function Register() {
                                 type="text"
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
-                                placeholder="거주지를 입력해주세요..."
+                                placeholder="거주지 동까지 입력해주세요..."
                                 className={styles.address}
                             />
                             <button onClick={handleSearch} className={styles.searchBtn}>
