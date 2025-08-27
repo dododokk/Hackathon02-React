@@ -52,7 +52,7 @@ function App() {
         <Route path="/message" element={<Message />} />
         <Route path="/notification" element={<Notification />} />
         <Route path="/chat" element={<Chat />} />
-        <Route path="/post" element={<Post />} />
+        <Route path="/post/:postId" element={<Post />} />
         <Route path="/write" element={<Write />}/>
       </Routes>
     </div>

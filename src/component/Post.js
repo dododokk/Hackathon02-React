@@ -23,27 +23,54 @@ function Post(){
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState(null);
 
+// useEffect(() => {
+//   const ac = new AbortSignal ? new AbortController() : null;
+//   setLoading(true);
+//   setErr(null);
+
+//   fetch(`${API_BASE}/posts/${postId}`, {
+//     signal: ac?.signal,
+//     credentials: "include",
+//   })
+//     .then((res) => {
+//       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//       return res.json();
+//     })
+//     .then((data) => setPost(data))
+//     .catch((e) => {
+//       if (e.name !== "AbortError") setErr(e);
+//     })
+//     .finally(() => setLoading(false));
+
+//   return () => ac?.abort?.();
+// }, [postId]);
 useEffect(() => {
-  const ac = new AbortSignal ? new AbortController() : null;
+  const controller =
+    typeof AbortController !== "undefined" ? new AbortController() : null;
+
   setLoading(true);
   setErr(null);
 
-  fetch(`${API_BASE}/posts/${postId}`, {
-    signal: ac?.signal,
-    credentials: "include",
-  })
-    .then((res) => {
+  (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/posts/${postId}`, {
+        credentials: "include",
+        ...(controller ? { signal: controller.signal } : {}),
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
-    })
-    .then((data) => setPost(data))
-    .catch((e) => {
+      const data = await res.json();
+      setPost(data);
+    } catch (e) {
+      // abort이면 무시
       if (e.name !== "AbortError") setErr(e);
-    })
-    .finally(() => setLoading(false));
+    } finally {
+      setLoading(false);
+    }
+  })();
 
-  return () => ac?.abort?.();
-}, [postId]);
+  return () => controller?.abort();
+}, [postId, API_BASE]);
+
 
 if (loading) {
   return (

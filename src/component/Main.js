@@ -56,13 +56,14 @@ function Main() {
     loadingRef.current = true;
 
     try{
+      setLoading(true);
     const params = new URLSearchParams();
     params.set("status", "OPEN");
     params.set("limit", String(limit));
     if (category) params.set("category", category);
     if (!reset && cursor) params.set("lastId", String(cursor));
 
-    const res = await fetch(`${API_BASE}/posts?${params.toString()}`, {
+    const res = await fetch(`${API_BASE}/posts?${params.toString()}` , {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -71,7 +72,10 @@ function Main() {
     const page = normalizePage(data);
 
     applyPage({ page, reset });
-  } finally {
+  } catch(e){
+    setError(e.message || "불러오기 실패");
+  }finally {
+    setLoading(false);
     loadingRef.current = false;
   }
   }
@@ -81,6 +85,7 @@ function Main() {
     loadingRef.current = true;
 
     try{
+      setLoading(true);
     const params = new URLSearchParams();
     params.set("q", keyword.trim()); // 키워드 있을 때만 호출됨
     params.set("status", "OPEN");
@@ -97,7 +102,9 @@ function Main() {
     const page = normalizePage(data);
 
     applyPage({ page, reset });
-  } finally{
+  }catch(e){
+    setError(e.message || "불러오기 실패");
+  }finally{
     loadingRef.current = false;
   }
   }
@@ -125,6 +132,7 @@ function Main() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword, category]);
 
+  const cooldownRef = useRef(0);
   // 무한 스크롤: 현재 모드(검색/목록)에 맞게 다음 페이지 호출
   useEffect(() => {
     if (done) return;
@@ -132,23 +140,20 @@ function Main() {
     if (!el) return;
 
     const io = new IntersectionObserver(async (entries) => {
+      const now = Date.now();
       if (!entries[0].isIntersecting) return;
       if (loadingRef.current) return;
+      if(now-cooldownRef.current<300) return;
+      cooldownRef.current = now;
 
-      // 한 번 트리거되면 현재 옵저버는 더 이상 관찰하지 않게 (중복 방지)
-      io.unobserve(el);
-
-      try {
-        if (keyword.trim()) await fetchSearch({ reset: false });
-        else await fetchList({ reset: false });
-      } finally {
-        // ✅ 재관찰은 하지 않음.
-        // cursor/done 변화로 이 useEffect가 다시 실행되며 새 옵저버가 attach 됨.
-      }
-    }, { rootMargin: "200px" });
-
+      if(keyword.trim()) await fetchSearch({reset: false});
+      else await fetchList({reset:false});
+    }, {
+      rootMargin: "0px",
+      threshold: 0.1,
+    });
     io.observe(el);
-    return () => io.disconnect();
+    return()=> io.disconnect();
   }, [cursor, done, keyword, category]);
 
   // 검색 버튼/Enter: 디바운스 없이 즉시 재조회
@@ -279,7 +284,7 @@ function Main() {
         )}
 
         {/* 무한 스크롤 센티넬 */}
-        <div ref={sentinelRef} style={{ height: 1 }} />
+        <div ref={sentinelRef} style={{ height: 40 }} />
 
         <button
           onClick={() => {
