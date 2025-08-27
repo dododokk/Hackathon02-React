@@ -13,6 +13,7 @@ import { AuthContext } from "../context/AuthContext";
 import { perPersonKRW } from "../utils/price";
 import { useNavigate } from "react-router-dom";
 import { useMap } from "../context/MapContext";
+import { API_BASE } from "../config";
 
 /** 탭 라벨 */
 function Label({ selected, menu, onSelect, title }) {
@@ -99,9 +100,9 @@ function Content({ which }) {
 
   // 메뉴별 엔드포인트 매핑
   const endpoint = useMemo(() => {
-    if (which === "menu1") return "/api/mypage/applied/ongoing";   // 신청중(approved|open)
-    if (which === "menu2") return "/api/mypage/applied/completed"; // 완료됨(approved|full)
-    return "/api/mypage/my-posts";                                 // 내가 쓴 글
+    if (which === "menu1") return `${API_BASE}/mypage/applied/ongoing`;   // 신청중(approved|open)
+    if (which === "menu2") return `${API_BASE}/mypage/applied/completed`; // 완료됨(approved|full)
+    if(which === "menu3") return `${API_BASE}/mypage/my-posts`;                                 // 내가 쓴 글
   }, [which]);
 
   // 데이터 가져오기
@@ -150,7 +151,7 @@ function Content({ which }) {
   const handleDelete = async (postId) => {
     if (!window.confirm("정말 삭제할까요?")) return;
     try {
-      const res = await fetch(`/api/posts/${postId}`, {
+      const res = await fetch(`${API_BASE}/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
