@@ -127,11 +127,9 @@ function Chat() {
 
                         // messageId 기준 중복 제거
                         setMessages((prev) => {
-                            const id = body.messageId ?? `${body.senderId}-${body.createdAt}-${body.content}`;
-                            if (prev.some(m => (m.messageId ?? `${m.senderId}-${m.createdAt}-${m.content}`) === id)) {
-                                return prev;
-                            }
-                            return [...prev, body];
+                            const serverId = body.messageId;
+                            const withoutOptimistic = prev.filter(m => m._optimistic !== true || m.content !== body.content)
+                            return [...withoutOptimistic, body];
                         });
                     } catch (e) {
                         console.error("parse error:", e, msg.body);
@@ -289,7 +287,7 @@ function Chat() {
                                     {showHeader && (
                                         <div className={styles.msgHeader}>
                                             <img src={profile} className={styles.msgAvatar} alt="" />
-                                            <span className={styles.senderName}>{m.senderNickName}</span>
+                                            <span className={styles.senderName}>{m.senderNickname}</span>
                                         </div>
                                     )}
                                     <div className={styles.bubble}>
