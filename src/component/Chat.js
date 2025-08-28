@@ -9,6 +9,8 @@ import { perPersonKRW } from "../utils/price";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import { API_BASE } from "../config";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 function Chat() {
     const navigate = useNavigate();
@@ -20,9 +22,10 @@ function Chat() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState(null);
-
     const [text, setText] = useState("");
+
     const listRef = useRef(null);
+    const stompClientRef = useRef(null);
 
     const getAuthHeaders = () => {
         const token = localStorage.getItem("jwt");
@@ -80,12 +83,66 @@ function Chat() {
         if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
     }, [messages.length]);
 
+    useEffect(() => {
+        if (!roomId) return;
+        const token = localStorage.getItem("jwt");
+        if (!token) return;
+        
+        const client = new Client({
+
+            webSocketFactory: () => new SockJS(`${API_BASE}/ws`),
+            connectHeaders: {
+                Authorization: `Bearer ${token}`,
+            },
+            debug: (str) => console.log("[STOMP]", str),
+            onConnect: () => {
+                console.log("✅ STOMP Connected");
+
+                // 구독
+                client.subscribe(`/sub/chatrooms/${roomId}`, (msg) => {
+                    const body = JSON.parse(msg.body);
+                    setMessages((prev) => [...prev, body]);
+                });
+            },
+            onStompError: (frame) => {
+                console.error("❌ STOMP Error:", frame);
+            },
+        });
+
+        client.activate();
+        stompClientRef.current = client;
+
+        return () => {
+            client.deactivate();
+        };
+    }, [roomId]);
+
+    // 메시지 전송
     const onSubmit = (e) => {
         e.preventDefault();
-        if (!text.trim()) return;
-        // 여기서 실제 전송 로직 연결하면 됨
+        if (!text.trim() || !stompClientRef.current) return;
+
+        const client = stompClientRef.current;
+
+        if (!client.connected) {
+            console.warn("STOMP 연결이 아직 준비되지 않았습니다.");
+            return;
+        }
+
+        client.publish({
+            destination: `/pub/chatrooms/${roomId}/send`,
+            body: JSON.stringify({
+                senderId: userId,
+                content: text,
+            }),
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+            },
+        });
+
         setText("");
     };
+
 
     if (loading) {
         return (
