@@ -268,7 +268,7 @@ function Chat() {
                                     {showHeader && (
                                         <div className={styles.msgHeader}>
                                             <img src={profile} className={styles.msgAvatar} alt="" />
-                                            <span className={styles.senderName}>{m.senderNickName}</span>
+                                            <span className={styles.senderName}>{m.senderNickname}</span>
                                         </div>
                                     )}
                                     <div className={styles.bubble}>
