@@ -1,6 +1,5 @@
 /* ===== NAV WRAPPER (필요하면 <nav class="nav"> 로 감싸기) ===== */
 .nav {
-    width: 920px;                 
     margin: 0 auto;               /* 가운데 위치하되, 내부 메뉴는 왼쪽 정렬 */
     padding-top: 5px;
     padding-bottom: 5px;

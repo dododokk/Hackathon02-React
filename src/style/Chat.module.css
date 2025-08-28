@@ -12,6 +12,10 @@
     overflow-y: auto;
 }
 
+.loading{
+    color: grey;
+}
+
 .chatWrapper {
     position: relative !important;
     width: clamp(280px, 50vw, 800px);

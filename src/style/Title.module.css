@@ -1,4 +1,4 @@
-.header {
+.headerdiv {
     text-align: center;
     margin: 0 auto;
     min-width: 700px;
@@ -25,4 +25,8 @@
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+}
+.topbar{
+    height: 28px;
+    background: #91A788;
 }

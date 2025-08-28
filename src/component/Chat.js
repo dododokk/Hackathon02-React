@@ -254,7 +254,7 @@ function Chat() {
         return (
             <div className={styles.mainWrapper}>
                 <InnerTitle />
-                <p>에러 발생: {String(err.message)}</p>
+                <p className={styles.loading}>에러 발생: {String(err.message)}</p>
             </div>
         );
     }
