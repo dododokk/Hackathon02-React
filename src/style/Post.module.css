@@ -71,7 +71,6 @@
   flex-direction: column;
   height: 80%;
   color: grey;
->>>>>>> origin
 }
 
 /* 상단: 썸네일 + 우측 영역 */
@@ -442,7 +441,7 @@
   background: #cfcfcf;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .18) inset;
 }
-<<<<<<< HEAD
+
 .btnPrimary{
     transition: background-color .2s ease, transform .15s ease, box-shadow .2s;
   min-width:96px; height:36px; padding:0 16px;
@@ -451,20 +450,7 @@
 }
 .btnPrimary:disabled{
   color:#cfcfcf;
-=======
 
-.btnPrimary {
-  transition: background-color .2s ease, transform .15s ease, box-shadow .2s;
-  min-width: 96px;
-  height: 36px;
-  padding: 0 16px;
-  border-radius: 999px;
-  border: 0;
-  background: #91a7889f;
-  color: #91a7889f;
-  font-weight: 800;
-  cursor: pointer;
->>>>>>> origin
 }
 
 .btnPrimary:hover {
