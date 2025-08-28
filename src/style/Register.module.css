@@ -16,7 +16,7 @@
     flex-shrink: 0;
     border-radius: 30px;
     background: rgba(151, 151, 151, 0.13);
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.12) inset;
     margin: 0 auto;
     margin-top: clamp(40px, 10vh, 70px);
     padding-top: clamp(20px, 6vh, 60px);
