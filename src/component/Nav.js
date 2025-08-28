@@ -9,7 +9,7 @@ function Nav() {
     const menus = [
         { name: "HOME", path: "/main" },
         { name: "NOTIFICATION", path: "/notification" },
-        { name: "MESSAGE", path: ["/message", "/chat"] },
+        { name: "CHAT", path: ["/message", "/chat"] },
         { name: "MY PAGE", path: "/mypage" }
     ];
 
