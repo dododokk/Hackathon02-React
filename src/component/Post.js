@@ -252,6 +252,7 @@ function Post() {
         body = await res.json();
       } catch {}
 
+      
       if (body && typeof body.currentMemberCount === "number") {
         setPost((p) =>
           p ? { ...p, currentMemberCount: body.currentMemberCount } : p
@@ -282,6 +283,41 @@ function Post() {
             : p
         );
       }
+
+      if (body && typeof body.currentMemberCount === "number") {
+      setPost((p) =>
+        p
+          ? {
+              ...p,
+              currentMemberCount: body.currentMemberCount,
+              desiredMemberCount: body.desiredMemberCount ?? p.desiredMemberCount,
+            }
+          : p
+      );
+
+      if (body.currentMemberCount === body.desiredMemberCount) {
+        try {
+          const chatRes = await fetch(
+            `${API_BASE}/posts/${postId}/chatroom`,
+            {
+              method: "POST",
+              headers: getAuthHeaders(),
+              credentials: "include",
+            }
+          );
+
+          if (chatRes.status === 201) {
+            console.log("채팅방 생성 완료");
+          } else if (chatRes.status === 200) {
+            console.log("이미 채팅방이 존재하여 입장 완료");
+          } else {
+            console.log("채팅방 생성 오류");
+          }
+        } catch (e) {
+          console.log("채팅방 생성 오류");
+        }
+      }
+    }
 
       Swal.fire({
         icon: "success",

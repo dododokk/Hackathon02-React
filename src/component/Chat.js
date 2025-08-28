@@ -8,172 +8,26 @@ import exit from "../img/exit.png";
 import { perPersonKRW } from "../utils/price";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import { API_BASE } from "../config";
 
 function Chat() {
     const navigate = useNavigate();
     const { state } = useLocation();
-    const msgId = state?.msgId;
+    const roomId = state?.roomId;
     const { userId } = useContext(UserContext);           // 내 userId
+
+    const [room, setRoom] = useState(null);   // 서버에서 받아올 방 데이터
+    const [messages, setMessages] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [err, setErr] = useState(null);
 
     const [text, setText] = useState("");
     const listRef = useRef(null);
 
-    const tempData = {
-        "roomId": 12,
-        "postId": 3,
-        "roomTitle": "한강 피크닉 같이 가실 분 구해요",   // 게시글 제목과 동일
-        "memberCapacity": 5,                               // 게시글 모집 인원과 동일
-        "currentMemberCount": 3,
-        "role": "MEMBER",                                  // HOST | MEMBER
-        "hostId": 7,
-        "productDesc": "11,200",
-
-        "members": [
-            { "userId": 7, "nickname": "호스트", "profileImageUrl": null },
-            { "userId": 2, "nickname": "민석", "profileImageUrl": null },
-            { "userId": 3, "nickname": "상훈", "profileImageUrl": null }
-        ],
-
-        "lastMessageAt": "2025-08-24T01:55:12+09:00",
-        "lastMessageId": 1042,
-
-        "ws": {
-            "endpoint": "ws://{host}/ws",
-            "subscribe": "/sub/chatrooms/12",
-            "publish": "/pub/chatrooms/12/send"
-        },
-
-        "messages": [
-            {
-                "messageId": 1040,
-                "senderId": 2,
-                "senderName": "도동",
-                "content": "아 지짜 언제 끝나요",
-                "createdAt": "2025-08-24T01:50:00+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1040,
-                "senderId": 2,
-                "senderName": "도동",
-                "content": "집갈래",
-                "createdAt": "2025-08-24T01:50:00+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 9,
-                "senderName": "야이수호",
-                "content": "일해라",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            },
-            {
-                "messageId": 1042,
-                "senderId": 5,
-                "senderName": "정정화진",
-                "content": "이수호 바부",
-                "createdAt": "2025-08-24T01:55:12+09:00",
-                "mine": false
-            }
-        ]
-    }
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem("jwt");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
 
     // hh:mm 표시
     const fmt = (iso) => {
@@ -181,10 +35,50 @@ function Chat() {
         catch { return ""; }
     };
 
+    useEffect(() => {
+        if (!roomId) return;
+        const controller = new AbortController();
+
+        (async () => {
+            try {
+                setLoading(true);
+                setErr(null);
+
+                // 1) 채팅방 정보
+                const resRoom = await fetch(`${API_BASE}/chatrooms/${roomId}`, {
+                    method: "GET",
+                    headers: { ...getAuthHeaders() },
+                    credentials: "include",
+                    signal: controller.signal,
+                });
+                if (!resRoom.ok) throw new Error(`Room HTTP ${resRoom.status}`);
+                const roomData = await resRoom.json();
+                setRoom(roomData);
+
+                // 2) 메시지 목록
+                const resMsg = await fetch(`${API_BASE}/chatrooms/${roomId}/messages`, {
+                    method: "GET",
+                    headers: { ...getAuthHeaders() },
+                    credentials: "include",
+                    signal: controller.signal,
+                });
+                if (!resMsg.ok) throw new Error(`Messages HTTP ${resMsg.status}`);
+                const msgs = await resMsg.json();
+                setMessages(Array.isArray(msgs) ? msgs : []);
+            } catch (e) {
+                if (e.name !== "AbortError") setErr(e);
+            } finally {
+                setLoading(false);
+            }
+        })();
+
+        return () => controller.abort();
+    }, [roomId]);
+
     // 새 메시지가 생기면 스크롤 맨 아래로
     useEffect(() => {
         if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
-    }, [tempData.messages?.length]);
+    }, [messages.length]);
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -193,6 +87,32 @@ function Chat() {
         setText("");
     };
 
+    if (loading) {
+        return (
+            <div className={styles.mainWrapper}>
+                <InnerTitle />
+                <p>불러오는 중...</p>
+            </div>
+        );
+    }
+
+    if (err) {
+        return (
+            <div className={styles.mainWrapper}>
+                <InnerTitle />
+                <p>에러 발생: {String(err.message)}</p>
+            </div>
+        );
+    }
+
+    if (!room) {
+        return (
+            <div className={styles.mainWrapper}>
+                <InnerTitle />
+                <p>채팅방을 찾을 수 없습니다.</p>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.mainWrapper}>
@@ -202,23 +122,23 @@ function Chat() {
                     <img className={styles.thumb} src={thumb} alt="" />
                     <div className={styles.right}>
                         <header className={styles.cardHead}>
-                            <h3 className={styles.title}>{tempData.roomTitle}</h3>
+                            <h3 className={styles.title}>{room.postTitle}</h3>
                             <img className={styles.exit} src={exit} alt="exit"
-                            onClick={()=>{navigate('/message')}} />
+                                onClick={() => { navigate('/message') }} />
                         </header>
 
                         <div className={styles.under}>
                             <div className={styles.cardBody}>
                                 <img src={profile} className={styles.profile} alt="" />
-                                <span className={styles.people}>{tempData.memberCapacity}</span>
+                                <span className={styles.people}>{room.desiredMemberCount}</span>
                             </div>
 
                             <aside className={styles.priceBox}>
                                 <div className={styles.price}>
-                                    {perPersonKRW(tempData.productDesc, tempData.memberCapacity)}
+                                    {perPersonKRW(room.productDesc, room.desiredMemberCount)}
                                 </div>
                                 <img className={styles.slash} src={slash} alt="" />
-                                <div className={styles.totalPrice}>total {tempData.productDesc}</div>
+                                <div className={styles.totalPrice}>total {room.productDesc}</div>
                             </aside>
                         </div>
                     </div>
@@ -229,9 +149,9 @@ function Chat() {
                 {/* ====== 채팅 본문 / 입력바 추가 시작 ====== */}
                 <div className={styles.chatBody}>
                     <div className={styles.messageList} ref={listRef}>
-                        {tempData.messages.map((m, i) => {
+                        {messages.map((m, i) => {
                             const mine = m.senderId === 5;
-                            const prev = tempData.messages[i - 1];
+                            const prev = messages[i - 1];
                             const showHeader = !mine && (!prev || prev.senderId !== m.senderId); // 연속 첫 메시지?
 
                             return (
@@ -243,7 +163,7 @@ function Chat() {
                                     {showHeader && (
                                         <div className={styles.msgHeader}>
                                             <img src={profile} className={styles.msgAvatar} alt="" />
-                                            <span className={styles.senderName}>{m.senderName}</span>
+                                            <span className={styles.senderName}>{m.senderNickName}</span>
                                         </div>
                                     )}
 
