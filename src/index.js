@@ -7,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { MapProvider } from './context/MapContext';
+import { UnreadProvider } from './context/UnreadContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,9 +15,11 @@ root.render(
     <BrowserRouter>
       <UserProvider>
         <AuthProvider>
-          <React.StrictMode>
-            <App />
-          </React.StrictMode>
+          <UnreadProvider>
+            <React.StrictMode>
+              <App />
+            </React.StrictMode>
+          </UnreadProvider>
         </AuthProvider>
       </UserProvider>
     </BrowserRouter>

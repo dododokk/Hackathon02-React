@@ -260,8 +260,8 @@ function Post() {
       }
       if (!res.ok) {
         Swal.fire({
-          icon: "error",
-          text: "신청 처리 중 오류가 발생했습니다.",
+          icon: "info",
+          text: "이미 신청한 글입니다.",
           confirmButtonText: "확인",
           confirmButtonColor: "#1f8954ff",
         });

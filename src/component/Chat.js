@@ -33,10 +33,19 @@ function Chat() {
     };
 
     // hh:mm 표시
-    const fmt = (iso) => {
-        try { return new Date(iso).toTimeString().slice(0, 5); }
-        catch { return ""; }
+    const fmtKST = (iso) => {
+        try {
+            return new Date(iso).toLocaleTimeString("ko-KR", {
+                timeZone: "Asia/Seoul",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            });
+        } catch {
+            return "";
+        }
     };
+
 
     useEffect(() => {
         if (!roomId) return;
@@ -292,7 +301,7 @@ function Chat() {
                                     )}
                                     <div className={styles.bubble}>
                                         <div className={styles.msgText}>{m.content}</div>
-                                        <time className={styles.msgTime}>{fmt(m.createdAt)}</time>
+                                        <time className={styles.msgTime}>{fmtKST(m.createdAt)}</time>
                                     </div>
                                 </div>
                             );
