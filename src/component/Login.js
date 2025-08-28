@@ -69,6 +69,16 @@ function Login() {
                 if (data.interests) setUserInterest(data.interests);
                 if (data.roadAddress) setUserAddress(data.roadAddress);
 
+                //새로고침 대비
+                //프로필도 로컬에 저장
+                const userForPersist = {
+                    username: data.username ?? null,
+                    nickname: data.nickname ?? null,
+                    interests: data.interests ?? [],
+                    roadAddress: data.roadAddress ?? "",
+                };
+                localStorage.setItem("user", JSON.stringify(userForPersist));
+
                 setIsLoggedIn(true);
                 navigate("/main");
             } else if (res.status === 400) {

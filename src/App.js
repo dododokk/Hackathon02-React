@@ -14,6 +14,7 @@ import Post from "./component/Post";
 import Write from "./component/Write";
 import background from "./img/background.png";
 import introImg from "./img/exampleIMG.png"; //예시 이미지. 사이트 다 만들고 나면 우리 사이트 화면 사진으로 변경하기!
+import PrivateRoute from "./component/PrivateRoute";
 
 function App() {
   //배경화면 설정 위한 인라인 css
@@ -47,13 +48,13 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/main" element={<Main />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/message" element={<Message />} />
-        <Route path="/notification" element={<Notification />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/post/:postId" element={<Post />} />
-        <Route path="/write" element={<Write />}/>
+        <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
+        <Route path="/mypage" element={<PrivateRoute><MyPage /></PrivateRoute>} />
+        <Route path="/message" element={<PrivateRoute><Message /></PrivateRoute>} />
+        <Route path="/notification" element={<PrivateRoute><Notification /></PrivateRoute>} />
+        <Route path="/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
+        <Route path="/post/:postId" element={<PrivateRoute><Post /></PrivateRoute>} />
+        <Route path="/write" element={<PrivateRoute><Write /></PrivateRoute>} />
       </Routes>
     </div>
   );
