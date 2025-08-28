@@ -5,6 +5,7 @@ import folder from "../img/folder.png";
 import notification from "../img/notification.png";
 import thumb from "../img/thumb.png";
 import { API_BASE } from "../config";
+import { useUnread } from "../context/UnreadContext";
 
 function Notification() {
 
@@ -28,6 +29,7 @@ function Notification() {
     //서버 연결
     const [notifications, setNotifications] = useState([]);
     const [readStates, setReadStates] = useState({});
+    const { setUnreadNotis } = useUnread();
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -50,6 +52,8 @@ function Notification() {
                             return acc;
                         }, {})
                     );
+                    const totalUnread = data.items.filter(noti => !noti.isRead).length;
+                    setUnreadNotis(totalUnread);
                 } else {
                     console.error("알림 불러오기 실패:", res.status);
                 }
@@ -62,64 +66,64 @@ function Notification() {
     }, []);
 
     const markAsRead = async (id) => {
-    try {
-        const token = localStorage.getItem("jwt");
-        const res = await fetch(`${API_BASE}/notifications/${id}/read`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        });
+        try {
+            const token = localStorage.getItem("jwt");
+            const res = await fetch(`${API_BASE}/notifications/${id}/read`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-        if (!res.ok) {
-        console.error("읽음 처리 실패:", res.status);
-        return;
+            if (!res.ok) {
+                console.error("읽음 처리 실패:", res.status);
+                return;
+            }
+
+            // 204 No Content 대비
+            if (res.status === 204 || res.headers.get("Content-Length") === "0") {
+                // 서버가 바디를 안 주면, 우리가 이미 가진 id로 로컬 상태만 갱신
+                setReadStates((prev) => ({ ...prev, [id]: true }));
+                setNotifications((prev) =>
+                    prev.map((n) => (n.id === id ? { ...n, isRead: true, readAt: new Date().toISOString() } : n))
+                );
+                return;
+            }
+
+            // 바디가 있는 경우에만 안전 파싱
+            const text = await res.text(); // 바디가 빈 문자열일 수도 있음
+            if (!text) {
+                setReadStates((prev) => ({ ...prev, [id]: true }));
+                setNotifications((prev) =>
+                    prev.map((n) => (n.id === id ? { ...n, isRead: true, readAt: new Date().toISOString() } : n))
+                );
+                return;
+            }
+
+            const json = JSON.parse(text);
+            // 백엔드 응답 형태: { data: {...} } 또는 바로 {...}
+            const updated = json?.data ?? json;
+
+            if (!updated || updated.id == null) {
+                // 그래도 안전하게 로컬 갱신
+                setReadStates((prev) => ({ ...prev, [id]: true }));
+                setNotifications((prev) =>
+                    prev.map((n) => (n.id === id ? { ...n, isRead: true, readAt: new Date().toISOString() } : n))
+                );
+                return;
+            }
+
+            // 정상적으로 내려온 경우 서버 값 반영
+            setReadStates((prev) => ({ ...prev, [updated.id]: !!updated.isRead }));
+            setNotifications((prev) =>
+                prev.map((n) =>
+                    n.id === updated.id ? { ...n, isRead: !!updated.isRead, readAt: updated.readAt ?? n.readAt } : n
+                )
+            );
+        } catch (error) {
+            console.error("읽음 처리 에러:", error);
         }
-
-        // 204 No Content 대비
-        if (res.status === 204 || res.headers.get("Content-Length") === "0") {
-        // 서버가 바디를 안 주면, 우리가 이미 가진 id로 로컬 상태만 갱신
-        setReadStates((prev) => ({ ...prev, [id]: true }));
-        setNotifications((prev) =>
-            prev.map((n) => (n.id === id ? { ...n, isRead: true, readAt: new Date().toISOString() } : n))
-        );
-        return;
-        }
-
-        // 바디가 있는 경우에만 안전 파싱
-        const text = await res.text(); // 바디가 빈 문자열일 수도 있음
-        if (!text) {
-        setReadStates((prev) => ({ ...prev, [id]: true }));
-        setNotifications((prev) =>
-            prev.map((n) => (n.id === id ? { ...n, isRead: true, readAt: new Date().toISOString() } : n))
-        );
-        return;
-        }
-
-        const json = JSON.parse(text);
-        // 백엔드 응답 형태: { data: {...} } 또는 바로 {...}
-        const updated = json?.data ?? json;
-
-        if (!updated || updated.id == null) {
-        // 그래도 안전하게 로컬 갱신
-        setReadStates((prev) => ({ ...prev, [id]: true }));
-        setNotifications((prev) =>
-            prev.map((n) => (n.id === id ? { ...n, isRead: true, readAt: new Date().toISOString() } : n))
-        );
-        return;
-        }
-
-        // 정상적으로 내려온 경우 서버 값 반영
-        setReadStates((prev) => ({ ...prev, [updated.id]: !!updated.isRead }));
-        setNotifications((prev) =>
-        prev.map((n) =>
-            n.id === updated.id ? { ...n, isRead: !!updated.isRead, readAt: updated.readAt ?? n.readAt } : n
-        )
-        );
-    } catch (error) {
-        console.error("읽음 처리 에러:", error);
-    }
     };
 
     return (

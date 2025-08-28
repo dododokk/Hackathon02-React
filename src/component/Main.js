@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getDirectImageUrl, FALLBACK_IMG } from "../utils/image";
 import { API_BASE } from "../config";
 import { UserContext } from "../context/UserContext";
+import { useUnread } from "../context/UnreadContext";
 
 function Main() {
   const navigate = useNavigate();
@@ -33,6 +34,86 @@ function Main() {
   // 디바운스 타이머
   const debounceRef = useRef(null);
 
+  const [notifications, setNotifications] = useState([]);
+  const [readStates, setReadStates] = useState({});
+  const { setUnreadNotis } = useUnread();
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("jwt"); // 로그인 시 저장한 토큰
+        const res = await fetch(`${API_BASE}/notifications`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setNotifications(data.items || []);
+          setReadStates(
+            (data.items || []).reduce((acc, noti) => {
+              acc[noti.id] = noti.isRead;
+              return acc;
+            }, {})
+          );
+          const totalUnread = data.items.filter(noti => !noti.isRead).length;
+          setUnreadNotis(totalUnread);
+        } else {
+          console.error("알림 불러오기 실패:", res.status);
+        }
+      } catch (error) {
+        console.error("알림 조회 에러:", error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  const [chatrooms, setChatrooms] = useState([]);
+  const [err, setErr] = useState(null);
+  const { setUnreadMessages } = useUnread();
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("jwt");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    (async () => {
+      try {
+        setLoading(true);
+        setErr(null);
+
+        const res = await fetch(`${API_BASE}/me/chatrooms`, {
+          method: "GET",
+          headers: {
+            ...getAuthHeaders(),
+          },
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        setChatrooms(Array.isArray(data) ? data : []);
+        const totalUnread = data.reduce((sum, room) => sum + (room.unreadCount || 0), 0);
+        setUnreadMessages(totalUnread);
+      } catch (e) {
+        if (e.name !== "AbortError") setErr(e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+    return () => controller.abort();
+  }, []);
+
   // 응답 포맷 통일
   function normalizePage(data) {
     if (Array.isArray(data?.items)) return data.items;     // /posts/search 에서 items일 수 있음
@@ -40,6 +121,18 @@ function Main() {
     if (Array.isArray(data)) return data;                  // 그냥 배열
     return [];
   }
+
+  const { totalUnread } = useUnread();
+  const [notice, setNotice] = useState(null);
+
+  useEffect(() => {
+    if (totalUnread > 0) {
+      setNotice("📩 새로운 알림/메시지가 있습니다.");
+      // 5초 후 자동으로 사라지게
+      const timer = setTimeout(() => setNotice(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [totalUnread]);
 
   // Main.js
 
@@ -171,6 +264,11 @@ function Main() {
 
   return (
     <div className={styles.mainWrapper}>
+      {notice && (
+        <div className={styles.toast}>
+          {notice}
+        </div>
+      )}
       <InnerTitle />
       <div className={styles.main}>
         <section className={styles.searchWrap}>

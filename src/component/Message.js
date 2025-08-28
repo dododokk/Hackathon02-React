@@ -6,6 +6,7 @@ import message from "../img/message.png";
 import profile from "../img/profile.png";
 import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../config";
+import { useUnread } from "../context/UnreadContext";
 
 function Message() {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ function Message() {
     const [chatrooms, setChatrooms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState(null);
+    const { setUnreadMessages } = useUnread();
 
     // JWT 가져오기
     const getAuthHeaders = () => {
@@ -56,6 +58,8 @@ function Message() {
                 const data = await res.json();
 
                 setChatrooms(Array.isArray(data) ? data : []);
+                const totalUnread = data.reduce((sum, room) => sum + (room.unreadCount || 0), 0);
+                setUnreadMessages(totalUnread);
             } catch (e) {
                 if (e.name !== "AbortError") setErr(e);
             } finally {
@@ -83,65 +87,6 @@ function Message() {
             </div>
         );
     }
-    //나중에 서버에서 받기
-    // const tempMessages = [
-    //     {
-    //         id: 1,
-    //         title: "휴지 공구해서 반띵하실 분 구합니다!",
-    //         people: 2,
-    //         latestMessage: "반갑습니다~!",
-    //         time: "오전 8:41",
-    //         unread: 2
-    //     },
-    //     {
-    //         id: 2,
-    //         title: "탄산수 같이 구매하실 분",
-    //         people: 3,
-    //         latestMessage: "저요! 같이 사요 🙌",
-    //         time: "오전 9:15",
-    //         unread: 5
-    //     },
-    //     {
-    //         id: 3,
-    //         title: "치킨 공구 하실 분?",
-    //         people: 4,
-    //         latestMessage: "주문 완료했어요 🍗",
-    //         time: "어제",
-    //         unread: 0
-    //     },
-    //     {
-    //         id: 4,
-    //         title: "치킨 공구 하실 분?",
-    //         people: 4,
-    //         latestMessage: "주문 완료했어요 🍗",
-    //         time: "어제",
-    //         unread: 0
-    //     },
-    //     {
-    //         id: 5,
-    //         title: "치킨 공구 하실 분?",
-    //         people: 4,
-    //         latestMessage: "주문 완료했어요 🍗",
-    //         time: "어제",
-    //         unread: 0
-    //     },
-    //     {
-    //         id: 6,
-    //         title: "그만할래ㅐㅐ",
-    //         people: 4,
-    //         latestMessage: "언제잘수있을까",
-    //         time: "어제",
-    //         unread: 0
-    //     },
-    //     {
-    //         id: 7,
-    //         title: "스크롤 잘 되는지 확인",
-    //         people: 4,
-    //         latestMessage: "언제잘수있을까",
-    //         time: "어제",
-    //         unread: 0
-    //     }
-    // ];
 
     return (
         <div className={styles.mainWrapper}>
