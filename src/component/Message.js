@@ -74,7 +74,7 @@ function Message() {
         return (
             <div className={styles.mainWrapper}>
                 <InnerTitle />
-                <p>불러오는 중...</p>
+                <p className={styles.loading}>불러오는 중...</p>
             </div>
         );
     }
