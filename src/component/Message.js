@@ -102,7 +102,7 @@ function Message() {
 
                 <div className={styles.messageList}>
                     {chatrooms.length === 0 && (
-                        <p style={{ padding: "1rem" }}>참여 중인 채팅방이 없습니다.</p>
+                        <p className={styles.loading} style={{ padding: "1rem" }}>참여 중인 채팅방이 없습니다.</p>
                     )}
 
                     {chatrooms.map((room) => (

@@ -350,14 +350,14 @@ function Post() {
   if (loading) {
     return (
       <main className={styles.wrap}>
-        <article className={styles.card}>불러오는 중…</article>
+        <article className={styles.loading}>불러오는 중…</article>
       </main>
     );
   }
   if (err) {
     return (
       <main className={styles.wrap}>
-        <article className={styles.card}>
+        <article className={styles.loading}>
           불러오기 실패: {String(err.message)}
           <div style={{ marginTop: 8 }}>
             <button className={styles.btnGhost} onClick={() => navigate(-1)}>
@@ -371,7 +371,7 @@ function Post() {
   if (!post) {
     return (
       <main className={styles.wrap}>
-        <article className={styles.card}>게시글이 없습니다.</article>
+        <article className={styles.loading}>불러오는 중...</article>
       </main>
     );
   }
