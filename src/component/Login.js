@@ -8,22 +8,30 @@ import Swal from "sweetalert2";
 import { API_BASE } from "../config";
 console.log("API_BASE =", API_BASE); // ✅ 여기서 undefined 아니어야 함
 
-function Input(props) {
-    return (
-        <div className={styles.loginElement}>
-            <div className={styles.inputRow}>
-                <span className={styles.loginTitle}>{props.title}</span>
-                <input className={styles.loginInput} type={props.type} value={props.value} onChange={props.onChange}
-                    placeholder={props.placeholder} />
-            </div>
+const Input = React.forwardRef((props, ref) => (
+    <div className={styles.loginElement}>
+        <div className={styles.inputRow}>
+            <span className={styles.loginTitle}>{props.title}</span>
+            <input
+                ref={ref} // ✅ forwardRef 적용
+                className={styles.loginInput}
+                type={props.type}
+                value={props.value}
+                onChange={props.onChange}
+                placeholder={props.placeholder}
+                onKeyDown={props.onKeyDown}
+            />
         </div>
-    )
-}
+    </div>
+));
+
 
 function Login() {
     const navigate = useNavigate();
     const [inputId, setInputId] = useState("");
     const [inputPw, setInputPw] = useState("");
+
+    const pwInputRef = React.useRef(null);
 
     const { setUserId, setUserDistinctId, setUserName, setUserInterest, setUserAddress } = useContext(UserContext);
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
@@ -106,9 +114,22 @@ function Login() {
                 <div className={styles.loginT}>Login</div>
                 <div>
                     <Input title="ID" type="text" value={inputId} onChange={handleIdChange}
-                        placeholder="아이디를 입력해주세요..." />
+                        placeholder="아이디를 입력해주세요..." 
+                        onKeyDown={(e)=>{
+                            if(e.key === "Enter"){
+                                pwInputRef.current?.focus();
+                            }
+                        }}
+                        />
                     <Input title="PW" type="password" value={inputPw} onChange={handlePwChange}
-                        placeholder="비밀번호를 입력해주세요..." />
+                        placeholder="비밀번호를 입력해주세요..." 
+                        onKeyDown={(e)=>{
+                            if(e.key === "Enter"){
+                                handleLogin();
+                            }
+                        }}
+                        ref = {pwInputRef}
+                        />
                 </div>
                 <div className={styles.bottomBar}>
                     <div className={styles.centerGroup}>
