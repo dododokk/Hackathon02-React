@@ -180,12 +180,19 @@ export default function Write() {
                 className={`${styles.input} ${styles.inputPrice}`}
                 type="text"
                 inputMode="numeric"
-                placeholder=""
+                placeholder="가격 입력"
                 value={price}
-                onChange={(e) =>
-                  setPrice(e.target.value.replace(/[^\d,]/g, ""))
-                }
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/[^0-9]/g, "");
+                  if (raw === "") {
+                    setPrice("");
+                    return;
+                  }
+                  const formatted = Number(raw).toLocaleString("ko-KR");
+                  setPrice(formatted);
+                }}
               />
+
             </div>
 
             {/* 모집 인원 / URL */}
