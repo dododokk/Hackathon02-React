@@ -301,7 +301,7 @@ function Chat() {
                                     )}
                                     <div className={styles.bubble}>
                                         <div className={styles.msgText}>{m.content}</div>
-                                        <time className={styles.msgTime}>{fmt(m.createdAt)}</time>
+                                        <time className={styles.msgTime}>{fmtKST(m.createdAt)}</time>
                                     </div>
                                 </div>
                             );
