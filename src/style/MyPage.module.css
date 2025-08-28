@@ -148,7 +148,7 @@
     font-weight: 400;
     line-height: normal;
     letter-spacing: 0.6px;
-    border-bottom: 1px solid #595959;
+    /* border-bottom: 1px solid #595959; */
 }
 
 .modifyImg {
