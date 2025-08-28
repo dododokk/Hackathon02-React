@@ -21,7 +21,7 @@ export default function Write() {
   const [image, setImage] = useState(null); // { file, preview }
   const fileRef = useRef(null);
 
-  const titleLimit = 30;
+  const titleLimit = 20;
   const titleCount = useMemo(() => `${title.length}/${titleLimit}`, [title]);
 
   const selectCategory = (name) => {
@@ -157,7 +157,7 @@ export default function Write() {
                 <input
                   className={styles.input}
                   type="text"
-                  placeholder="30자 이내로 입력하세요..."
+                  placeholder="20자 이내로 입력하세요..."
                   value={title}
                   maxLength={titleLimit}
                   onChange={(e) => setTitle(e.target.value)}
