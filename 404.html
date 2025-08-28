@@ -1,8 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=/" />
+    <meta charset="utf-8">
+    <title>Redirecting…</title>
+    <script>
+      (function () {
+        // 리포지토리 베이스 경로 (깃허브 페이지 프로젝트명)
+        var repoBase = "/Hackathon02-React";
+        var l = window.location;
+        // 원래 요청한 경로/쿼리/해시를 p= 로 실어서 루트로 이동
+        var carried = l.pathname.replace(repoBase, "") + l.search + l.hash;
+        var target = l.protocol + "//" + l.host + repoBase + "/?p=" + encodeURIComponent(carried);
+        window.location.replace(target);
+      })();
+    </script>
   </head>
-  <body>
-  </body>
+  <body>Redirecting…</body>
 </html>
