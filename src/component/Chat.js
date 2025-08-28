@@ -33,10 +33,19 @@ function Chat() {
     };
 
     // hh:mm 표시
-    const fmt = (iso) => {
-        try { return new Date(iso).toTimeString().slice(0, 5); }
-        catch { return ""; }
+    const fmtKST = (iso) => {
+        try {
+            return new Date(iso).toLocaleTimeString("ko-KR", {
+                timeZone: "Asia/Seoul",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            });
+        } catch {
+            return "";
+        }
     };
+
 
     useEffect(() => {
         if (!roomId) return;
