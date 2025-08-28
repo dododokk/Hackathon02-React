@@ -116,7 +116,9 @@
 }
 
 .title {
-  font-family: "NexonLv1Gothic";
+  padding-top: 5px;
+  font-family: "nanum";
+  /* font-family: "Pretendard"; */
   margin: 0;
   flex: 1 1 auto;
   min-width: 0;
@@ -128,10 +130,8 @@
   overflow: hidden;
   white-space: normal;
   color: #424242;
-  font-family: Pretendard;
-  font-size: 30px;
+  font-size: 28px;
   font-style: normal;
-  font-weight: 600;
   line-height: 36px;
   /* 140.625% */
   letter-spacing: 0.64px;
@@ -145,7 +145,7 @@
   align-items: center;
   flex: 0 0 auto;
   height: 26px;
-  padding: 0 10px;
+  padding: 5px 10px 0 10px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -165,7 +165,7 @@
 
 /* 작성자/날짜 */
 .metaRow {
-  margin-top: 55px;
+  margin-top: 50px;
   display: flex;
   align-items: center;
   gap: 10px;
