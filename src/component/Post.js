@@ -39,8 +39,15 @@ function Post() {
     const token = localStorage.getItem("jwt");
     if (!token) return null;
     try {
-      const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, " ").replace(/_/g, "/")));
-      return payload || null; // { sub, userId, nickname, ... } 중 무엇이든 백엔드 규약에 맞게 사용
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const json = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+    return JSON.parse(json);
     } catch {
       return null;
     }
@@ -115,13 +122,17 @@ function Post() {
             }
           );
           if (aRes.ok) {
-            const list = await aRes.json().catch(() => []);
+            const raw = await aRes.json().catch(() => null);
+            const list =
+              Array.isArray(raw) ? raw :
+              Array.isArray(raw?.data) ? raw.data :
+              raw ? [raw] : [];
             const me = getUserFromToken();
-            const myId = me?.userId || me?.sub || me?.id;
-            const applied = Array.isArray(list) && list.some(
-              (a) =>
-                String(a.applicantId) === String(myId) &&
-                (a.status === "APPLIED" || a.status === "APPROVED")
+            const myId = me?.userId ?? me?.sub ?? me?.id;
+            const applied = myId != null && list.some(a =>
+              String(a.applicantId) === String(myId) &&
+              // 필요한 상태들 추가
+              (a.status === "APPLIED" || a.status === "APPROVED" || a.status === "JOINED")
             );
 
             setHasApplied(Boolean(applied));

@@ -240,6 +240,7 @@
   -webkit-box-orient: vertical;
   white-space: pre-line;
   overflow-wrap: anywhere;
+  overflow: hidden;
 }
 
 /* 가격 박스(오른쪽) */
