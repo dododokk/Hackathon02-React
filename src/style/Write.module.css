@@ -15,7 +15,7 @@
   flex-shrink: 0;
   border-radius: 20px;
   background: rgba(254, 248, 248, 0.50);
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
+border: 0.5px solid rgba(0,0,0,.08);
 }
 
 /* 폼 공통 */
@@ -43,7 +43,7 @@ height: 58px;
 flex-shrink: 0;
 border-radius: 20px;
 border: 1px solid rgba(89, 89, 89, 0.50);
-box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
+border: 0.5px solid rgba(0,0,0,.08);
 }
 .input, .textarea, .select {
   width: 80%;
@@ -111,12 +111,12 @@ box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
   font-weight: 600;
   cursor: pointer;
   transition: transform .06s ease, background .15s ease, box-shadow .15s ease;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset;
+  border: 0.5px solid rgba(0,0,0,.08);
 }
 .chip:hover { transform: translateY(-1px); }
 .chipOn {
   background: #cfead0;
-  box-shadow: 0 0 0 3px rgba(64,132,96,0.18);
+  border: 0.5px solid rgba(0,0,0,.08);
 }
 
 /* 업로드 */

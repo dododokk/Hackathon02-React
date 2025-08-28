@@ -35,7 +35,7 @@ function App() {
 
     backgroundImage: `url(${background})`,
     backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundPosition: 'top',
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed'
   };
