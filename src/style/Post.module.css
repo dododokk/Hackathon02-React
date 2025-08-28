@@ -292,15 +292,15 @@ letter-spacing: 0.32px;
     transition: background-color .2s ease, transform .15s ease, box-shadow .2s;
   min-width:96px; height:36px; padding:0 16px;
   border-radius:999px; border:0; background:#91a7889f;
-  color:#CFDFC5; font-weight:800; cursor:pointer;
+  color:#91a7889f; font-weight:800; cursor:pointer;
 }
 .btnPrimary:hover{
-  background: #a7cfa7;                 /* 포인트 컬러 살짝 진해짐 */
+  background: #CFDFC5;                 /* 포인트 컬러 살짝 진해짐 */
   box-shadow: 0 4px 12px rgba(0,0,0,.18);
   transform: translateY(-1px);         /* 살짝 떠오름 */
 }
 .btnPrimary:active{
-  background: #9dca9d;
+  background: #CFDFC5;
   transform: translateY(0);
   box-shadow: 0 2px 6px rgba(0,0,0,.2) inset;
 }
