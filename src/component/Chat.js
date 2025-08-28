@@ -39,62 +39,65 @@ function Chat() {
     };
 
     useEffect(() => {
-  if (!roomId) return;
-  const controller = new AbortController();
+        if (!roomId) return;
+        const controller = new AbortController();
 
-  (async () => {
-    setLoading(true);
-    setErr(null);
+        (async () => {
+            setLoading(true);
+            setErr(null);
 
-    try {
-      // 1) 채팅방 정보는 반드시 먼저, 실패 시에만 전체 에러 처리
-      const resRoom = await fetch(`${API_BASE}/chatrooms/${roomId}`, {
-        method: "GET",
-        headers: { ...getAuthHeaders() },
-        credentials: "include",
-        signal: controller.signal,
-      });
-      if (!resRoom.ok) {
-        const body = await resRoom.text().catch(()=> "");
-        throw new Error(`Room HTTP ${resRoom.status} ${body}`);
-      }
-      const roomData = await resRoom.json();
-      setRoom(roomData);
-    } catch (e) {
-      // 방 자체를 못 불러오면 그때만 전체 에러
-      if (e.name !== "AbortError") setErr(e);
-      setLoading(false);
-      return;
-    }
+            try {
+                // 1) 채팅방 정보는 반드시 먼저, 실패 시에만 전체 에러 처리
+                const resRoom = await fetch(`${API_BASE}/chatrooms/${roomId}`, {
+                    method: "GET",
+                    headers: { ...getAuthHeaders() },
+                    credentials: "include",
+                    signal: controller.signal,
+                });
+                if (!resRoom.ok) {
+                    const body = await resRoom.text().catch(() => "");
+                    throw new Error(`Room HTTP ${resRoom.status} ${body}`);
+                }
+                const roomData = await resRoom.json();
+                setRoom(roomData);
+            } catch (e) {
+                // 방 자체를 못 불러오면 그때만 전체 에러
+                if (e.name !== "AbortError") setErr(e);
+                setLoading(false);
+                return;
+            }
 
-    try {
-      // 2) 메시지는 독립적으로 처리: 실패하더라도 화면은 유지
-      const resMsg = await fetch(`${API_BASE}/chatrooms/${roomId}/messages`, {
-        method: "GET",
-        headers: { ...getAuthHeaders() },
-        credentials: "include",
-        signal: controller.signal,
-      });
-      if (!resMsg.ok) {
-        const body = await resMsg.text().catch(()=> "");
-        console.warn(`Messages HTTP ${resMsg.status} ${body}`);
-        setMessages([]); // 실패 시 빈 배열로
-      } else {
-        const msgs = await resMsg.json();
-        setMessages(Array.isArray(msgs) ? msgs : []);
-      }
-    } catch (e) {
-      if (e.name !== "AbortError") {
-        console.warn("메시지 목록 로딩 실패:", e);
-        setMessages([]);
-      }
-    } finally {
-      setLoading(false);
-    }
-  })();
+            try {
+                // 2) 메시지는 독립적으로 처리: 실패하더라도 화면은 유지
+                const resMsg = await fetch(
+                    `https://hackathon02-api-production.up.railway.app/chatrooms/${roomId}/messages`,
+                    {
+                        method: "GET",
+                        headers: { ...getAuthHeaders() },
+                        credentials: "include",
+                        signal: controller.signal,
+                    }
+                );
+                if (!resMsg.ok) {
+                    const body = await resMsg.text().catch(() => "");
+                    console.warn(`Messages HTTP ${resMsg.status} ${body}`);
+                    setMessages([]); // 실패 시 빈 배열로
+                } else {
+                    const msgs = await resMsg.json();
+                    setMessages(Array.isArray(msgs) ? msgs : []);
+                }
+            } catch (e) {
+                if (e.name !== "AbortError") {
+                    console.warn("메시지 목록 로딩 실패:", e);
+                    setMessages([]);
+                }
+            } finally {
+                setLoading(false);
+            }
+        })();
 
-  return () => controller.abort();
-}, [roomId]);
+        return () => controller.abort();
+    }, [roomId]);
 
     // 새 메시지가 생기면 스크롤 맨 아래로
     useEffect(() => {
@@ -124,16 +127,14 @@ function Chat() {
 
                         // messageId 기준 중복 제거
                         setMessages((prev) => {
-                            const id = body.messageId ?? `${body.senderId}-${body.createdAt}-${body.content}`;
-                            if (prev.some(m => (m.messageId ?? `${m.senderId}-${m.createdAt}-${m.content}`) === id)) {
-                                return prev;
-                            }
-                            return [...prev, body];
+                            const serverId = body.messageId;
+                            const withoutOptimistic = prev.filter(m => m._optimistic !== true || m.content !== body.content)
+                            return [...withoutOptimistic, body];
                         });
                     } catch (e) {
                         console.error("parse error:", e, msg.body);
                     }
-                    
+
                 });
             },
             onWebSocketClose: (evt) => {
@@ -286,7 +287,7 @@ function Chat() {
                                     {showHeader && (
                                         <div className={styles.msgHeader}>
                                             <img src={profile} className={styles.msgAvatar} alt="" />
-                                            <span className={styles.senderName}>{m.senderNickName}</span>
+                                            <span className={styles.senderName}>{m.senderNickname}</span>
                                         </div>
                                     )}
                                     <div className={styles.bubble}>
