@@ -33,7 +33,7 @@ function App() {
     justifyContent: "center",
     alignItems: "center",
 
-    backgroundImage: `url(${background})`,
+    //backgroundImage: `url(${background})`,
     backgroundSize: 'cover',
     backgroundPosition: 'top',
     backgroundRepeat: 'no-repeat',

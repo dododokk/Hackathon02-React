@@ -17,6 +17,7 @@ function InnerTitle() {
 
     return (
         <header className={styles.header}>
+            <div className={styles.topbar}></div>
             <div className={styles.headerdiv}>
                 <div className={styles.headerR}>
                     <img src={cart} className={styles.cart}></img>

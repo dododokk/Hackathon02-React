@@ -1,4 +1,4 @@
-.header {
+.headerdiv {
     text-align: right;
     /* ✅ 오른쪽 정렬 */
     margin: 0 320px;
@@ -36,4 +36,8 @@
     object-fit: contain;
     text-align: right;
     margin-top: 40px;
+}
+.topbar{
+    height: 28px;
+    background: #91A788;
 }

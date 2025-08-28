@@ -297,7 +297,7 @@ function MyPage() {
     "미설정";
 
   return (
-    <div className={styles.mainWrapper} style={backgroundStyle}>
+    <div className={styles.mainWrapper}>
       <InnerTitle />
 
       {/* 상단 내 정보 */}
