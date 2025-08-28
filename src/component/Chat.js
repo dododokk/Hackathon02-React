@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef, useEffect, useState } from "react";
+import React, { useContext, useMemo, useRef, useEffect, useState, useCallback } from "react";
 import styles from "../style/Chat.module.css";
 import InnerTitle from "./InnerTitle";
 import thumb from "../img/thumb.png";
@@ -45,6 +45,22 @@ function Chat() {
             return "";
         }
     };
+
+    const readAllQuick = useCallback(async (rid) => {
+        try {
+            await fetch(`${API_BASE}/chatrooms/${rid}/read-all`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+                },
+                credentials: "include",
+                body: "{}", // 바디 없어도 되지만 프록시/서버에 따라 빈 객체로
+            });
+        } catch (e) {
+            console.warn("read-all failed:", e);
+        }
+    }, [API_BASE]);
 
 
     useEffect(() => {
@@ -171,6 +187,10 @@ function Chat() {
         };
     }, [roomId, WS_BASE]);
 
+    useEffect(() => {
+        if (roomId) localStorage.setItem("currentChatRoomId", String(roomId));
+        return () => localStorage.removeItem("currentChatRoomId");
+    }, [roomId]);
 
     // 메시지 전송
     const onSubmit = (e) => {
@@ -189,7 +209,7 @@ function Chat() {
         const optimistic = {
             messageId: tmpId,
             senderId: userDistinctId,
-            senderNickName: "나",
+            senderNickname: "나",
             content: text,
             createdAt: new Date().toISOString(),
             _optimistic: true,
@@ -258,7 +278,10 @@ function Chat() {
                         <header className={styles.cardHead}>
                             <h3 className={styles.title}>{room.postTitle}</h3>
                             <img className={styles.exit} src={exit} alt="exit"
-                                onClick={() => { navigate('/message') }} />
+                                onClick={async () => {
+                                    await readAllQuick(roomId);   // ✅ 여기서 unread=0으로
+                                    navigate('/message');
+                                }} />
                         </header>
 
                         <div className={styles.under}>
