@@ -203,8 +203,8 @@ function Content({ which }) {
   if (!items.length) {
     return (
       <div id={styles.content}>
-        <div className={styles.list}>
-          <p>표시할 게시글이 없습니다.</p>
+        <div>
+          <p className={styles.list}>표시할 게시글이 없습니다.</p>
         </div>
       </div>
     );

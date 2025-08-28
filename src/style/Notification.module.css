@@ -128,6 +128,7 @@
     color: white;
     transition: 0.2s;
     margin-right: 15px;
+    margin-top: 5px;
 }
 
 .readButton:disabled {

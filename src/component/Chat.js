@@ -245,7 +245,7 @@ function Chat() {
         return (
             <div className={styles.mainWrapper}>
                 <InnerTitle />
-                <p>불러오는 중...</p>
+                <p className={styles.loading}>불러오는 중...</p>
             </div>
         );
     }
@@ -254,7 +254,7 @@ function Chat() {
         return (
             <div className={styles.mainWrapper}>
                 <InnerTitle />
-                <p>에러 발생: {String(err.message)}</p>
+                <p className={styles.loading}>에러 발생: {String(err.message)}</p>
             </div>
         );
     }
@@ -263,7 +263,7 @@ function Chat() {
         return (
             <div className={styles.mainWrapper}>
                 <InnerTitle />
-                <p>채팅방을 찾을 수 없습니다.</p>
+                <p className={styles.loading}>채팅방을 찾을 수 없습니다.</p>
             </div>
         );
     }
