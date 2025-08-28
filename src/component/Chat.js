@@ -225,7 +225,7 @@ function Chat() {
             <InnerTitle />
             <div className={styles.chatWrapper}>
                 <article className={styles.card}>
-                    <img className={styles.thumb} src={thumb} alt="" />
+                    <img className={styles.thumb} src={room.mainImageUrl} alt="" />
                     <div className={styles.right}>
                         <header className={styles.cardHead}>
                             <h3 className={styles.title}>{room.postTitle}</h3>
