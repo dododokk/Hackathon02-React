@@ -60,7 +60,7 @@ function Main() {
           : `${API_BASE}/posts`;
       if (keyword.trim()) params.set("q", keyword.trim());
 
-      const token = localStorage.getItem("token"); // 실제 사용하는 토큰 키로 변경
+      const token = localStorage.getItem("jwt"); // 실제 사용하는 토큰 키로 변경
       const headers = { "Content-Type": "application/json" };
       if (token) headers.Authorization = `Bearer ${token}`;
 

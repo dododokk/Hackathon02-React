@@ -260,6 +260,8 @@ function MyPage() {
   const handleLogout = () => {
     // 나중에 실제 토큰 키 사용
     // localStorage.removeItem("token");
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUserId("");
     setUserPw("");
