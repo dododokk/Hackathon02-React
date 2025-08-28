@@ -7,11 +7,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
 import { Navigation, EffectCoverflow, Autoplay } from "swiper/modules";
-// 홈화면 이미지 슬라이드
-import introImg from "../img/exampleIMG.png";
-import introImg1 from "../img/thumb2.png";
-import introImg2 from "../img/thumb.png";
-import introImg3 from "../img/thumb3.png";
 
 // 사용할 이미지들을 import 합니다.
 import thumb1 from "../img/thumb1.png";
