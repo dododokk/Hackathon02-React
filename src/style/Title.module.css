@@ -19,9 +19,9 @@
 
 .subtitle {
     color: #595959;
-    font-family: "Climate Crisis";
+    font-family: Pretendard;
     font-size: clamp(10px, 2.5vw, 18px);
     font-style: normal;
-    font-weight: 400;
+    font-weight: 700;
     line-height: normal;
 }

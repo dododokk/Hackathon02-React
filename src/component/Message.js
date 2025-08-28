@@ -20,6 +20,11 @@ function Message() {
         return token ? { Authorization: `Bearer ${token}` } : {};
     };
 
+    const fmt = (iso) => {
+        try { return new Date(iso).toTimeString().slice(0, 5); }
+        catch { return ""; }
+    };
+
     // 채팅방 목록 불러오기
     useEffect(() => {
         const controller = new AbortController();
@@ -169,7 +174,7 @@ function Message() {
                                         {room.desiredMemberCount ?? 0}
                                     </span>
                                     <span className={styles.messageTime}>
-                                        {room.lastMessage?.createdAt ?? ""}
+                                        {fmt(room.lastMessage?.createdAt) ?? ""}
                                     </span>
                                 </div>
                                 <div className={styles.messageBottom}>

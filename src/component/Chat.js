@@ -16,7 +16,7 @@ function Chat() {
     const navigate = useNavigate();
     const { state } = useLocation();
     const roomId = state?.roomId;
-    const { userId } = useContext(UserContext);           // 내 userId
+    const { userDistinctedId } = useContext(UserContext);           // 내 userId
 
     const [room, setRoom] = useState(null);   // 서버에서 받아올 방 데이터
     const [messages, setMessages] = useState([]);
@@ -160,7 +160,7 @@ function Chat() {
         const tmpId = `tmp-${Date.now()}`;
         const optimistic = {
             messageId: tmpId,
-            senderId: userId,
+            senderId: userDistinctedId,
             senderNickName: "나",
             content: text,
             createdAt: new Date().toISOString(),
@@ -172,7 +172,7 @@ function Chat() {
         client.publish({
             destination: `/pub/chatrooms/${roomId}/send`,
             body: JSON.stringify({
-                senderId: userId,
+                senderId: userDistinctedId,
                 content: text,
             }),
             headers: {
@@ -256,7 +256,7 @@ function Chat() {
                 <div className={styles.chatBody}>
                     <div className={styles.messageList} ref={listRef}>
                         {messages.map((m, i) => {
-                            const mine = m.senderId === userId;
+                            const mine = m.senderId === userDistinctedId;
                             const prev = messages[i - 1];
                             const showHeader = !mine && (!prev || prev.senderId !== m.senderId);
 
