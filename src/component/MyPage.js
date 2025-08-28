@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useMap } from "../context/MapContext";
 import { API_BASE } from "../config";
 import ba from "../img/ba.png";
+import Swal from "sweetalert2";
 
 /** 탭 라벨 */
 function Label({ selected, menu, onSelect, title }) {
@@ -152,7 +153,17 @@ function Content({ which }) {
 
   // (선택) 내가 쓴 글 삭제 예시 – 실제 API 경로/파라미터에 맞춰 수정해 사용
   const handleDelete = async (postId) => {
-    if (!window.confirm("정말 삭제할까요?")) return;
+    const result = await Swal.fire({
+    title: "정말 삭제하시겠습니까?",
+    text: "삭제된 글은 복구할 수 없습니다.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "삭제하기",
+    cancelButtonText: "취소"
+  });
+    if (!result.isConfirmed) return;
     try {
       const res = await fetch(`${API_BASE}/posts/${postId}`, {
         method: "DELETE",
