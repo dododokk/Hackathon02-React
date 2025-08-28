@@ -8,7 +8,7 @@ import exit from "../img/exit.png";
 import { perPersonKRW } from "../utils/price";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
-import { API_BASE } from "../config";
+import { API_BASE, WS_BASE } from "../config";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
@@ -87,22 +87,39 @@ function Chat() {
         if (!roomId) return;
         const token = localStorage.getItem("jwt");
         if (!token) return;
-        
-        const client = new Client({
 
-            webSocketFactory: () => new SockJS(`${API_BASE}/ws`),
-            connectHeaders: {
-                Authorization: `Bearer ${token}`,
-            },
+        const client = new Client({
+            // SockJS 엔드포인트: 반드시 /api 미포함
+            webSocketFactory: () => new SockJS(`${WS_BASE}/ws`, null, { transports: ['websocket', 'xhr-streaming', 'xhr-polling'] }),
+            connectHeaders: { Authorization: `Bearer ${token}` },
+            // 안정성 옵션
+            reconnectDelay: 3000,               // 재연결 간격(ms)
+            heartbeatIncoming: 10000,           // 서버->클라이언트 하트비트
+            heartbeatOutgoing: 10000,           // 클라이언트->서버 하트비트
             debug: (str) => console.log("[STOMP]", str),
             onConnect: () => {
                 console.log("✅ STOMP Connected");
-
-                // 구독
                 client.subscribe(`/sub/chatrooms/${roomId}`, (msg) => {
-                    const body = JSON.parse(msg.body);
-                    setMessages((prev) => [...prev, body]);
+                    try {
+                        const body = JSON.parse(msg.body);
+                        console.log("📩 incoming:", body);
+
+                        // messageId 기준 중복 제거
+                        setMessages((prev) => {
+                            const id = body.messageId ?? `${body.senderId}-${body.createdAt}-${body.content}`;
+                            if (prev.some(m => (m.messageId ?? `${m.senderId}-${m.createdAt}-${m.content}`) === id)) {
+                                return prev;
+                            }
+                            return [...prev, body];
+                        });
+                    } catch (e) {
+                        console.error("parse error:", e, msg.body);
+                    }
+                    
                 });
+            },
+            onWebSocketClose: (evt) => {
+                console.warn("🔌 WS closed:", evt?.code, evt?.reason);
             },
             onStompError: (frame) => {
                 console.error("❌ STOMP Error:", frame);
@@ -112,10 +129,20 @@ function Chat() {
         client.activate();
         stompClientRef.current = client;
 
-        return () => {
-            client.deactivate();
+        // 탭 비활성화 시 하트비트 중단을 피하기 위한 가벼운 처리 (선택)
+        const onVisibility = () => {
+            if (document.visibilityState === "visible" && client && !client.connected) {
+                client.activate();
+            }
         };
-    }, [roomId]);
+        document.addEventListener("visibilitychange", onVisibility);
+
+        return () => {
+            document.removeEventListener("visibilitychange", onVisibility);
+            client.deactivate(); // 연결 정리
+        };
+    }, [roomId, WS_BASE]);
+
 
     // 메시지 전송
     const onSubmit = (e) => {
@@ -129,6 +156,19 @@ function Chat() {
             return;
         }
 
+        // 1) 낙관적 메시지 - 화면에 즉시 추가
+        const tmpId = `tmp-${Date.now()}`;
+        const optimistic = {
+            messageId: tmpId,
+            senderId: userId,
+            senderNickName: "나",
+            content: text,
+            createdAt: new Date().toISOString(),
+            _optimistic: true,
+        };
+        setMessages(prev => [...prev, optimistic]);
+
+
         client.publish({
             destination: `/pub/chatrooms/${roomId}/send`,
             body: JSON.stringify({
@@ -137,8 +177,17 @@ function Chat() {
             }),
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+                // 2) 서버까지 도달했는지 확인하고 싶으면 receipt 사용 (선택)+    
+                receipt: tmpId,
             },
         });
+
+        // 3) receipt 수신 시(선택): 성공만 로깅 (실패 시 서버에서 ERROR frame)
+        client.onReceipt = (frame) => {
+            if (frame?.headers?.["receipt-id"] === tmpId) {
+                console.log("✅ delivered:", tmpId);
+            }
+        };
 
         setText("");
     };
@@ -207,24 +256,21 @@ function Chat() {
                 <div className={styles.chatBody}>
                     <div className={styles.messageList} ref={listRef}>
                         {messages.map((m, i) => {
-                            const mine = m.senderId === 5;
+                            const mine = m.senderId === userId;
                             const prev = messages[i - 1];
-                            const showHeader = !mine && (!prev || prev.senderId !== m.senderId); // 연속 첫 메시지?
+                            const showHeader = !mine && (!prev || prev.senderId !== m.senderId);
 
                             return (
                                 <div
-                                    key={m.messageId}
+                                    key={m.messageId || `${m.senderId}-${m.createdAt || i}`}
                                     className={`${styles.msgGroup} ${mine ? styles.me : styles.other}`}
                                 >
-                                    {/* 상대 메시지에서만: 프로필+닉네임을 같은 줄에 */}
                                     {showHeader && (
                                         <div className={styles.msgHeader}>
                                             <img src={profile} className={styles.msgAvatar} alt="" />
                                             <span className={styles.senderName}>{m.senderNickName}</span>
                                         </div>
                                     )}
-
-                                    {/* 말풍선 (상대는 헤더 유무와 관계없이 항상 같은 들여쓰기) */}
                                     <div className={styles.bubble}>
                                         <div className={styles.msgText}>{m.content}</div>
                                         <time className={styles.msgTime}>{fmt(m.createdAt)}</time>
