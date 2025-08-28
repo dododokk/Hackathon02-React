@@ -14,6 +14,7 @@ import { perPersonKRW } from "../utils/price";
 import { useNavigate } from "react-router-dom";
 import { useMap } from "../context/MapContext";
 import { API_BASE } from "../config";
+import ba from "../img/ba.png";
 
 /** 탭 라벨 */
 function Label({ selected, menu, onSelect, title }) {
@@ -226,6 +227,15 @@ function MyPage() {
   const [selectedMenu, setSelectedMenu] = useState("menu1");
   const { initMap, addMarker, clearMarkers, setCenter, place, addressText, geocode } = useMap();
 
+  const backgroundStyle = {
+    backgroundImage: `url(${ba})`, // 👉 public/img/background.png 에 넣어두세요
+    backgroundSize: "cover",
+    backgroundPosition: "center top",
+    backgroundRepeat: "no-repeat",
+    minHeight: "100vh",
+    width: "100%",
+  }
+
   // 지도 초기화
   useEffect(() => {
     if (mapRef.current) {
@@ -276,7 +286,7 @@ function MyPage() {
     "미설정";
 
   return (
-    <div className={styles.mainWrapper}>
+    <div className={styles.mainWrapper} style={backgroundStyle}>
       <InnerTitle />
 
       {/* 상단 내 정보 */}
@@ -305,7 +315,6 @@ function MyPage() {
             </div>
             <p className={styles.userName}>
               {userName}
-              <img src={modify} className={styles.modifyImg} alt="" />
             </p>
           </div>
         </div>

@@ -34,14 +34,15 @@
 }
 
 .messageImg{
-    width: 7%;
+    width: 3.3%;
     height: auto;
-    margin-top: clamp(20px, 5vh, 100px);
-    margin-left: clamp(20px, 5vw, 60px);
+    margin-top: clamp(20px, 4vh, 100px);
+    margin-left: clamp(10px, 4vw, 100px);
 }
 
 .messageTitle{
     margin-top: clamp(20px, 6vh, 120px);
+    margin-left: clamp(1px, 0.5vw, 100px);
 }
 
 .headerHr{
@@ -56,9 +57,9 @@
     display: flex;
     flex-direction: column;
     margin: 0 auto;
-    margin-top: 10px;
+    margin-top: 30px;
     width: 80%;      /* ✅ 폴더 컨테이너 기준 */
-    height: 60%;
+    height: 70%;
     overflow-y: auto;
 }
 
