@@ -6,6 +6,56 @@ import { API_BASE } from "../config";
 import Swal from "sweetalert2";
 
 const CATEGORIES = ["식품", "생활용품", "사무용품", "반려용품", "기타"];
+const URL_MAX = 2000;
+const PRODUCT_URL_DB_MAX = 255;
+function sanitizeProductUrl(input) {
+  const trimmed = (input || "")
+    .trim()
+    // 붙여넣기 시 들어올 수 있는 제로폭 문자 제거
+    .replace(/[\u200B-\u200D\uFEFF]/g, "");
+
+  if (!trimmed) return { ok: true, value: undefined }; // 빈 값이면 필드 자체 제거
+
+  // 스킴이 없으면 https 붙이기
+  const withScheme = /^(https?:)?\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+  let u;
+  try {
+    u = new URL(withScheme);
+  } catch {
+    return { ok: false, msg: "URL 형식이 올바르지 않습니다." };
+  }
+
+  // http/https만 허용
+  if (!/^https?:$/.test(u.protocol)) {
+    return { ok: false, msg: "URL은 http 또는 https만 허용됩니다." };
+  }
+
+  // 흔한 트래킹 파라미터 제거 (길이 단축 + 서버 부하 감소)
+  const dropKeys = new Set([
+    "utm_source","utm_medium","utm_campaign","utm_term","utm_content",
+    "fbclid","gclid","igshid","mc_eid","mc_cid"
+  ]);
+  [...u.searchParams.keys()].forEach(k => { if (dropKeys.has(k)) u.searchParams.delete(k); });
+
+  // #fragment 제거
+  u.hash = "";
+  
+  let s = u.toString();
+  if(s.length > URL_MAX) {
+    return{ok:false, msg: `URL이 너무 깁니다. 최대 ${URL_MAX}자까지 허용됩니다.`}
+  }
+  if (s.length > PRODUCT_URL_DB_MAX) {
+    // 2) 모든 쿼리스트링 제거 후 한 번 더 시도
+    u.search = "";
+    s = u.toString();
+    if (s.length > PRODUCT_URL_DB_MAX) {
+      return { ok: false, msg: `URL이 너무 깁니다. 최대 ${PRODUCT_URL_DB_MAX}자까지 허용됩니다.` };
+    }
+  }
+  return { ok: true, value: s };
+}
+
 
 export default function Write() {
   const navigate = useNavigate();
@@ -54,15 +104,20 @@ export default function Write() {
 
   const validate = () => {
     if (!title.trim()) return { ok: false, msg: "제목을 입력해주세요." };
-    if (title.trim().length > titleLimit)
-      return { ok: false, msg: `제목은 ${titleLimit}자 이내로 입력해주세요.` };
+    if (title.trim().length > titleLimit) return { ok: false, msg: `제목은 ${titleLimit}자 이내로 입력해주세요.` };
     if (!productName.trim()) return { ok: false, msg: "제품명을 입력해주세요." };
     if (!price.trim()) return { ok: false, msg: "가격을 입력해주세요." };
-    if (isNaN(Number(price.replaceAll(",", ""))))
-      return { ok: false, msg: "가격은 숫자만 입력해주세요." };
+    if (isNaN(Number(price.replaceAll(",", "")))) return { ok: false, msg: "가격은 숫자만 입력해주세요." };
     if (!category) return { ok: false, msg: "카테고리를 선택해주세요." };
+
+    if (url) {
+      const sv = sanitizeProductUrl(url);
+      if (!sv.ok) return { ok: false, msg: sv.msg };
+    }
     return { ok: true };
   };
+
+
 
   // 1) 이미지 먼저 업로드 → 2) 응답 URL을 mainImageUrl로 사용
   async function uploadImage(file, token) {
@@ -110,16 +165,27 @@ export default function Write() {
       }
 
       // 2) 게시글 생성(JSON)
+      const safeUrl = sanitizeProductUrl(url);
+      if (!safeUrl.ok) {
+        return Swal.fire({
+          icon: "warning",
+          text: safeUrl.msg,
+          confirmButtonText: "확인",
+          confirmButtonColor: "#1f8954ff",
+        });
+      }
+
       const body = {
         title: title.trim(),
         category,
         productName: productName.trim(),
-        productUrl: url.trim() || null,
+        ...(safeUrl.value ? { productUrl: safeUrl.value } : {}), // 값이 있을 때만 key 포함
         productDesc: price.trim(),
         desiredMemberCount: Number(people),
         content: desc.trim(),
-        mainImageUrl,                              // 업로드 URL (없으면 null)
+        ...(mainImageUrl ? { mainImageUrl } : {}),
       };
+
 
       const res = await fetch(`${API_BASE}/posts`, {
         method: "POST",
