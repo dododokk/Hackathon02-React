@@ -247,7 +247,7 @@ function MyPage() {
     } else if (!place && addressText && addressText.trim()) {
       geocode(addressText).catch(() => { });
     }
-  }, [userAddress, place, addressText, geocode]);
+  }, [userAddress, addressText]);
 
   // 마커 표시
   useEffect(() => {
