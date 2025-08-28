@@ -12,7 +12,7 @@ import { UnreadProvider } from './context/UnreadContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <MapProvider>
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <UserProvider>
         <AuthProvider>
           <UnreadProvider>
