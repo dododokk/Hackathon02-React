@@ -1,24 +1,24 @@
 {
   "files": {
-    "main.css": "/Hackathon02-React.git/static/css/main.baebbc9d.css",
-    "main.js": "/Hackathon02-React.git/static/js/main.d272dc26.js",
-    "static/js/453.81ac011e.chunk.js": "/Hackathon02-React.git/static/js/453.81ac011e.chunk.js",
-    "static/media/location.png": "/Hackathon02-React.git/static/media/location.4f2dfa9b59836c0af23c.png",
-    "static/media/thumb2.png": "/Hackathon02-React.git/static/media/thumb2.b18576a6289d902df8d8.png",
-    "static/media/thumb3.png": "/Hackathon02-React.git/static/media/thumb3.b9f002ecf6aca5bfc17e.png",
-    "static/media/thumb1.png": "/Hackathon02-React.git/static/media/thumb1.ffed08ff03f856695404.png",
-    "static/media/exampleIMG.png": "/Hackathon02-React.git/static/media/exampleIMG.8813209d7076321881df.png",
-    "static/media/firework.png": "/Hackathon02-React.git/static/media/firework.69c9251c876c55090de7.png",
-    "static/media/thumb.png": "/Hackathon02-React.git/static/media/thumb.b78cae612aa53a15c526.png",
-    "static/media/cart.png": "/Hackathon02-React.git/static/media/cart.ff12da858389caca7d8b.png",
-    "static/media/notification.png": "/Hackathon02-React.git/static/media/notification.8e63cd3f77e3cc4a4101.png",
-    "index.html": "/Hackathon02-React.git/index.html",
-    "main.baebbc9d.css.map": "/Hackathon02-React.git/static/css/main.baebbc9d.css.map",
-    "main.d272dc26.js.map": "/Hackathon02-React.git/static/js/main.d272dc26.js.map",
-    "453.81ac011e.chunk.js.map": "/Hackathon02-React.git/static/js/453.81ac011e.chunk.js.map"
+    "main.css": "/Hackathon02-React/static/css/main.4a4ab731.css",
+    "main.js": "/Hackathon02-React/static/js/main.8e6d55e7.js",
+    "static/js/453.81ac011e.chunk.js": "/Hackathon02-React/static/js/453.81ac011e.chunk.js",
+    "static/media/location.png": "/Hackathon02-React/static/media/location.4f2dfa9b59836c0af23c.png",
+    "static/media/thumb2.png": "/Hackathon02-React/static/media/thumb2.b18576a6289d902df8d8.png",
+    "static/media/thumb3.png": "/Hackathon02-React/static/media/thumb3.b9f002ecf6aca5bfc17e.png",
+    "static/media/thumb1.png": "/Hackathon02-React/static/media/thumb1.ffed08ff03f856695404.png",
+    "static/media/exampleIMG.png": "/Hackathon02-React/static/media/exampleIMG.8813209d7076321881df.png",
+    "static/media/firework.png": "/Hackathon02-React/static/media/firework.69c9251c876c55090de7.png",
+    "static/media/thumb.png": "/Hackathon02-React/static/media/thumb.b78cae612aa53a15c526.png",
+    "static/media/cart.png": "/Hackathon02-React/static/media/cart.ff12da858389caca7d8b.png",
+    "static/media/notification.png": "/Hackathon02-React/static/media/notification.8e63cd3f77e3cc4a4101.png",
+    "index.html": "/Hackathon02-React/index.html",
+    "main.4a4ab731.css.map": "/Hackathon02-React/static/css/main.4a4ab731.css.map",
+    "main.8e6d55e7.js.map": "/Hackathon02-React/static/js/main.8e6d55e7.js.map",
+    "453.81ac011e.chunk.js.map": "/Hackathon02-React/static/js/453.81ac011e.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.baebbc9d.css",
-    "static/js/main.d272dc26.js"
+    "static/css/main.4a4ab731.css",
+    "static/js/main.8e6d55e7.js"
   ]
 }
