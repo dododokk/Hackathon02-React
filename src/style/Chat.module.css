@@ -19,9 +19,10 @@
     flex-shrink: 0;
     border-radius: 30px;
     background: rgba(254, 248, 248, 0.50);
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
+    border: 0.5px solid rgba(151, 151, 151, 0.4);
     margin: 0 auto;
-    margin-top: clamp(20px, 8vh, 60px);
+    margin-bottom: 40px;
+    margin-top: clamp(10px, 1vh, 60px);
     padding-top: clamp(1px, 1vh, 30px);
     /* 여기까지 회색 틀 쓸때 공통 css */
 
@@ -78,6 +79,7 @@
 }
 
 .title {
+    /* font-family: "NexonLv1Gothic"; */
     flex: 1 1 auto;
     min-width: 0;
     margin-top: 10px;
@@ -250,7 +252,7 @@
 
 /* 내 메시지: 오른쪽 초록 */
 .me .bubble {
-    background: #D9F7C7; /* 연초록 */
+    background: #91a7889f; /* 연초록 */
     color: #1e3a2f;
     border-top-right-radius: 6px;
 }
