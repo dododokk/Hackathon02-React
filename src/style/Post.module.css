@@ -1,3 +1,4 @@
+
 *, *::before, *::after { box-sizing: border-box; }
 :root{
   --brand: #2c9c61;
@@ -31,41 +32,45 @@
 
 /* 큰 카드 컨테이너 */
 .card{
+  border-radius: 20px;
+border: 0.5px solid rgba(0,0,0,.08);
+background: rgba(254, 248, 248, 0.50);
     min-width: 860px;
   padding: 16px;
   width: 861px;
-height: 600px;
+height: 610px;
 margin-inline: auto;
 box-sizing: border-box;
 flex-shrink: 0;
-border-radius: 20px;
-background: rgba(254, 248, 248, 0.50);
-box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
 }
 
 /* 상단: 썸네일 + 우측 영역 */
 .top{
-  display: grid;
-  grid-template-columns: 250px minmax(0, 1fr);
   gap: 16px;
   height: 250px;
-  align-items: start;
+  flex-direction: column;
   min-width: 0;
 }
 .thumb{
-  width: 250px;
-  height: 250px;
+  width: 150px;
+  height: 150px;
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 10px;
   display: block;
 }
 .topRight{
     width: auto;
   min-width: 0;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 3px;
-  padding-top: 10px;
+  padding: 10px;
+}
+.Right{
+  padding: 0 20px;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
 }
 
 /* 제목 + 인원 pill */
@@ -77,6 +82,7 @@ box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
   min-width: 0;
 }
 .title{
+  font-family: "NexonLv1Gothic";
     margin: 0;
     flex:1 1 auto; min-width:0;
     word-break: keep-all; overflow-wrap: anywhere;
@@ -116,9 +122,9 @@ background: rgba(217, 217, 217, 0.50);
 }
 
 /* 작성자/날짜 */
-.metaRow{ margin-top: 5px; display:flex; align-items:center; gap:10px; min-width:0; color:#6d6d6d; font-size:14px; }
+.metaRow{ margin-top: 55px; display:flex; align-items:center; gap:10px; min-width:0; color:#6d6d6d; font-size:14px; }
 .author{ display:inline-flex; align-items:center; gap:8px; }
-.profile{ width:47px; height:47px; display:block; }
+.profile{ width:42px; height:42px; display:block; }
 .nickname{ font-weight:500; color:#595959; font-size: 18px;}
 .date{ margin-left:auto; white-space:nowrap; color:#8a8a8a; margin-top: auto;}
 
@@ -126,7 +132,9 @@ background: rgba(217, 217, 217, 0.50);
 .hr{ height:1px; width:100%; background: rgba(0,0,0,.08); margin: 4px 0 6px; }
 
 /* 제품명/가격 줄 */
-.productRow{ display:flex; align-items:center; gap:16px; min-width:0; }
+.productRow{ display:flex; align-items:center; gap:16px; min-width:0;
+  padding: 10px;
+}
 .productLeft{
   flex:1 1 auto; min-width:0;
   display:flex;
@@ -142,6 +150,7 @@ font-weight: 400;
 line-height: normal;
 letter-spacing: 0.32px;
 }
+
 .productName{ white-space:normal; overflow:visible; text-overflow: clip; word-break: keep-all; overflow-wrap: anywhere;
 color: #595959;
 font-family: Pretendard;
@@ -177,12 +186,13 @@ margin-right: auto;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-top: 10px;
 }
 .price{
   color: #595959;
   font-family: Pretendard, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: .5px;
   margin: 0;
   margin-bottom: 20px;
@@ -233,14 +243,28 @@ letter-spacing: 0.32px;
 .chips{ display:flex; align-items:center; gap: 8px; flex-wrap: wrap; }
 .addressChip{
   display:inline-flex; align-items:center; gap:6px;
-  background: var(--chip); border-radius: 999px; height: 28px; padding: 0 10px;
-  color:#6d6d6d; font-size: 13px;
+  background: var(--chip); border-radius: 999px; height: 37px; padding: 15px;
+  color:#595959; font-size: 17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.addrIcon{ width:14px; height:14px; display:block; }
+.addrIcon{ width:18px; height:18px; display:block; }
 .addrText{ white-space:nowrap; }
 .chipBtn{
-  height: 28px; padding: 0 10px; border-radius: 999px; border:0;
-  background: #e8f0e6; color:#3b6b4a; font-weight:600; cursor:pointer;
+  height: 37px; padding: 12px; border-radius: 999px; border:0;
+  background: #CFDFC5; color:#595959; font-weight:500; cursor:pointer;
+  font-size: 17px;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+}
+.category{
+  display: flex;
+  justify-content: center;  
+  align-items: center;
+  height: 37px; padding: 0 10px; border-radius: 999px; border:0;
+  background: #CFDFC5; color:#595959; font-weight:450;  font-size: 17px;
 }
 
 .cta{ 
@@ -267,7 +291,7 @@ letter-spacing: 0.32px;
     transition: background-color .2s ease, transform .15s ease, box-shadow .2s;
   min-width:96px; height:36px; padding:0 16px;
   border-radius:999px; border:0; background:#b7d8b7;
-  color:#2c6c3c; font-weight:800; cursor:pointer;
+  color:#CFDFC5; font-weight:800; cursor:pointer;
 }
 .btnPrimary:hover{
   background: #a7cfa7;                 /* 포인트 컬러 살짝 진해짐 */

@@ -23,7 +23,7 @@ function Post() {
   const [applying, setApplying] = useState(false);
   const [applyErr, setApplyErr] = useState(null);
 
-  // ✅ 추가: 이미 신청 여부 / 작성자 여부
+  // ✅ 이미 신청 여부 / 작성자 여부
   const [hasApplied, setHasApplied] = useState(false);
   const [isAuthor, setIsAuthor] = useState(false);
 
@@ -40,18 +40,20 @@ function Post() {
     if (!token) return null;
     try {
       const base64Url = token.split(".")[1];
+      // base64url -> base64
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const json = decodeURIComponent(
         atob(base64)
           .split("")
-          .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
           .join("")
       );
-    return JSON.parse(json);
+      return JSON.parse(json);
     } catch {
       return null;
     }
   };
+
   useEffect(() => {
     const controller =
       typeof AbortController !== "undefined" ? new AbortController() : null;
@@ -99,48 +101,49 @@ function Post() {
         setPost({ ...baseData, currentMemberCount: applicantCount });
 
         const me = getUserFromToken();
-          if (me) {
-            // ⚠️ 백엔드가 무엇을 author에 담는지에 따라 비교 키를 선택하세요.
-            // 가장 좋은 건 'id' 비교. 없으면 email/nickname 등 대체.
-            const myId = me.userId || me.sub || me.id;
-            const authorId = baseData?.author?.id || baseData?.authorId;
-            if (myId && authorId) {
-              setIsAuthor(String(myId) === String(authorId));
-            } else if (me.nickname && baseData?.author?.nickname) {
-              setIsAuthor(me.nickname === baseData.author.nickname);
-            }
+        if (me) {
+          // ⚠️ 백엔드가 무엇을 author에 담는지에 따라 비교 키를 선택하세요.
+          const myId = me.userId || me.sub || me.id;
+          const authorId = baseData?.author?.id || baseData?.authorId;
+          if (myId && authorId) {
+            setIsAuthor(String(myId) === String(authorId));
+          } else if (me.nickname && baseData?.author?.nickname) {
+            setIsAuthor(me.nickname === baseData.author.nickname);
           }
-        
+        }
 
+        // ✅ 내 신청 여부 조회 (APPROVED만 "이미 신청함"으로 간주)
         try {
-          const aRes = await fetch(
-            `${API_BASE}/posts/${postId}/applications`,
-            {
-              method: "GET",
-              headers: auth,
-              ...(controller ? { signal: controller.signal } : {}),
-            }
-          );
+          const aRes = await fetch(`${API_BASE}/posts/${postId}/applications`, {
+            method: "GET",
+            headers: auth,
+            ...(controller ? { signal: controller.signal } : {}),
+          });
           if (aRes.ok) {
             const raw = await aRes.json().catch(() => null);
-            const list =
-              Array.isArray(raw) ? raw :
-              Array.isArray(raw?.data) ? raw.data :
-              raw ? [raw] : [];
+            const list = Array.isArray(raw)
+              ? raw
+              : Array.isArray(raw?.data)
+              ? raw.data
+              : raw
+              ? [raw]
+              : [];
             const me = getUserFromToken();
             const myId = me?.userId ?? me?.sub ?? me?.id;
-            const applied = myId != null && list.some(a =>
-              String(a.applicantId) === String(myId) &&
-              // 필요한 상태들 추가
-              (a.status === "APPLIED" || a.status === "APPROVED" || a.status === "JOINED")
-            );
+
+            // 🔒 정책: 서버 기준으로 APPROVED 상태만 신청 중으로 판단
+            const applied =
+              myId != null &&
+              list.some(
+                (a) => String(a.applicantId) === String(myId) && a.status === "APPROVED"
+              );
 
             setHasApplied(Boolean(applied));
           } else if (aRes.status === 404) {
             setHasApplied(false);
           }
         } catch {
-          // 엔드포인트 없거나 실패해도 치명적이지 않음 (아래 409로도 막힘)
+          // 엔드포인트 없거나 실패해도 치명적이지 않음 (아래 409로도 방어)
         }
       } catch (e) {
         if (e.name !== "AbortError") setErr(e);
@@ -246,7 +249,7 @@ function Post() {
       }
       if (res.status === 409) {
         // ✅ 서버에서 이미 신청/마감 충돌
-        setHasApplied(true); // 이미 신청으로 취급 (마감 충돌일 수도 있지만 버튼 비활성화 목적엔 문제 없음)
+        setHasApplied(true); // 버튼 비활성화를 위해 이미 신청으로 처리
         Swal.fire({
           icon: "info",
           text: "이미 신청한 글입니다.",
@@ -270,11 +273,8 @@ function Post() {
         body = await res.json();
       } catch {}
 
-      
       if (body && typeof body.currentMemberCount === "number") {
-        setPost((p) =>
-          p ? { ...p, currentMemberCount: body.currentMemberCount } : p
-        );
+        setPost((p) => (p ? { ...p, currentMemberCount: body.currentMemberCount } : p));
       } else {
         // count 재조회
         const auth = getAuthHeaders();
@@ -292,50 +292,40 @@ function Post() {
               ? b.count
               : Number(b?.count ?? 0) || 0;
         }
+        setPost((p) => (p ? { ...p, currentMemberCount: applicantCount } : p));
+      }
+
+      if (body && typeof body.currentMemberCount === "number") {
         setPost((p) =>
           p
             ? {
                 ...p,
-                currentMemberCount: applicantCount,
+                currentMemberCount: body.currentMemberCount,
+                desiredMemberCount: body.desiredMemberCount ?? p.desiredMemberCount,
               }
             : p
         );
-      }
 
-      if (body && typeof body.currentMemberCount === "number") {
-      setPost((p) =>
-        p
-          ? {
-              ...p,
-              currentMemberCount: body.currentMemberCount,
-              desiredMemberCount: body.desiredMemberCount ?? p.desiredMemberCount,
-            }
-          : p
-      );
-
-      if (body.currentMemberCount === body.desiredMemberCount) {
-        try {
-          const chatRes = await fetch(
-            `${API_BASE}/posts/${postId}/chatroom`,
-            {
+        if (body.currentMemberCount === body.desiredMemberCount) {
+          try {
+            const chatRes = await fetch(`${API_BASE}/posts/${postId}/chatroom`, {
               method: "POST",
               headers: getAuthHeaders(),
               credentials: "include",
-            }
-          );
+            });
 
-          if (chatRes.status === 201) {
-            console.log("채팅방 생성 완료");
-          } else if (chatRes.status === 200) {
-            console.log("이미 채팅방이 존재하여 입장 완료");
-          } else {
+            if (chatRes.status === 201) {
+              console.log("채팅방 생성 완료");
+            } else if (chatRes.status === 200) {
+              console.log("이미 채팅방이 존재하여 입장 완료");
+            } else {
+              console.log("채팅방 생성 오류");
+            }
+          } catch (e) {
             console.log("채팅방 생성 오류");
           }
-        } catch (e) {
-          console.log("채팅방 생성 오류");
         }
       }
-    }
 
       Swal.fire({
         icon: "success",
@@ -387,8 +377,7 @@ function Post() {
   }
 
   const isClosed =
-    post?.desiredMemberCount &&
-    post?.currentMemberCount >= post.desiredMemberCount;
+    post?.desiredMemberCount && post?.currentMemberCount >= post.desiredMemberCount;
 
   const primaryDisabled = applying || isClosed || isAuthor || hasApplied;
   const primaryTitle = isClosed
@@ -416,37 +405,39 @@ function Post() {
       {post && (
         <article className={styles.card}>
           <header className={styles.top}>
-            <img
-              className={styles.thumb}
-              src={getDirectImageUrl(post.mainImageUrl)}
-              alt=""
-              onError={(e) => {
-                e.currentTarget.src = FALLBACK_IMG;
-                e.currentTarget.onerror = null;
-              }}
-            />
+            
             <div className={styles.topRight}>
-              <div className={styles.titleRow}>
-                <h1 className={styles.title}>{post.title}</h1>
-                <span className={styles.pill}>
-                  {post.currentMemberCount}/{post.desiredMemberCount}명
-                </span>
-              </div>
-              <div className={styles.metaRow}>
-                <div className={styles.author}>
-                  <img className={styles.profile} src={profile} alt="" />
-                  <span className={styles.nickname}>
-                    {post.author?.nickname}
+              <img
+                className={styles.thumb}
+                src={getDirectImageUrl(post.mainImageUrl)}
+                alt=""
+                onError={(e) => {
+                  e.currentTarget.src = FALLBACK_IMG;
+                  e.currentTarget.onerror = null;
+                }}
+              />
+              <div className={styles.Right}>
+                <div className={styles.titleRow}>
+                  <h1 className={styles.title}>{post.title}</h1>
+                  <span className={styles.pill}>
+                    {post.currentMemberCount}/{post.desiredMemberCount}명
                   </span>
                 </div>
-                <time className={styles.date}>{post.createdAt}</time>
+                <div className={styles.metaRow}>
+                  <div className={styles.author}>
+                    <img className={styles.profile} src={profile} alt="" />
+                    <span className={styles.nickname}>{post.author?.nickname}</span>
+                  </div>
+                  <time className={styles.date}>{post.createdAt}</time>
+                </div>
               </div>
-              <div className={styles.hr} />
+              
+            </div>
+            <div className={styles.hr}></div>
               <div className={styles.productRow}>
                 <div className={styles.productLeft}>
                   <span className={styles.smallLabel}>제품명</span>
                   <div className={styles.productName}>{post.productName}</div>
-                  <div className={styles.tag}>#{post.category}</div>
                 </div>
                 <aside className={styles.priceBox}>
                   <div className={styles.price}>
@@ -456,7 +447,6 @@ function Post() {
                   <div className={styles.total}>total {post.productDesc}원</div>
                 </aside>
               </div>
-            </div>
           </header>
 
           <section className={styles.descCard}>
@@ -466,12 +456,7 @@ function Post() {
 
           <footer className={styles.footer}>
             <div className={styles.chips}>
-              <span className={styles.addressChip}>
-                <img className={styles.addrIcon} src={addressIcon} alt="" />
-                <span className={styles.addrText}>
-                  {post.author?.roadAddress}
-                </span>
-              </span>
+              <div className={styles.category}>#{post.category}</div>
               {post.productUrl && (
                 <a
                   href={post.productUrl}
@@ -479,16 +464,16 @@ function Post() {
                   rel="noreferrer"
                   className={styles.chipBtn}
                 >
-                  상품 URL 열기
+                   URL 
                 </a>
               )}
+              <span className={styles.addressChip}>
+                <img className={styles.addrIcon} src={addressIcon} alt="" />
+                <span className={styles.addrText}>{post.author?.roadAddress}</span>
+              </span>
             </div>
             <div className={styles.cta}>
-              <button
-                className={styles.btnGhost}
-                onClick={() => navigate(-1)}
-                disabled={applying}
-              >
+              <button className={styles.btnGhost} onClick={() => navigate(-1)} disabled={applying}>
                 나가기
               </button>
               <button
