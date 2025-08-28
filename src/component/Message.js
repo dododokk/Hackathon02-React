@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../style/Message.module.css";
 import InnerTitle from "./InnerTitle";
-import folder from "../img/folder.png";
+import folder from "../img/fold.png";
 import message from "../img/message.png";
 import profile from "../img/profile.png";
 import { useNavigate } from "react-router-dom";

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../style/Notification.module.css";
 import InnerTitle from "./InnerTitle";
-import folder from "../img/folder.png";
+import folder from "../img/fold.png";
 import notification from "../img/notification.png";
 import thumb from "../img/thumb.png";
 import { API_BASE } from "../config";
