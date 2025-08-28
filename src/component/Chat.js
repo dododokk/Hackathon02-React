@@ -187,6 +187,10 @@ function Chat() {
         };
     }, [roomId, WS_BASE]);
 
+    useEffect(() => {
+        if (roomId) localStorage.setItem("currentChatRoomId", String(roomId));
+        return () => localStorage.removeItem("currentChatRoomId");
+    }, [roomId]);
 
     // 메시지 전송
     const onSubmit = (e) => {
