@@ -12,9 +12,10 @@
 
 .folderContainer{
     /* position: relative; */
-    width: clamp(300px, 65vw, 1000px);
-    height: clamp(200px, 80vh, 1000px);
+    width: clamp(300px, 55vw, 1000px);
+    height: clamp(200px, 65vh, 1000px);
     margin: 0 auto;
+    margin-top: 25px;
 
     background-size: 100% 100%;
     background-position: top center;
@@ -35,12 +36,12 @@
 .messageImg{
     width: 7%;
     height: auto;
-    margin-top: clamp(20px, 10vh, 100px);
+    margin-top: clamp(20px, 5vh, 100px);
     margin-left: clamp(20px, 5vw, 60px);
 }
 
 .messageTitle{
-    margin-top: clamp(20px, 12vh, 120px);
+    margin-top: clamp(20px, 6vh, 120px);
 }
 
 .headerHr{

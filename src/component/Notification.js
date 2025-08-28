@@ -134,7 +134,6 @@ function Notification() {
                     <img src={notification} className={styles.notificationImg} />
                     <h2 className={styles.notificationTitle}>알림</h2>
                 </div>
-                <hr className={styles.headerHr} />
 
                 <div className={styles.notificationList}>
                     {notifications.map((noti) => (

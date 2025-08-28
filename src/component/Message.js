@@ -99,7 +99,6 @@ function Message() {
                     <img src={message} className={styles.messageImg} alt="msg" />
                     <h2 className={styles.messageTitle}>채팅창</h2>
                 </div>
-                <hr className={styles.headerHr} />
 
                 <div className={styles.messageList}>
                     {chatrooms.length === 0 && (
