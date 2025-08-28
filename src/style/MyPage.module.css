@@ -32,7 +32,7 @@
     flex-shrink: 0;
     border-radius: 30px;
     background: rgba(151, 151, 151, 0.13);
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset;
+    /* box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25) inset; */
     margin: 0 auto;
     margin-top: clamp(20px, 8vh, 60px);
     padding-top: clamp(20px, 4vh, 40px);
@@ -113,9 +113,9 @@
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    /* transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease; */
     margin-left: auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); */
     /* ✅ 기본 그림자 */
 }
 
@@ -201,7 +201,7 @@
     height: 300px;
     border-radius: 12px;
     margin: 20px auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); */
 }
 
 .mywriteContent {
@@ -213,13 +213,13 @@
     background: rgba(151, 151, 151, 0.18);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+    /* box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2); */
 }
 
 .mywrite {
     display: flex;
     justify-content: space-around;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); */
     background: #e5e5e5;
 }
 
@@ -231,18 +231,14 @@
     font-weight: 600;
     font-size: 16px;
     color: #555;
-    box-shadow:
-        inset 6px 6px 10px -4px rgba(0, 0, 0, 0.1);
-    /* 바깥쪽 그림자 */
-    transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.menuItem:first-child {
+/* .menuItem:first-child {
     box-shadow:
         inset 6px 0 6px -4px rgba(0, 0, 0, 0.1),
         inset 6px 6px 10px -4px rgba(0, 0, 0, 0.1),
         inset 0 6px 6px -4px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .menuItem:hover {
     background: #e0e0e0;
@@ -552,9 +548,9 @@
     font-weight: 700;
     font-size: 14px;
     letter-spacing: .2px;
-    box-shadow:
+    /* box-shadow:
         inset 0 -2px 4px rgba(0, 0, 0, .06),
-        0 2px 6px rgba(0, 0, 0, .10);
+        0 2px 6px rgba(0, 0, 0, .10); */
     cursor: default;
 }
 
