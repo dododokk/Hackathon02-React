@@ -12,13 +12,14 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <MapProvider>
     <BrowserRouter>
+      <React.StrictMode>
+    {/* AuthProvider가 항상 바깥쪽에 있어야 합니다. */}
+    <AuthProvider>
       <UserProvider>
-        <AuthProvider>
-          <React.StrictMode>
-            <App />
-          </React.StrictMode>
-        </AuthProvider>
+        <App />
       </UserProvider>
+    </AuthProvider>
+  </React.StrictMode>
     </BrowserRouter>
   </MapProvider>
 );

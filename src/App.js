@@ -1,61 +1,63 @@
-import React from "react";
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import "./App.css";
-import Home from "./component/Home";
-import Title from "./component/Title";
-import Login from "./component/Login";
-import Register from "./component/Register";
-import Main from "./component/Main";
-import MyPage from "./component/MyPage";
-import Message from "./component/Message";
-import Notification from "./component/Notification";
-import Chat from "./component/Chat";
-import Post from "./component/Post";
-import Write from "./component/Write";
-import background from "./img/background.png";
-import introImg from "./img/exampleIMG.png"; //예시 이미지. 사이트 다 만들고 나면 우리 사이트 화면 사진으로 변경하기!
+// App.js 예시
+
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+// 컴포넌트 import
+import Home from './component/Home';
+import Login from './component/Login';
+import Register from './component/Register';
+import Main from './component/Main';
+import MyPage from './component/MyPage';
+import Notification from './component/Notification';
+import Message from './component/Message';
+import Chat from './component/Chat';
+import Post from './component/Post';
+import Write from './component/Write';
+
+// 1. 방금 만든 ProtectedRoute를 import 합니다.
+import ProtectedRoute from './component/ProtectedRoute';
 
 function App() {
-  //배경화면 설정 위한 인라인 css
-  const backgroundStyle = {
-    // position: "fixed",   // 화면 고정
-    top: 0,
-    left: 0,
-    width: "auto",
-    height: "auto",
-    margin: 0,
-    padding: 0,
-    overflowX: 'hidden',
-    // overflow: "hidden",  // 스크롤 방지
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-
-    backgroundImage: `url(${background})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed'
-  };
-
-  const navigate = useNavigate();
-
   return (
-    <div className="App" style={backgroundStyle}>
       <Routes>
+        {/* 로그인이 필요 없는 페이지 */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/main" element={<Main />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/message" element={<Message />} />
-        <Route path="/notification" element={<Notification />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/post/:postId" element={<Post />} />
-        <Route path="/write" element={<Write />}/>
+
+        {/* ▼▼▼ 로그인이 필요한 페이지들을 ProtectedRoute로 감싸줍니다 ▼▼▼ */}
+        <Route
+          path="/main"
+          element={<ProtectedRoute><Main /></ProtectedRoute>}
+        />
+        <Route
+          path="/mypage"
+          element={<ProtectedRoute><MyPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/notification"
+          element={<ProtectedRoute><Notification /></ProtectedRoute>}
+        />
+        <Route
+          path="/message"
+          element={<ProtectedRoute><Message /></ProtectedRoute>}
+        />
+        <Route
+          path="/chat"
+          element={<ProtectedRoute><Chat /></ProtectedRoute>}
+        />
+         <Route
+          path="/post/:postId"
+          element={<ProtectedRoute><Post /></ProtectedRoute>}
+        />
+         <Route
+          path="/write"
+          element={<ProtectedRoute><Write /></ProtectedRoute>}
+        />
+        {/* ▲▲▲ 여기까지 ▲▲▲ */}
+
       </Routes>
-    </div>
   );
 }
 

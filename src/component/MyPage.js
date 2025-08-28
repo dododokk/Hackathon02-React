@@ -218,9 +218,9 @@ function Content({ which }) {
 }
 
 function MyPage() {
-  const { userId, userName, userInterest, userAddress, setUserId, setUserPw } =
+  const { userId, userName, userInterest, userAddress, setUserId, setUserPw, setUserName, setUserAddress, setUserInterest } =
     useContext(UserContext);
-  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  const { setIsLoggedIn } = useContext(AuthContext);
   const mapRef = useRef(null);
   const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState("menu1");
@@ -258,11 +258,17 @@ function MyPage() {
   }, [place, clearMarkers, addMarker, setCenter]);
 
   const handleLogout = () => {
-    // 나중에 실제 토큰 키 사용
-    // localStorage.removeItem("token");
+      localStorage.removeItem("jwt"); // 👈 브라우저에서 토큰 삭제 (매우 중요!)
+    
+    // AuthContext 상태 업데이트
     setIsLoggedIn(false);
+    
+    // UserContext 상태 초기화
     setUserId("");
-    setUserPw("");
+    setUserName("");
+    setUserAddress("");
+    setUserInterest([]);
+    
     navigate("/");
   };
 

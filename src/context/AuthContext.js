@@ -1,29 +1,21 @@
-// 전역으로 로그인 상태 관리
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { UserContext } from "./UserContext";
-import { API_BASE } from "../config";
+// src/context/AuthContext.js
+
+import React, { createContext, useState, useEffect } from "react";
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const {setUserId, setUserName, setUserInterest, setUserAddress } = useContext(UserContext);
 
+  // AuthProvider는 오직 'isLoggedIn' 상태만 관리합니다.
   useEffect(() => {
+    // 앱이 처음 로드될 때 localStorage에서 토큰을 확인합니다.
     const token = localStorage.getItem("jwt");
     if (token) {
+      // 토큰이 있으면 로그인 상태로 설정합니다.
       setIsLoggedIn(true);
-      fetch(`${API_BASE}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(res => res.json())
-        .then(data => {
-          setUserId(data.username);
-          setUserName(data.nickname);
-          setUserInterest(data.interests);
-          setUserAddress(data.roadAddress);
-        });
     }
-  }, []);
+  }, []); // 최초 1회만 실행
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
@@ -31,5 +23,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);
