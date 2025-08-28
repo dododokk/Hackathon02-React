@@ -1,10 +1,10 @@
 .header {
-    text-align: center;
-    margin: 0 auto;
+    text-align: right;     /* ✅ 오른쪽 정렬 */
+    margin: 0 320px;
 }
 
 .title {
-    color: rgba(255, 255, 255, 0.95);
+    color: #91A788;
     text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
     font-family: "Partial Sans KR";
     font-size: clamp(32px, 8vw, 70px);
@@ -12,11 +12,17 @@
     font-weight: 400;
     line-height: normal;
     letter-spacing: 1.6px;
-    margin-bottom: 8px;
+    margin-bottom: 20px;
     margin-top: 40px;
     cursor: pointer;
 }
 
-.headerdiv{
+.headerdiv {
+    padding-top: 30px;
     min-width: 700px;
+}
+.topbar{
+    color: #91A788;
+    height: 28px;
+    width: 100%;
 }

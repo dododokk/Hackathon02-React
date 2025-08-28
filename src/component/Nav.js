@@ -13,7 +13,7 @@ function Nav() {
     ];
 
     return (
-        <nav>
+        <nav className={styles.nav}>
             <div className={styles.menuBar}>
                 {menus.map((menu) => (
                     <span
@@ -31,7 +31,6 @@ function Nav() {
                 ))}
 
             </div>
-            <hr />
         </nav >
     );
 }

@@ -1,52 +1,62 @@
+/* ===== NAV WRAPPER (필요하면 <nav class="nav"> 로 감싸기) ===== */
+.nav {
+    width: 920px;                 
+    margin: 0 auto;               /* 가운데 위치하되, 내부 메뉴는 왼쪽 정렬 */
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 0.5px solid #979797;
+    border-top: 0.5px solid #979797;
+    align-items: center;
+}
+
+/* ===== 메뉴 바 ===== */
 .menuBar {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    text-align: center;
-    width: clamp(700px, 60vw, 900px);
-    gap: clamp(60px, 10vw, 100px);
-    margin-top: 30px;
+    flex-wrap: wrap;              /* 줄바꿈 대응 */
+    justify-content: flex-start;  /* ✅ 왼쪽 정렬 핵심 */
+    align-items: center;
+    gap: 32px;                    /* 메뉴 간격 (원하는 값으로 조절) */
+    width: 100%;                  /* 부모(nav) 전체 폭 사용 */
+    margin: 0;                    /* 가운데 정렬 방지 */
+    text-align: left;             /* 혹시 상위가 center여도 안전하게 */
 }
 
+/* ===== 메뉴 아이템 ===== */
 .menu {
-    flex: 1;
-    color: #474747;
-    font-family: Pretendard;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 300;
-    line-height: normal;
-    letter-spacing: 0.48px;
-    white-space: nowrap;
-}
-
-nav hr {
-    border: none;
-    border-top: 1.5px solid #474747;
-    margin-top: 10px;
-    width: 110%;
-    margin-left: -5%;
-}
-
-.menu:hover {
-    color: #245112;
-    text-shadow: 0 4px 4px rgba(36, 81, 18, 0.50);
-    font-family: Pretendard;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    letter-spacing: 0.48px;
+    font-family: "Pretendard", sans-serif;  /* 기존 폰트 유지 */
+    font-size: 15px;               /* 기존 tab-btn 과 동일 */
+    font-weight: 700;
+    color: #929292;
+    line-height: 30px;
+    height: 30px;
+    padding: 0 4px;               /* 클릭 여유 */
     cursor: pointer;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    text-align: center;           /* 버튼 안 글자만 중앙 정렬 */
 }
 
-.active{
-    color: #245112;
-    text-shadow: 0 4px 4px rgba(36, 81, 18, 0.50);
-    font-family: Pretendard;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    letter-spacing: 0.48px;
+/* hover & active 상태 */
+.menu:hover,
+.menu.active {
+    color: #111;
+}
+
+/* ===== 불필요했던 중앙 정렬 유발 스타일 무력화 ===== */
+/* 혹시 상위에 text-align:center가 있어도 영향 없게 */
+.header, nav {
+    text-align: left;
+}
+
+/* 과거에 사용한 hr 스타일이 있다면 비활성화 (border-bottom으로 대체) */
+nav hr {
+    display: none;
+}
+.hr{
+    height: 1px;
+    width: 900px;
+    border: #424242;
+}
+.nav{
+    flex-direction: column;
 }
