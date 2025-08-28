@@ -330,7 +330,7 @@
   line-height: 1.4;
   min-width: 0;
   width: 400px;
-  height: 50px;
+  height: 52px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   /* 스샷처럼 2줄만 */
