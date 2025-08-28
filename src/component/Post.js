@@ -107,7 +107,7 @@ function Post() {
 
         try {
           const aRes = await fetch(
-            `${API_BASE}/posts/${postId}/applications/me`,
+            `${API_BASE}/posts/${postId}/applications`,
             {
               method: "GET",
               headers: auth,
@@ -115,9 +115,16 @@ function Post() {
             }
           );
           if (aRes.ok) {
-            // 200이면 이미 신청으로 간주
-            const data = await aRes.json().catch(() => ({}));
-            setHasApplied(Boolean(data?.applied ?? true));
+            const list = await aRes.json().catch(() => []);
+            const me = getUserFromToken();
+            const myId = me?.userId || me?.sub || me?.id;
+            const applied = Array.isArray(list) && list.some(
+              (a) =>
+                String(a.applicantId) === String(myId) &&
+                (a.status === "APPLIED" || a.status === "APPROVED")
+            );
+
+            setHasApplied(Boolean(applied));
           } else if (aRes.status === 404) {
             setHasApplied(false);
           }

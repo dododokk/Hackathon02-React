@@ -18,8 +18,9 @@
 }
 
 .subtitle {
+
     color: #595959;
-    font-family: Pretendard;
+    font-family: "NexonLv1Gothic";
     font-size: clamp(10px, 2.5vw, 18px);
     font-style: normal;
     font-weight: 700;
