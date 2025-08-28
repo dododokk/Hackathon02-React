@@ -37,7 +37,7 @@ function App() {
     backgroundSize: 'cover',
     backgroundPosition: 'top',
     backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed'
+    // backgroundAttachment: 'fixed'
   };
 
   const navigate = useNavigate();
