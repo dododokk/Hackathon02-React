@@ -43,6 +43,7 @@ height: 610px;
 margin-inline: auto;
 box-sizing: border-box;
 flex-shrink: 0;
+margin-bottom: 30px;
 }
 
 /* 상단: 썸네일 + 우측 영역 */
@@ -292,7 +293,10 @@ letter-spacing: 0.32px;
     transition: background-color .2s ease, transform .15s ease, box-shadow .2s;
   min-width:96px; height:36px; padding:0 16px;
   border-radius:999px; border:0; background:#91a7889f;
-  color:#91a7889f; font-weight:800; cursor:pointer;
+  color:#424242; font-weight:800; cursor:pointer;
+}
+.btnPrimary:disabled{
+  color:#cfcfcf;
 }
 .btnPrimary:hover{
   background: #CFDFC5;                 /* 포인트 컬러 살짝 진해짐 */

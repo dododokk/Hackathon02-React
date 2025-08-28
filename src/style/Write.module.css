@@ -1,6 +1,19 @@
+.writewrapper{
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  margin-top: 0;
+  /* padding-top: 15px; */
+  min-width: 700px;
+  width: 100%;
+  height: 100vh;
+  overflow-x: auto;       /* ← 가로 스크롤 허용 */
+  overflow-y: auto;   
+}
+
 /* 레이아웃 */
 .container {
-  min-height: calc(100vh - 100px);
+  /* min-height: calc(100vh - 100px); */
   display: flex;
   justify-content: center;
   padding: 32px 16px 64px;
@@ -190,7 +203,9 @@ border: 0.5px solid rgba(0,0,0,.08);
   border-radius: 999px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform .06s ease, box-shadow .15s ease, background .15s ease;
+  transition: transform .06s ease, 
+  /* box-shadow .15s ease,  */
+  background .15s ease;
 }
 .btn:active { transform: translateY(1px); }
 .btnGhost {
@@ -199,7 +214,7 @@ border: 0.5px solid rgba(0,0,0,.08);
 }
 .btnGhost:hover { box-shadow: 0 0 0 4px rgba(87,115,94,0.12) inset; }
 .btnPrimary {
-  background: #a8d4a9;
+  background: #91a7889f;
   color: #1f2a20;
 }
 .btnPrimary:hover { box-shadow: 0 0 0 4px rgba(64,132,96,0.18) inset; }

@@ -145,7 +145,7 @@ export default function Write() {
   };
 
   return (
-    <>
+    <div className={styles.writewrapper}>
       <InnerTitle />
       <main className={styles.container}>
         <section className={styles.card}>
@@ -307,6 +307,6 @@ export default function Write() {
           </form>
         </section>
       </main>
-    </>
+    </div>
   );
 }

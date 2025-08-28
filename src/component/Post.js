@@ -130,15 +130,21 @@ function Post() {
               : [];
             const me = getUserFromToken();
             const myId = me?.userId ?? me?.sub ?? me?.id;
+    
+            const REJECTED_STATUSES = new Set(["REJECTED", "CANCELLED", "CANCELED", "WITHDRAWN", "DENIED"]);
 
-            // 🔒 정책: 서버 기준으로 APPROVED 상태만 신청 중으로 판단
             const applied =
-              myId != null &&
-              list.some(
-                (a) => String(a.applicantId) === String(myId) && a.status === "APPROVED"
-              );
+            myId != null &&
+            list.some((a) => {
+              if (String(a.applicantId) !== String(myId)) return false;
+              const s = String(a.status || "").toUpperCase();
+              if (!s) return true;                  // 상태 없으면 신청중으로 처리
+              if (REJECTED_STATUSES.has(s)) return false;
+              return true;                           // 그 외 상태(PENDING/REQUESTED/WAITING 등) 전부 신청중
+            });
 
-            setHasApplied(Boolean(applied));
+
+            setHasApplied(applied);
           } else if (aRes.status === 404) {
             setHasApplied(false);
           }
