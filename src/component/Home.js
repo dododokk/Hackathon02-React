@@ -22,7 +22,7 @@ function Home() {
     return (
         <div className={styles.Home}>
             <Title />
-            {/* Swiper를 감싸는 새로운 컨테이너. 이 컨테이너가 3개만 보이도록 강제합니다. */}
+            {}
             <div className={styles.sliderContainer}>
                 <Swiper
                     modules={[Autoplay]}

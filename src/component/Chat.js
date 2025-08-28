@@ -279,7 +279,7 @@ function Chat() {
                             <h3 className={styles.title}>{room.postTitle}</h3>
                             <img className={styles.exit} src={exit} alt="exit"
                                 onClick={async () => {
-                                    await readAllQuick(roomId);   // ✅ 여기서 unread=0으로
+                                    await readAllQuick(roomId);
                                     navigate('/message');
                                 }} />
                         </header>

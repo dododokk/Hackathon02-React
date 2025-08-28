@@ -51,7 +51,7 @@ function PostCard({ item, variant = "default", onDelete }) {
             {item.currentMemberCount}/{item.desiredMemberCount}명
           </span>
 
-          {/* 내가 쓴 글 탭만 삭제 버튼 노출 (선택) */}
+          {}
           {onDelete && (
             <button className={styles.delete} onClick={() => onDelete(item.id)}>
               <img src={trash} className={styles.trashImg} alt="delete" />
@@ -239,8 +239,7 @@ function MyPage() {
   const { initMap, addMarker, clearMarkers, setCenter, place, addressText, geocode } = useMap();
 
   const backgroundStyle = {
-    backgroundImage: `url(${ba})`, // 👉 public/img/background.png 에 넣어두세요
-    backgroundSize: "cover",
+    backgroundImage: `url(${ba})`,
     backgroundPosition: "center top",
     backgroundRepeat: "no-repeat",
     minHeight: "100vh",
@@ -300,7 +299,7 @@ function MyPage() {
     <div className={styles.mainWrapper}>
       <InnerTitle />
 
-      {/* 상단 내 정보 */}
+      {}
       <div className={styles.myInfo}>
         <div className={styles.userInfo}>
           <img src={profile} className={styles.profile} alt="" />
@@ -340,7 +339,7 @@ function MyPage() {
         <div ref={mapRef} className={styles.map}></div>
       </div>
 
-      {/* 하단 탭 & 콘텐츠 */}
+      {}
       <div className={styles.mywriteContent}>
         <div className={styles.mywrite}>
           <Label selected={selectedMenu} menu="menu1" onSelect={setSelectedMenu} title="신청중" />

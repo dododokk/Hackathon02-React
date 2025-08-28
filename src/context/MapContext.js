@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useMemo, useRef, useState, useContext } from "react";
 
 /**
- * 전역 지도 컨텍스트 (Naver Maps v3)
  * - map: 네이버 지도 인스턴스
  * - markers: 현재 표시 중인 마커 배열
  * - place: 마지막 지오코딩 결과 { lat, lng, roadAddress, jibunAddress, englishAddress, region, raw }

@@ -254,7 +254,6 @@ function Post() {
         return;
       }
       if (res.status === 409) {
-        // ✅ 서버에서 이미 신청/마감 충돌
         setHasApplied(true); // 버튼 비활성화를 위해 이미 신청으로 처리
         Swal.fire({
           icon: "info",

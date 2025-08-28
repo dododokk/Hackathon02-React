@@ -9,23 +9,6 @@ import { useUnread } from "../context/UnreadContext";
 
 function Notification() {
 
-    // const tempData = [
-    //     {
-    //         "id": 987,                                  // 알림 PK (커서/읽음 처리용)
-    //         "type": "POST_APPLIED",
-    //         "title": "새로운 신청이 도착했어요",
-    //         "message": "민석님이 게시글에 신청했습니다.",
-    //         "refPostId": 55,                             // 관련 게시글 PK
-    //         "postTitle": "한강 피크닉 같이 가실 분 구해요",   // 게시글 제목
-    //         "currentMemberCount": 3,                    // 신청 인원(작성자 1 + 승인 인원)
-    //         "desiredMemberCount": 5,                    // 모집 인원
-    //         "price": 15900,                             // 가격(숫자, KRW)
-    //         "imageUrl": "https://cdn.example.com/pic.jpg", // 대표 이미지 1개
-    //         "isRead": false,
-    //         "createdAt": "2025-08-24T04:30:12Z"
-    //     }
-    // ];
-
     //서버 연결
     const [notifications, setNotifications] = useState([]);
     const [readStates, setReadStates] = useState({});
@@ -138,9 +121,8 @@ function Notification() {
                 <div className={styles.notificationList}>
                     {notifications.map((noti) => (
                         <div key={noti.id} className={styles.notificationCard}>
-                            {/* 빨간 점 (안읽음일 경우만) */}
-                            {/* {!readStates[noti.id] && <span className={styles.unreadDot}></span>} */}
 
+                            
                             <div className={styles.notificationTop}>
                                 <p className={styles.notificationContent}>{noti.title}</p>
                                 <button

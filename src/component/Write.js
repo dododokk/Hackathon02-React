@@ -133,7 +133,7 @@ export default function Write() {
       body: form,
     });
     if (!res.ok) throw new Error(`이미지 업로드 실패 (HTTP ${res.status})`);
-    const data = await res.json(); // { url: "https://..." } 기대
+    const data = await res.json(); 
     if (!data?.url) throw new Error("업로드 응답에 url 없음");
     return data.url;
   }
@@ -216,7 +216,7 @@ export default function Write() {
       <main className={styles.container}>
         <section className={styles.card}>
           <form className={styles.form} onSubmit={onSubmit}>
-            {/* 제목 */}
+        
             <div className={styles.row}>
               <label className={styles.label}>제목</label>
               <div className={styles.flexGrow}>
@@ -232,7 +232,6 @@ export default function Write() {
               </div>
             </div>
 
-            {/* 제품명 / 가격 */}
             <div className={styles.rowFour}>
               <label className={styles.label}>제품명</label>
               <input
@@ -285,7 +284,7 @@ export default function Write() {
               />
             </div>
 
-            {/* 카테고리 */}
+      
             <div className={styles.row}>
               <label className={styles.label}>카테고리</label>
               <div className={styles.categoryWrap}>
@@ -306,7 +305,7 @@ export default function Write() {
               </div>
             </div>
 
-            {/* 소개글 */}
+
             <div className={styles.row}>
               <label className={styles.label}>소개글</label>
               <textarea
@@ -318,7 +317,7 @@ export default function Write() {
               />
             </div>
 
-            {/* 사진 */}
+           
             <div className={styles.row}>
               <label className={styles.label}>사진</label>
               <div className={styles.uploadWrap}>
