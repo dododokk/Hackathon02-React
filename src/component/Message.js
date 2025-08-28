@@ -20,10 +20,19 @@ function Message() {
         return token ? { Authorization: `Bearer ${token}` } : {};
     };
 
-    const fmt = (iso) => {
-        try { return new Date(iso).toTimeString().slice(0, 5); }
-        catch { return ""; }
+    const fmtKST = (iso) => {
+        try {
+            return new Date(iso).toLocaleTimeString("ko-KR", {
+                timeZone: "Asia/Seoul",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            });
+        } catch {
+            return "";
+        }
     };
+
 
     // 채팅방 목록 불러오기
     useEffect(() => {
@@ -174,7 +183,7 @@ function Message() {
                                         {room.desiredMemberCount ?? 0}
                                     </span>
                                     <span className={styles.messageTime}>
-                                        {fmt(room.lastMessage?.createdAt) ?? ""}
+                                        {fmtKST(room.lastMessage?.createdAt) ?? ""}
                                     </span>
                                 </div>
                                 <div className={styles.messageBottom}>
