@@ -1,4 +1,4 @@
-import React, { use, useRef, useEffect, useState, useContext } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import styles from "../style/Register.module.css";
 import Title from "./Title";
 import { useNavigate } from "react-router-dom";
@@ -9,22 +9,38 @@ import { useMap } from "../context/MapContext";
 import Swal from "sweetalert2";
 import { API_BASE } from "../config";
 
-function Input(props) {
-    return (
-        <div className={styles.regisElement}>
-            <div className={styles.inputRow}>
-                <span className={styles.regisTitle}>{props.title}</span>
-                <input className={styles.regisInput} type={props.type} value={props.value} onChange={props.onChange}
-                    placeholder={props.placeholder} />
-            </div>
-            {props.warning && (
-                <p id={props.check ? styles.warning : styles.safe}>
-                    {props.warning}
-                </p>
-            )}
-        </div>
-    )
-}
+const Input = React.forwardRef(
+  ({ title, warning, check, ...rest }, ref) => (
+    <div className={styles.regisElement}>
+      <div className={styles.inputRow}>
+        <span className={styles.regisTitle}>{title}</span>
+        <input
+          ref={ref}
+          className={styles.regisInput}
+          {...rest}        // ✅ onKeyUp, onKeyDown 등 모든 prop 전달
+        />
+      </div>
+      {warning && (
+        <p id={check ? styles.warning : styles.safe}>
+          {warning}
+        </p>
+      )}
+    </div>
+  )
+);
+
+const focusNext = (ref) => {
+  setTimeout(() => ref?.current?.focus(), 0); // ✅ 다음 틱에 포커스 이동
+};
+
+const onEnter = (cb) => (e) => {
+  if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+    e.preventDefault();
+    e.stopPropagation();
+    cb?.();
+  }
+};
+
 
 function Register() {
     const navigate = useNavigate();
@@ -39,6 +55,12 @@ function Register() {
     const [gender, setGender] = useState("");
     const [age, setAge] = useState("");
     const [interests, setInterests] = useState([]);
+
+    const pwRef = useRef(null);
+    const checkPwRef = useRef(null);
+    const nameRef = useRef(null);
+    const addressRef = useRef(null);
+    const nextBtnRef = useRef(null);  
 
     //지도 찍기 관련 변수
     const mapRef = useRef(null);
@@ -276,20 +298,43 @@ function Register() {
                 {step === 1 && (
                     <div>
                         <div className={styles.signup}><span className={styles.big}>Sign up</span><span className={styles.small}>| STEP 1</span></div>
-                        <Input title="ID" type="text" value={inputId} onChange={handleIdChange}
-                            placeholder="아이디를 입력해주세요..." />
-                        <Input title="PW" type="password" value={inputPw} onChange={handlePwChange}
-                            placeholder="비밀번호를 입력해주세요..." />
-                        <Input title="Check PW" type="password" value={confirmPw} onChange={handlePwCheck} check={checkPw}
+                        <Input title="ID" type="text" value={inputId} onChange={(e)=>setInputId(e.target.value)}
+                            placeholder="아이디를 입력해주세요..." 
+                            onKeyUp={onEnter(() => pwRef.current?.focus())}
+                        />
+                        <Input ref={pwRef} title="PW" type="password" value={inputPw} 
+                            onChange={(e) => {
+                                setInputPw(e.target.value);
+                                setCheckPw(confirmPw !== "" && confirmPw !== e.target.value);
+                            }}
+                            placeholder="비밀번호를 입력해주세요..."
+                            onKeyUp={onEnter(() => checkPwRef.current?.focus())}                     
+                        />
+                        <Input ref={checkPwRef} title="Check PW" type="password" value={confirmPw} 
+                            onChange={(e) => {
+                                setConfirmPw(e.target.value);
+                                setCheckPw(inputPw !== e.target.value);
+                            }}
+                            check={checkPw}
                             warning={confirmPw === "" ? "" : checkPw ? "※ 비밀번호가 일치하지 않습니다." : "일치합니다!"}
-                            placeholder="비밀번호를 다시 입력해주세요..." />
+                            placeholder="비밀번호를 다시 입력해주세요..."
+                            onKeyUp={onEnter(() => nextBtnRef.current?.click())}
+                        />
                     </div>
                 )}
                 {step === 2 && (
                     <div>
                         <div className={styles.signup}><span className={styles.big}>Sign up</span><span className={styles.small}>| STEP 2</span></div>
-                        <Input title="닉네임" type="text" value={inputName} onChange={handleNameChange}
-                            placeholder="닉네임을 입력해주세요..." />
+                        <Input title="닉네임" type="text" value={inputName} 
+                            onChange={(e) => {
+                                setInputName(e.target.value);
+                                setUserName(e.target.value);
+                            }}
+                            placeholder="닉네임을 입력해주세요..."
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") nextBtnRef.current?.click();
+                            }}
+                        />
                         <div className={styles.inputR}>
                             <span className={styles.regisTitle}>성별</span>
                             <div className={styles.genderGroup}>
@@ -367,6 +412,9 @@ function Register() {
                                 onChange={(e) => setAddress(e.target.value)}
                                 placeholder="거주지 동까지 입력해주세요..."
                                 className={styles.address}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") nextBtnRef.current?.click();
+                                }}
                             />
                             <button onClick={handleSearch} className={styles.searchBtn}>
                                 <img src={searchIcon}></img>
@@ -400,7 +448,7 @@ function Register() {
                         </div>
                     )}
                     {step < 4 && (
-                        <button className={styles.next} onClick={handleNext}>NEXT &gt;</button>
+                        <button ref={nextBtnRef} className={styles.next} onClick={handleNext}>NEXT &gt;</button>
                     )}
                 </div>
             </div>
