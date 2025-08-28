@@ -1,5 +1,6 @@
 .header {
-    text-align: right;     /* ✅ 오른쪽 정렬 */
+    text-align: right;
+    /* ✅ 오른쪽 정렬 */
     margin: 0 320px;
 }
 
@@ -18,12 +19,21 @@
     cursor: pointer;
 }
 
-.headerdiv {
-    padding-top: 30px;
-    min-width: 700px;
+.headerR {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    gap: 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    margin-top: 40px;
+    margin-left: auto;
 }
-.topbar{
-    color: #91A788;
-    height: 28px;
-    width: 100%;
+
+.cart {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    text-align: right;
+    margin-top: 40px;
 }

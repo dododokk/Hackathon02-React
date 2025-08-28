@@ -3,6 +3,7 @@ import styles from "../style/InnerTitle.module.css";
 import Nav from "./Nav";
 import { useNavigate } from "react-router-dom";
 import { readAllFromStorage } from "../utils/readAllQuick"; // ✅ 추가
+import cart from "../img/cart.png";
 
 function InnerTitle() {
     const navigate = useNavigate();
@@ -17,9 +18,12 @@ function InnerTitle() {
     return (
         <header className={styles.header}>
             <div className={styles.headerdiv}>
-                <h1 className={styles.title} onClick={goHome}>
-                    MOA
-                </h1>
+                <div className={styles.headerR}>
+                    <img src={cart} className={styles.cart}></img>
+                    <h1 className={styles.title} onClick={goHome}>
+                        MOA
+                    </h1>
+                </div>
                 <Nav />
             </div>
         </header>
